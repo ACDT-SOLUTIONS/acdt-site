@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://acdt-solutions.com/sitemap.xml
+Sitemap: https://acdt-solutions.com/image-sitemap.xml
+
+# Empêche l’indexation du dossier interne (sécurité)
+Disallow: /tmp/
+Disallow: /draft/

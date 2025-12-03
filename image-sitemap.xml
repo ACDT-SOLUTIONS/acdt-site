@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+    <url>
+        <loc>https://acdt-solutions.com/</loc>
+        <image:image>
+            <image:loc>https://acdt-solutions.com/assets/hero-banner.png</image:loc>
+        </image:image>
+    </url>
+
+    <!-- Ajoute les images importantes -->
+    <url>
+        <loc>https://acdt-solutions.com/services/</loc>
+        <image:image><image:loc>https://acdt-solutions.com/assets/icon-automatisations.png</image:loc></image:image>
+        <image:image><image:loc>https://acdt-solutions.com/assets/icon-audit.png</image:loc></image:image>
+        <image:image><image:loc>https://acdt-solutions.com/assets/icon-chatbot.png</image:loc></image:image>
+        <image:image><image:loc>https://acdt-solutions.com/assets/icon-n8n.png</image:loc></image:image>
+        <image:image><image:loc>https://acdt-solutions.com/assets/icon-sheets.png</image:loc></image:image>
+    </url>
+
+</urlset>
