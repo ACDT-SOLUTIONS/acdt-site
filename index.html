@@ -21,22 +21,21 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ACDT Solutions – Automatisation et intégration pour TPE / PME</title>
-    <meta name="description" content="Réduisez jusqu’à 90% de vos tâches répétitives grâce à des automatisations sur mesure et des intégrations n8n, pensées pour les TPE / PME.">
+    <title>ACDT Solutions – Automatisation n8n pour TPE et PME</title>
+    <meta name="description" content="ACDT Solutions connecte formulaires, emails, CRM, Google Sheets et outils métier pour réduire les ressaisies, les oublis et les relances manuelles.">
     <link rel="canonical" href="https://acdt-solutions.com/">
     <link rel="stylesheet" href="/assets/styles.css">
     <link rel="alternate" hreflang="fr" href="https://acdt-solutions.com/">
-    <link rel="alternate" hreflang="en" href="https://acdt-solutions.com/en/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="ACDT Solutions">
-    <meta property="og:title" content="ACDT Solutions – Automatisation et intégration pour TPE / PME">
-    <meta property="og:description" content="Automatisation & intégration pour les TPE / PME : moins de tâches manuelles, plus de rentabilité.">
+    <meta property="og:title" content="ACDT Solutions – Automatisation n8n pour TPE et PME">
+    <meta property="og:description" content="ACDT Solutions connecte formulaires, emails, CRM, Google Sheets et outils métier pour réduire les ressaisies, les oublis et les relances manuelles.">
     <meta property="og:url" content="https://acdt-solutions.com/">
-    <meta property="og:image" content="https://acdt-solutions.com/assets/og-default.jpg">
+    <meta property="og:image" content="https://acdt-solutions.com/assets/og-default.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="ACDT Solutions – Automatisation et intégration pour TPE / PME">
-    <meta name="twitter:description" content="Automatisation & intégration pour les TPE / PME : moins de tâches manuelles, plus de rentabilité.">
-    <meta name="twitter:image" content="https://acdt-solutions.com/assets/og-default.jpg">
+    <meta name="twitter:title" content="ACDT Solutions – Automatisation n8n pour TPE et PME">
+    <meta name="twitter:description" content="ACDT Solutions connecte formulaires, emails, CRM, Google Sheets et outils métier pour réduire les ressaisies, les oublis et les relances manuelles.">
+    <meta name="twitter:image" content="https://acdt-solutions.com/assets/og-default.png">
     <script defer data-domain="acdt-solutions.com" src="https://plausible.io/js/script.tagged-events.js"></script>
     <script>window.plausible = window.plausible || function(){(window.plausible.q = window.plausible.q || []).push(arguments)};</script>
     <script type="application/ld+json">
@@ -45,360 +44,246 @@
       "@type": ["Organization", "WebSite"],
       "name": "ACDT Solutions",
       "url": "https://acdt-solutions.com",
-      "logo": "https://acdt-solutions.com/assets/og-default.jpg",
-      "description": "Automatisation et intégration pour les petites entreprises."
+      "description": "Automatisation n8n et intégration d'outils métier pour TPE et PME françaises."
     }
     </script>
 </head>
 <body>
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXXCW598"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXXCW598" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    <!-- HEADER commun -->
     <a href="#main-content" class="skip-link">Aller au contenu</a>
-
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="logo">ACDT Solutions</a>
-
-            <button class="nav-toggle" type="button" aria-label="Ouvrir le menu">
+            <button class="nav-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
                 <span class="nav-toggle-bar"></span>
                 <span class="nav-toggle-bar"></span>
                 <span class="nav-toggle-bar"></span>
             </button>
-
             <nav aria-label="Navigation principale">
                 <ul class="nav-list">
-                    <li><a href="/services">Services</a></li>
-                    <li><a href="/tarifs">Tarifs</a></li>
-                    <li><a href="/methodologie">Méthodologie</a></li>
-                    <li><a href="/etudes-de-cas">Études de cas</a></li>
-                    <!-- TODO: Reactivate the Blog link when the blog page is ready -->
-                    <!-- <li><a href="/blog">Blog</a></li> -->
-                    <li><a href="/a-propos">À propos</a></li>
-                    <li><a href="/contact" data-event="nav_contact_click">Contact</a></li>
-                    <li class="nav-cta">
-                        <a href="/rdv"
-                           class="button primary"
-                           data-event="nav_rdv_click"
-                           data-cta-label="Prendre RDV">
-                            Prendre RDV
-                        </a>
-                    </li>
+                    <li><a href="/services">Services</a></li><li><a href="/tarifs">Tarifs</a></li><li><a href="/methodologie">Méthodologie</a></li><li><a href="/etudes-de-cas">Cas d’usage</a></li><li><a href="/a-propos">À propos</a></li><li><a href="/contact" data-event="nav_contact_click">Contact</a></li>
+                    <li class="nav-cta"><a href="/rdv" class="button primary" data-event="nav_rdv_click" data-cta-label="Audit gratuit">Audit gratuit</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main id="main-content">
-        <!-- HERO -->
         <section class="hero">
-            <img src="/assets/hero-banner.png"
-                 alt="Illustration abstraite de flux de données interconnectés représentant l’automatisation des processus"
-                 class="hero-background">
+            <div class="container hero-grid">
+                <div class="hero-copy">
+                    <p class="eyebrow">Automatisation opérationnelle pour TPE/PME</p>
+                    <h1>Automatisations simples pour entreprises qui perdent trop de temps à tout gérer à la main.</h1>
+                    <p class="lead">ACDT Solutions connecte vos formulaires, emails, CRM, fichiers Google Sheets et outils métier pour réduire les ressaisies, les oublis et les relances manuelles.</p>
+                    <div class="cta-row">
+                        <a href="/contact" class="button primary" data-event="hero_cta_click" data-cta-label="Demander un audit gratuit">Demander un audit gratuit</a>
+                        <a href="#cas-usages" class="button secondary" data-event="hero_cta_click" data-cta-label="Voir les cas d’usage">Voir les cas d’usage</a>
+                    </div>
+                    <p class="proof-line"><strong>Exemples :</strong> relances clients, suivi SAV, qualification de prospects, tableaux de bord, synchronisation CRM / Google Sheets.</p>
+                </div>
+                <aside class="process-visual" aria-label="Exemple de workflow automatisé">
+                    <div class="visual-topbar"><span>Workflow illustratif</span><span class="status-dot" aria-hidden="true"></span></div>
+                    <div class="flow-stack">
+                        <div class="flow-card"><small>Entrée</small><strong>Formulaire rempli</strong><span>Demande client, devis ou SAV.</span></div>
+                        <div class="flow-arrow" aria-hidden="true">↓</div>
+                        <div class="flow-card"><small>Traitement</small><strong>CRM et Google Sheets mis à jour</strong><span>Les informations sont rangées au bon endroit.</span></div>
+                        <div class="flow-arrow" aria-hidden="true">↓</div>
+                        <div class="flow-card"><small>Action</small><strong>Tâche créée, relance préparée</strong><span>L’équipe sait quoi faire et quand.</span></div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric"><strong>1</strong><span>source fiable</span></div>
+                        <div class="metric"><strong>0</strong><span>copier-coller</span></div>
+                        <div class="metric"><strong>100%</strong><span>documenté</span></div>
+                    </div>
+                </aside>
+            </div>
+        </section>
 
+        <section class="section bg-soft">
             <div class="container">
-                <div class="hero-inner">
-                    <p class="hero-kicker">
-                        Automatisation & intégration pour TPE / PME
-                    </p>
-
-                    <h1>
-                        Automatisez votre entreprise.<br>
-                        Libérez votre temps.
-                    </h1>
-
-                    <p class="subheadline">
-                        ACDT Solutions conçoit des systèmes autonomes qui connectent vos outils,
-                        suppriment la saisie manuelle et redonnent du temps à votre équipe
-                        pour se concentrer sur la croissance plutôt que sur l’administratif.
-                    </p>
-
-                    <div class="hero-meta">
-                        <span>⚡ Jusqu’à 50–90&nbsp;% de tâches répétitives en moins</span>
-                        <span class="hero-meta-separator">•</span>
-                        <span>Workflows documentés, pensés pour les TPE / PME</span>
+                <div class="section-intro">
+                    <div>
+                        <p class="eyebrow">Problèmes terrain</p>
+                        <h2>Les problèmes commencent rarement par un grand projet informatique.</h2>
                     </div>
-
-                    <div class="cta-group">
-                        <a href="/contact"
-                           class="button primary"
-                           data-event="hero_cta_click"
-                           data-cta-label="Obtenir un audit gratuit"
-                           data-section="hero">
-                            Obtenir un audit gratuit
-                        </a>
-                        <a href="/services"
-                           class="button secondary"
-                           data-event="hero_cta_click"
-                           data-cta-label="Découvrir les services"
-                           data-section="hero">
-                            Découvrir les services
-                        </a>
-                    </div>
-
-                    <div class="hero-badges">
-                        <span class="hero-badge">n8n • Google Sheets • CRM</span>
-                        <span class="hero-badge">Spécial TPE / PME</span>
-                        <span class="hero-badge">Approche par itérations, sans jargon</span>
-                    </div>
+                    <p>Ils commencent par une demande qui reste dans une boîte mail, une relance remise à plus tard ou un fichier qui n’est plus à jour. On corrige d’abord ces points précis.</p>
+                </div>
+                <div class="grid grid-3">
+                    <article class="card problem-card"><span class="tag">Demandes</span><h3>Demandes clients dispersées</h3><p>Email, téléphone, formulaire : les informations arrivent partout et personne ne sait toujours qui reprend le sujet.</p></article>
+                    <article class="card problem-card"><span class="tag">Relances</span><h3>Relances oubliées</h3><p>Les prospects intéressés ne sont pas toujours relancés au bon moment, surtout quand l’activité accélère.</p></article>
+                    <article class="card problem-card"><span class="tag">Sheets</span><h3>Fichiers copiés à la main</h3><p>Les tableaux Google Sheets servent de référence, mais ils dépendent encore de copier-coller fragiles.</p></article>
+                    <article class="card problem-card"><span class="tag">Prospects</span><h3>Prospects non suivis</h3><p>Un formulaire arrive, puis la qualification, la tâche commerciale ou la mise à jour CRM n’est pas systématique.</p></article>
+                    <article class="card problem-card"><span class="tag">Outils</span><h3>Informations en double</h3><p>Le même client existe dans plusieurs outils, avec des statuts différents et des données parfois contradictoires.</p></article>
+                    <article class="card problem-card"><span class="tag">Priorités</span><h3>Urgences difficiles à repérer</h3><p>Sans notification fiable, l’équipe découvre trop tard ce qui aurait dû être traité en priorité.</p></article>
                 </div>
             </div>
         </section>
 
-        <!-- SERVICES OVERVIEW -->
-        <section class="services-overview section-padding bg-light">
-            <div class="container text-center">
-                <p class="section-kicker">Services</p>
-                <h2>Des systèmes qui travaillent pendant que vous faites autre chose.</h2>
-                <p class="section-subtitle">
-                    Nous concevons des automatisations et intégrations sur mesure qui relient vos outils,
-                    réduisent la saisie manuelle et fluidifient vos opérations au quotidien.
-                </p>
-
-                <div class="services-grid">
-                    <article class="service-card">
-                        <img src="/assets/icon-automatisations.png"
-                             alt="Icône 3D d'engrenages interconnectés"
-                             class="icon">
-                        <h3><a href="/services/automatisations-sur-mesure">Automatisations sur mesure</a></h3>
-                        <p>Votre entreprise est unique, vos outils aussi. Nous analysons vos tâches manuelles et créons un système sur mesure qui travaille pour vous, sans friction.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <img src="/assets/icon-n8n.png"
-                             alt="Icône 3D de nœuds connectés"
-                             class="icon">
-                        <h3><a href="/services/integration-n8n">Connexion de vos outils (via n8n)</a></h3>
-                        <p>Faites enfin communiquer vos logiciels. Nous connectons votre CRM, votre facturation, vos emails et vos formulaires pour que l’information circule seule.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <img src="/assets/icon-chatbot.png"
-                             alt="Icône 3D de bulle de dialogue"
-                             class="icon">
-                        <h3><a href="/services/chatbot-entreprise">Chatbot d’entreprise</a></h3>
-                        <p>Votre assistant virtuel répond 24/7 sur votre site, qualifie les demandes et vous envoie uniquement les prospects chauds.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <img src="/assets/icon-sheets.png"
-                             alt="Icône 3D de tableur automatisé"
-                             class="icon">
-                        <h3><a href="/services/google-sheets-automations">Google Sheets automatisé</a></h3>
-                        <p>Vos tableurs deviennent intelligents : rapports automatiques, alertes, synchronisation de bases de données… fini le temps perdu sur Google Sheets.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <img src="/assets/icon-audit.png"
-                             alt="Icône 3D de loupe pour audit"
-                             class="icon">
-                        <h3><a href="/services/audit-express">Audit express</a></h3>
-                        <p>Nous identifions les 3 actions les plus rentables à automatiser pour un retour sur investissement rapide et mesurable.</p>
-                    </article>
+        <section class="section bg-paper">
+            <div class="container split">
+                <div>
+                    <p class="eyebrow">Solution</p>
+                    <h2>Des workflows utiles, pas des gadgets.</h2>
+                    <p class="lead">ACDT Solutions construit des automatisations qui s’intègrent à vos habitudes de travail. Le but n’est pas d’ajouter un outil de plus, mais de fiabiliser la circulation de l’information.</p>
                 </div>
-
-                <div class="cta-group">
-                    <a href="/services"
-                       class="button secondary"
-                       data-event="services_cta_click"
-                       data-cta-label="Voir tous les services"
-                       data-section="services-overview">
-                        Voir tous les services
-                    </a>
+                <div class="panel">
+                    <ul class="check-list">
+                        <li>Analyse du processus actuel et des exceptions.</li>
+                        <li>Identification des tâches répétitives et des oublis fréquents.</li>
+                        <li>Création d’un workflow automatisé, testé sur des cas réels.</li>
+                        <li>Connexion des outils existants : n8n, CRM, Sheets, emails, formulaires.</li>
+                        <li>Documentation claire pour comprendre et maintenir le système.</li>
+                        <li>Amélioration par itérations, sans usine à gaz.</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <!-- POURQUOI NOUS -->
-        <section class="why-us section-padding">
+        <section class="section" id="cas-usages">
             <div class="container">
-                <h2 class="text-center">Pourquoi travailler avec ACDT Solutions&nbsp;?</h2>
-
-                <div class="whyus-grid">
-                    <div class="whyus-image-wrap">
-                        <img src="https://images.pexels.com/photos/3182763/pexels-photo-3182763.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                             alt="Consultant présentant un plan d’automatisation à une équipe dans un bureau moderne"
-                             class="whyus-image">
+                <div class="section-intro">
+                    <div>
+                        <p class="eyebrow">Cas d’usage</p>
+                        <h2>Des automatisations précises pour les opérations du quotidien.</h2>
                     </div>
-                    <div class="whyus-content">
-                        <ul class="whyus-list">
-                            <li>
-                                <span class="whyus-icon">✓</span>
-                                <span><strong>Expertise n8n :</strong> intégrations robustes, maintenables et documentées, adaptées à votre réalité terrain.</span>
-                            </li>
-                            <li>
-                                <span class="whyus-icon">✓</span>
-                                <span><strong>Approche 100 % personnalisée :</strong> nous partons de vos outils existants et de vos contraintes, sans tout réinventer.</span>
-                            </li>
-                            <li>
-                                <span class="whyus-icon">✓</span>
-                                <span><strong>Pédagogie & transparence :</strong> vous comprenez ce que nous mettons en place et comment cela crée de la valeur.</span>
-                            </li>
-                            <li>
-                                <span class="whyus-icon">✓</span>
-                                <span><strong>Gains concrets :</strong> temps gagné, erreurs réduites, meilleure visibilité sur votre activité.</span>
-                            </li>
-                        </ul>
-                    </div>
+                    <p>Chaque cas part d’un problème observable, puis formalise ce que le workflow doit faire et le résultat attendu pour l’équipe.</p>
+                </div>
+                <div class="grid grid-4">
+                    <article class="card use-card"><h3>Qualification de prospects entrants</h3><dl><div><dt>Problème</dt><dd>Les demandes arrivent sans tri et sans responsable clair.</dd></div><div><dt>Automatisation</dt><dd>Création du contact, enrichissement des champs utiles, notification interne.</dd></div><div><dt>Résultat</dt><dd>Un suivi plus rapide et moins de prospects oubliés.</dd></div></dl></article><article class="card use-card"><h3>Relances automatiques</h3><dl><div><dt>Problème</dt><dd>Les prospects intéressés ne sont pas toujours relancés au bon moment.</dd></div><div><dt>Automatisation</dt><dd>Tâche créée, rappel interne, email préparé ou envoyé selon scénario.</dd></div><div><dt>Résultat</dt><dd>Moins d’opportunités perdues.</dd></div></dl></article><article class="card use-card"><h3>Suivi SAV / demandes clients</h3><dl><div><dt>Problème</dt><dd>Les demandes restent coincées dans une boîte mail partagée.</dd></div><div><dt>Automatisation</dt><dd>Ticket ou ligne de suivi créée, priorité définie, personne assignée.</dd></div><div><dt>Résultat</dt><dd>Des demandes visibles et traitées dans l’ordre.</dd></div></dl></article><article class="card use-card"><h3>Synchronisation Google Sheets / CRM</h3><dl><div><dt>Problème</dt><dd>Les données sont ressaisies entre tableau et CRM.</dd></div><div><dt>Automatisation</dt><dd>Mise à jour contrôlée entre Sheets et CRM, avec règles simples.</dd></div><div><dt>Résultat</dt><dd>Une base plus fiable et moins d’erreurs.</dd></div></dl></article><article class="card use-card"><h3>Tableaux de bord opérationnels</h3><dl><div><dt>Problème</dt><dd>Les indicateurs sont dispersés ou mis à jour trop tard.</dd></div><div><dt>Automatisation</dt><dd>Consolidation automatique des données utiles dans un tableau de suivi.</dd></div><div><dt>Résultat</dt><dd>Une vue claire pour décider chaque semaine.</dd></div></dl></article><article class="card use-card"><h3>Chatbot de préqualification</h3><dl><div><dt>Problème</dt><dd>Les visiteurs posent les mêmes questions avant d’être qualifiés.</dd></div><div><dt>Automatisation</dt><dd>Collecte du besoin, du budget indicatif et du contact avant transmission.</dd></div><div><dt>Résultat</dt><dd>Moins d’échanges inutiles et des demandes mieux cadrées.</dd></div></dl></article><article class="card use-card"><h3>Notifications internes</h3><dl><div><dt>Problème</dt><dd>Les bonnes personnes ne sont pas alertées au bon moment.</dd></div><div><dt>Automatisation</dt><dd>Notification email, Slack ou tâche lorsqu’un seuil ou événement se déclenche.</dd></div><div><dt>Résultat</dt><dd>Une équipe plus réactive sans surveillance permanente.</dd></div></dl></article><article class="card use-card"><h3>Préparation de devis ou réponses</h3><dl><div><dt>Problème</dt><dd>Les réponses répétitives prennent du temps et varient selon les personnes.</dd></div><div><dt>Automatisation</dt><dd>Préremplissage de modèles avec les données déjà disponibles.</dd></div><div><dt>Résultat</dt><dd>Des réponses plus rapides, tout en gardant la validation humaine.</dd></div></dl></article>
                 </div>
             </div>
         </section>
 
-        <!-- VISUAL SHOWCASE 
-        <section class="visual-showcase section-padding">
-            <div class="container">
-                <p class="section-kicker">Ambiances de travail</p>
-                <h2>Des équipes qui passent à l’automatisation.</h2>
-                <p class="section-subtitle">
-                    Une sélection de photos professionnelles libres de droits issues de Pexels pour illustrer les environnements
-                    modernes dans lesquels nous mettons en place vos workflows.
-                </p>
-
-                <div class="visual-grid">
-                    <figure class="visual-card">
-                        <img src="https://images.pexels.com/photos/3183171/pexels-photo-3183171.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                             alt="Équipe de jeunes professionnels en réunion autour d’un ordinateur portable">
-                    </figure>
-
-                    <figure class="visual-card">
-                        <img src="https://images.pexels.com/photos/1181359/pexels-photo-1181359.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                             alt="Facilitateur présentant un tableau blanc rempli de schémas de processus">
-                    </figure>
-
-                    <figure class="visual-card">
-                        <img src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                             alt="Entrepreneuse concentrée travaillant sur un ordinateur portable">
-                    </figure>
-
-                    <figure class="visual-card">
-                        <img src="https://images.pexels.com/photos/5668859/pexels-photo-5668859.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                             alt="Salle de réunion moderne équipée d’écrans d’analyse de données">
-                    </figure>
+        <section class="section bg-soft">
+            <div class="container split">
+                <div>
+                    <p class="eyebrow">Méthode</p>
+                    <h2>Une méthode simple : comprendre, automatiser, documenter.</h2>
+                    <p class="lead">Le client garde la main : vous validez le processus, les règles, les accès et les exceptions avant la mise en production.</p>
                 </div>
-
-                <p class="visual-credit">
-                    Photos libres de droits fournies par <a href="https://www.pexels.com/" target="_blank" rel="noopener">Pexels</a>.
-                </p>
-            </div>
-        </section> -->
-
-        <!-- FAQ -->
-        <section class="faq section-padding bg-light">
-            <div class="container">
-                <h2 class="text-center">Questions fréquentes</h2>
-
-                <div class="faq-inner">
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" data-question-id="q1">
-                            Qu’est-ce que l’automatisation de processus&nbsp;?
-                        </button>
-                        <div class="faq-answer" hidden>
-                            <p>
-                                L’automatisation consiste à confier à des scénarios techniques des tâches répétitives
-                                (envoi d’emails, mises à jour de fichiers, synchronisation d’outils, relances…)
-                                pour qu’elles se fassent automatiquement, sans intervention humaine.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" data-question-id="q2">
-                            Mes données sont-elles sécurisées&nbsp;?
-                        </button>
-                        <div class="faq-answer" hidden>
-                            <p>
-                                La sécurité est une priorité : nous utilisons des connexions chiffrées et nous limitons
-                                les accès aux seules données nécessaires aux automatisations, en respectant vos contraintes.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" data-question-id="q3">
-                            Combien de temps faut-il pour mettre en place une automatisation&nbsp;?
-                        </button>
-                        <div class="faq-answer" hidden>
-                            <p>
-                                Après un audit, un premier workflow peut être opérationnel en quelques jours.
-                                Les projets plus complexes peuvent s’étaler sur quelques semaines, avec des livraisons par étapes.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" aria-expanded="false" data-question-id="q4">
-                            Travaillez-vous avec ma TPE / mon secteur&nbsp;?
-                        </button>
-                        <div class="faq-answer" hidden>
-                            <p>
-                                Nous accompagnons des TPE / PME de secteurs variés (services, B2B, e-commerce, artisanat, etc.).
-                                L’automatisation s’adapte à quasiment tous les métiers : l’important est votre organisation actuelle.
-                            </p>
-                        </div>
-                    </div>
+                <div class="method-list">
+                    <article class="method-step"><div><h3>Audit rapide</h3><p>Identifier les tâches répétitives et les points de risque.</p></div></article><article class="method-step"><div><h3>Cartographie du processus</h3><p>Dessiner le flux actuel, les outils, les rôles et les exceptions.</p></div></article><article class="method-step"><div><h3>Prototype</h3><p>Construire un premier scénario testable sur un périmètre réduit.</p></div></article><article class="method-step"><div><h3>Mise en production</h3><p>Déployer avec contrôles, logs et alertes utiles.</p></div></article><article class="method-step"><div><h3>Documentation</h3><p>Livrer un schéma, les règles du workflow et la checklist de maintenance.</p></div></article><article class="method-step"><div><h3>Amélioration</h3><p>Ajuster selon les retours terrain et les nouveaux besoins.</p></div></article>
                 </div>
             </div>
         </section>
 
+        <section class="section bg-paper">
+            <div class="container">
+                <div class="section-intro">
+                    <div>
+                        <p class="eyebrow">Outils</p>
+                        <h2>Nous partons de vos outils existants.</h2>
+                    </div>
+                    <p>L’objectif n’est pas de tout remplacer, mais de faire circuler l’information correctement entre les outils que vous utilisez déjà.</p>
+                </div>
+                <div class="tools-grid" aria-label="Outils et connecteurs possibles">
+                    <span class="tool-chip">n8n</span><span class="tool-chip">Google Sheets</span><span class="tool-chip">Gmail / Outlook</span><span class="tool-chip">CRM</span><span class="tool-chip">Formulaires</span><span class="tool-chip">Calendriers</span><span class="tool-chip">Webhooks</span><span class="tool-chip">Outils métier</span><span class="tool-chip">Tableaux de bord</span><span class="tool-chip">Emails transactionnels</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section bg-soft">
+            <div class="container">
+                <div class="section-intro">
+                    <div>
+                        <p class="eyebrow">Crédibilité</p>
+                        <h2>Exemples de livrables, sans faux témoignages.</h2>
+                    </div>
+                    <p>Quand il n’y a pas encore de témoignage vérifiable à publier, le plus sérieux est de montrer ce que vous recevez concrètement.</p>
+                </div>
+                <div class="grid grid-3">
+                    <article class="card deliverable"><div><h3>Schéma de workflow</h3><p>Le chemin de l’information, les outils connectés et les points de contrôle.</p></div><div class="deliverable-preview" aria-hidden="true"><span class="line"></span><span class="line mid"></span><span class="line short"></span></div></article><article class="card deliverable"><div><h3>Tableau de suivi</h3><p>Une vue simple pour piloter les demandes, relances ou statuts importants.</p></div><div class="deliverable-preview" aria-hidden="true"><span class="line"></span><span class="line mid"></span><span class="line short"></span></div></article><article class="card deliverable"><div><h3>Documentation simple</h3><p>Les règles du scénario, les accès utilisés et les actions de maintenance.</p></div><div class="deliverable-preview" aria-hidden="true"><span class="line"></span><span class="line mid"></span><span class="line short"></span></div></article><article class="card deliverable"><div><h3>Scénario n8n</h3><p>Un workflow organisé, nommé proprement et testable par étape.</p></div><div class="deliverable-preview" aria-hidden="true"><span class="line"></span><span class="line mid"></span><span class="line short"></span></div></article><article class="card deliverable"><div><h3>Checklist de maintenance</h3><p>Les vérifications à faire en cas de changement d’outil ou d’erreur.</p></div><div class="deliverable-preview" aria-hidden="true"><span class="line"></span><span class="line mid"></span><span class="line short"></span></div></article><article class="card deliverable"><div><h3>Rapport d’audit</h3><p>Les processus analysés, les gains attendus et les priorités recommandées.</p></div><div class="deliverable-preview" aria-hidden="true"><span class="line"></span><span class="line mid"></span><span class="line short"></span></div></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section bg-paper">
+            <div class="container center">
+                <p class="eyebrow">FAQ</p>
+                <h2>Questions fréquentes</h2>
+                <div class="faq-list">
+<article class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false" data-question-id="faq-1">Est-ce adapté à une petite entreprise ?</button>
+    <div class="faq-answer" hidden><p>Oui, si le point de départ est concret. Une première automatisation peut simplement relier un formulaire, un fichier Google Sheets et une relance. L’objectif est de traiter un irritant réel avant d’élargir.</p></div>
+</article>
+<article class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false" data-question-id="faq-2">Est-ce que je dois changer mes outils ?</button>
+    <div class="faq-answer" hidden><p>Pas nécessairement. Nous partons de vos outils existants : Gmail ou Outlook, Google Sheets, CRM, formulaires, calendriers, logiciel métier. Le remplacement n’est proposé que si l’outil actuel bloque vraiment le processus.</p></div>
+</article>
+<article class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false" data-question-id="faq-3">Est-ce que mes données sont sécurisées ?</button>
+    <div class="faq-answer" hidden><p>Les accès sont limités aux besoins du workflow, les connexions sont documentées et les droits peuvent être séparés par outil. Les règles de conservation et les données sensibles sont cadrées avant la mise en production.</p></div>
+</article>
+<article class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false" data-question-id="faq-4">Combien de temps prend une première automatisation ?</button>
+    <div class="faq-answer" hidden><p>Un workflow ciblé peut souvent être cadré, prototypé et testé en quelques jours ouvrés. Les systèmes plus larges sont découpés en étapes pour éviter l’effet tunnel.</p></div>
+</article>
+<article class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false" data-question-id="faq-5">Est-ce que je pourrai comprendre ce qui est mis en place ?</button>
+    <div class="faq-answer" hidden><p>Oui. Chaque automatisation est livrée avec un schéma, une documentation simple, les cas prévus et les points de maintenance. Vous gardez la main sur le fonctionnement.</p></div>
+</article>
+<article class="faq-item">
+    <button class="faq-question" type="button" aria-expanded="false" data-question-id="faq-6">Est-ce que l’automatisation remplace quelqu’un ?</button>
+    <div class="faq-answer" hidden><p>L’objectif est d’enlever les ressaisies, les rappels oubliés et les manipulations répétitives. Les décisions, la relation client et les exceptions restent humaines.</p></div>
+</article>
+</div>
+            </div>
+        </section>
+
+        <section class="section final-cta">
+            <div class="container center">
+                <h2>Vous avez probablement déjà un processus automatisable cette semaine.</h2>
+                <p class="lead">Un audit rapide permet d’identifier les tâches répétitives qui prennent du temps, créent des oublis ou ralentissent votre suivi client.</p>
+                <div class="cta-row"><a href="/contact" class="button primary" data-event="final_cta_click" data-cta-label="Demander un audit gratuit">Demander un audit gratuit</a></div>
+            </div>
+        </section>
     </main>
-
-    <!-- FOOTER + CHAT + JS communs -->
     <footer class="site-footer">
-        <div class="container">
-            <div class="footer-columns">
-                <div>
-                    <h3>ACDT Solutions</h3>
-                    <p>Automatisation et intégration pour TPE.</p>
-                    <p><strong>Email :</strong> <a href="mailto:contact@acdt-solutions.com">contact@acdt-solutions.com</a></p>
-                    <p><strong> </strong> </p>
-                </div>
-                <div>
-                    <h3>Menu</h3>
-                    <ul>
-                        <li><a href="/services">Services</a></li>
-                        <li><a href="/tarifs">Tarifs</a></li>
-                        <li><a href="/etudes-de-cas">Études de cas</a></li>
-                        <!-- TODO: Reactivate the Blog link when the blog page is ready -->
-                        <!-- <li><a href="/blog">Blog</a></li> -->
-                        <li><a href="/a-propos">À propos</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                        <li><a href="/rdv">Prendre RDV</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3>Légal</h3>
-                    <ul>
-                        <li><a href="/mentions-legales">Mentions légales</a></li>
-                        <li><a href="/politique-de-confidentialite">Confidentialité</a></li>
-                        <li><a href="/politique-cookies">Cookies</a></li>
-                    </ul>
-                </div>
+        <div class="container footer-columns">
+            <div>
+                <h3>ACDT Solutions</h3>
+                <p>Automatisations n8n, intégrations d'outils métier et workflows documentés pour TPE/PME.</p>
+                <p><strong>Email :</strong> <a href="mailto:contact@acdt-solutions.com">contact@acdt-solutions.com</a></p>
             </div>
-            <p class="copy">&copy; 2025 ACDT Solutions. Tous droits réservés.</p>
+            <div>
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="/services">Services</a></li>
+                    <li><a href="/tarifs">Tarifs</a></li>
+                    <li><a href="/methodologie">Méthodologie</a></li>
+                    <li><a href="/etudes-de-cas">Cas d’usage</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/rdv">Prendre RDV</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Légal</h3>
+                <ul>
+                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                    <li><a href="/politique-de-confidentialite">Confidentialité</a></li>
+                    <li><a href="/politique-cookies">Cookies</a></li>
+                    <li><a href="/conditions-generales-utilisation">CGU</a></li>
+                    <li><a href="/conditions-generales-vente">CGV</a></li>
+                </ul>
+            </div>
         </div>
+        <p class="copy">&copy; 2026 ACDT Solutions. Tous droits réservés.</p>
     </footer>
-
     <button id="chat-toggle" class="chat-button" aria-label="Ouvrir le chat">Chat</button>
     <div id="chat-panel" class="chat-panel" aria-hidden="true">
         <div class="chat-header">
+            <span>Assistant ACDT</span>
             <button id="chat-close" aria-label="Fermer">×</button>
-            Chatbot
         </div>
         <div class="chat-messages" id="chat-messages"></div>
         <form id="chat-form" class="chat-form">
             <label for="chat-input" class="visually-hidden">Votre message</label>
-            <input type="text" id="chat-input" aria-label="Votre message" placeholder="Tapez votre message…" />
+            <input type="text" id="chat-input" aria-label="Votre message" placeholder="Décrivez votre besoin..." />
             <button type="submit">Envoyer</button>
         </form>
-       <!-- <div class="chat-suggestions">
-            <button type="button" data-suggest-id="pricing">Tarifs</button>
-            <button type="button" data-suggest-id="services">Services</button>
-        </div> -->
     </div>
-
     <script src="/assets/app.js" defer></script>
 </body>
 </html>

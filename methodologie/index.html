@@ -21,349 +21,105 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Méthodologie – ACDT Solutions</title>
-    <meta name="description" content="Découvrez la méthodologie en 5 étapes d’ACDT Solutions pour automatiser vos processus sans perturber votre activité : audit, design, implémentation, formation et support.">
+    <title>Méthodologie d’automatisation n8n – ACDT Solutions</title>
+    <meta name="description" content="Méthode ACDT Solutions : audit, cartographie, prototype, mise en production, documentation et amélioration des workflows n8n.">
     <link rel="canonical" href="https://acdt-solutions.com/methodologie">
     <link rel="stylesheet" href="/assets/styles.css">
     <link rel="alternate" hreflang="fr" href="https://acdt-solutions.com/methodologie">
-    <link rel="alternate" hreflang="en" href="https://acdt-solutions.com/en/methodology">
-
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="ACDT Solutions">
-    <meta property="og:title" content="Méthodologie – ACDT Solutions">
-    <meta property="og:description" content="Une méthode en 5 étapes, pensée pour les TPE / PME : audit, design, implémentation, formation et optimisation continue.">
+    <meta property="og:title" content="Méthodologie d’automatisation n8n – ACDT Solutions">
+    <meta property="og:description" content="Méthode ACDT Solutions : audit, cartographie, prototype, mise en production, documentation et amélioration des workflows n8n.">
     <meta property="og:url" content="https://acdt-solutions.com/methodologie">
-    <meta property="og:image" content="https://acdt-solutions.com/assets/og-default.jpg">
-
+    <meta property="og:image" content="https://acdt-solutions.com/assets/og-default.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Méthodologie – ACDT Solutions">
-    <meta name="twitter:description" content="Découvrez comment nous sécurisons vos projets d’automatisation, étape par étape.">
-    <meta name="twitter:image" content="https://acdt-solutions.com/assets/og-default.jpg">
-
+    <meta name="twitter:title" content="Méthodologie d’automatisation n8n – ACDT Solutions">
+    <meta name="twitter:description" content="Méthode ACDT Solutions : audit, cartographie, prototype, mise en production, documentation et amélioration des workflows n8n.">
+    <meta name="twitter:image" content="https://acdt-solutions.com/assets/og-default.png">
     <script defer data-domain="acdt-solutions.com" src="https://plausible.io/js/script.tagged-events.js"></script>
     <script>window.plausible = window.plausible || function(){(window.plausible.q = window.plausible.q || []).push(arguments)};</script>
-
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Méthodologie",
-      "url": "https://acdt-solutions.com/methodologie",
-      "description": "Méthodologie en 5 étapes pour automatiser les processus des TPE / PME."
+      "@type": ["Organization", "WebSite"],
+      "name": "ACDT Solutions",
+      "url": "https://acdt-solutions.com",
+      "description": "Automatisation n8n et intégration d'outils métier pour TPE et PME françaises."
     }
     </script>
 </head>
 <body>
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXXCW598"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXXCW598" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
     <a href="#main-content" class="skip-link">Aller au contenu</a>
-
-    <!-- HEADER STICKY GLASS -->
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="logo">ACDT Solutions</a>
-
-            <button class="nav-toggle" type="button" aria-label="Ouvrir le menu">
+            <button class="nav-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
                 <span class="nav-toggle-bar"></span>
                 <span class="nav-toggle-bar"></span>
                 <span class="nav-toggle-bar"></span>
             </button>
-
             <nav aria-label="Navigation principale">
                 <ul class="nav-list">
-                    <li><a href="/services">Services</a></li>
-                    <li><a href="/tarifs">Tarifs</a></li>
-                    <li><a href="/methodologie">Méthodologie</a></li>
-                    <li><a href="/etudes-de-cas">Études de cas</a></li>
-                    <!-- TODO: Reactivate the Blog link when the blog page is ready -->
-                    <!-- <li><a href="/blog">Blog</a></li> -->
-                    <li><a href="/a-propos">À propos</a></li>
-                    <li><a href="/contact" data-event="nav_contact_click">Contact</a></li>
-                    <li class="nav-cta">
-                        <a href="/rdv"
-                           class="button primary"
-                           data-event="nav_rdv_click"
-                           data-cta-label="Prendre RDV">
-                            Prendre RDV
-                        </a>
-                    </li>
+                    <li><a href="/services">Services</a></li><li><a href="/tarifs">Tarifs</a></li><li><a href="/methodologie" aria-current="page">Méthodologie</a></li><li><a href="/etudes-de-cas">Cas d’usage</a></li><li><a href="/a-propos">À propos</a></li><li><a href="/contact" data-event="nav_contact_click">Contact</a></li>
+                    <li class="nav-cta"><a href="/rdv" class="button primary" data-event="nav_rdv_click" data-cta-label="Audit gratuit">Audit gratuit</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main id="main-content">
-        <!-- HERO MÉTHODO -->
-        <section class="section-padding bg-light section-media">
-            <div class="container section-media-inner">
-                <div class="section-media-content">
-                    <p class="section-kicker">Méthodologie</p>
-                    <h1>Votre succès n’est pas une option. C’est un plan.</h1>
-                    <p class="section-subtitle">
-                        Un projet d’automatisation ne doit pas être un saut dans l’inconnu.  
-                        Pour une TPE / PME, chaque investissement doit être rentable et chaque changement doit rester fluide.
-                    </p>
-                    <p>
-                        C’est pourquoi notre méthodologie en cinq étapes est conçue pour être
-                        efficace, transparente et centrée sur votre retour sur investissement.  
-                        Nous gérons la complexité technique pour que vous puissiez rester concentré
-                        sur l’essentiel&nbsp;: piloter votre entreprise.
-                    </p>
-                </div>
-                <div class="section-media-image">
-                    <img class="image-pexels"
-                         src="https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                         alt="Équipe projet alignée autour d’un tableau numérique pour planifier un déploiement">
-                </div>
-            </div>
-        </section>
-
-        <section class="section-padding section-media">
-            <div class="container section-media-inner">
-                <div class="section-media-content">
-                    <p class="section-kicker">Diagnostic &amp; accompagnement</p>
-                    <h2>Nous combinons audit rigoureux et coaching terrain.</h2>
-                    <p>
-                        Durant l’audit, nous cartographions vos processus critiques, vos outils et les responsabilités
-                        de chaque membre de l’équipe. Ensuite, nous vous coachons dans la durée pour que chaque automatisation
-                        reste alignée sur vos objectifs business.
-                    </p>
-                    <ul class="about-list">
-                        <li>Sessions d’immersion pour comprendre votre quotidien.</li>
-                        <li>Playbooks partagés pour documenter chaque workflow.</li>
-                        <li>Accompagnement post-livraison pour itérer rapidement.</li>
-                    </ul>
-                </div>
-                <div class="section-media-image">
-                    <div class="media-gallery two-cols">
-                        <img class="image-pexels"
-                             src="https://images.pexels.com/photos/3861972/pexels-photo-3861972.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                             alt="Consultante en train de cartographier un processus sur un tableau translucide">
-                        <img class="image-pexels"
-                             src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                             alt="Session de travail avec deux collaborateurs analysant des données sur tablette">
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ÉTAPES MÉTHODO -->
-        <section class="section-padding">
-            <div class="container">
-                <h2 class="text-center">Nos 5 étapes clés pour un projet réussi</h2>
-                <p class="section-subtitle">
-                    Voici comment nous transformons vos processus sans perturber votre activité,
-                    de l’audit initial jusqu’à l’optimisation continue.
-                </p>
-
-                <div class="method-steps">
-                    <!-- Étape 1 -->
-                    <article class="method-step">
-                        <div class="method-step-header">
-                            <div class="method-step-number">1</div>
-                            <div>
-                                <h3>Audit &amp; Diagnostic</h3>
-                                <div class="method-step-tag">L’écoute</div>
-                            </div>
-                        </div>
-                        <p>
-                            Nous ne commençons jamais par la technique, mais par vous.  
-                            Nous plongeons dans vos opérations pour comprendre vos goulots d’étranglement,
-                            vos tâches manuelles répétitives et les points de friction qui ralentissent votre équipe.
-                        </p>
-                        <p class="method-gain">
-                            <strong>Votre gain :</strong>
-                            un diagnostic clair des actions d’automatisation les plus rentables à court terme.
-                        </p>
-                    </article>
-
-                    <!-- Étape 2 -->
-                    <article class="method-step">
-                        <div class="method-step-header">
-                            <div class="method-step-number">2</div>
-                            <div>
-                                <h3>Design &amp; Planification</h3>
-                                <div class="method-step-tag">La vision</div>
-                            </div>
-                        </div>
-                        <p>
-                            Pas de boîte noire. Nous dessinons ensemble le futur processus et validons les outils
-                            à utiliser. Vous recevez un plan d’action détaillé&nbsp;: qui fait quoi, à quel moment,
-                            avec quels délais et quels résultats attendus.
-                        </p>
-                        <p class="method-gain">
-                            <strong>Votre gain :</strong>
-                            une visibilité totale sur le projet, le budget et le calendrier. Zéro surprise.
-                        </p>
-                    </article>
-
-                    <!-- Étape 3 -->
-                    <article class="method-step">
-                        <div class="method-step-header">
-                            <div class="method-step-number">3</div>
-                            <div>
-                                <h3>Implémentation &amp; Tests</h3>
-                                <div class="method-step-tag">L’action</div>
-                            </div>
-                        </div>
-                        <p>
-                            Nous construisons et connectons vos workflows (n8n, Google Sheets, CRM, formulaires, etc.)
-                            en respectant vos contraintes métier. Chaque scénario est testé de manière rigoureuse
-                            avant toute mise en production.
-                        </p>
-                        <p class="method-gain">
-                            <strong>Votre gain :</strong>
-                            une solution «&nbsp;zéro défaut&nbsp;» qui fonctionne dès le premier jour,
-                            sans impacter vos équipes.
-                        </p>
-                    </article>
-
-                    <!-- Étape 4 -->
-                    <article class="method-step">
-                        <div class="method-step-header">
-                            <div class="method-step-number">4</div>
-                            <div>
-                                <h3>Formation &amp; Adoption</h3>
-                                <div class="method-step-tag">L’autonomie</div>
-                            </div>
-                        </div>
-                        <p>
-                            Un outil n’est puissant que si vos équipes l’adoptent.  
-                            Nous formons vos collaborateurs sur les nouveaux workflows, avec un langage simple
-                            et des exemples concrets tirés de votre quotidien.
-                        </p>
-                        <p class="method-gain">
-                            <strong>Votre gain :</strong>
-                            une équipe à l’aise, productive et rapidement autonome sur les nouveaux processus.
-                        </p>
-                    </article>
-
-                    <!-- Étape 5 -->
-                    <article class="method-step">
-                        <div class="method-step-header">
-                            <div class="method-step-number">5</div>
-                            <div>
-                                <h3>Support &amp; Optimisation</h3>
-                                <div class="method-step-tag">Le partenariat</div>
-                            </div>
-                        </div>
-                        <p>
-                            Notre mission ne s’arrête pas au lancement.  
-                            Nous restons votre interlocuteur unique pour le suivi, les ajustements
-                            et les évolutions futures de vos automatisations au rythme de votre entreprise.
-                        </p>
-                        <p class="method-gain">
-                            <strong>Votre gain :</strong>
-                            la sérénité d’un partenaire fiable qui veille à la performance de vos outils
-                            sur le long terme.
-                        </p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <!-- BLOC RASSURANCE / CTA -->
-        <section class="section-padding bg-light section-media">
-            <div class="container section-media-inner">
-                <div class="section-media-content">
-                    <h2>Une méthode pensée pour les dirigeants de TPE / PME</h2>
-                    <p class="section-subtitle">
-                        Professionnalisme, pédagogie et retour sur investissement&nbsp;: notre approche vise à
-                        supprimer vos incertitudes («&nbsp;Par où commencer ? Est-ce que ça vaut le coup ?&nbsp;»)
-                        et à vous donner un cadre clair pour décider.
-                    </p>
-                    <p>
-                        Chaque projet est découpé en étapes actionnables, avec des livrables concrets et des
-                        gains mesurables. Vous savez toujours où vous en êtes et pourquoi nous faisons
-                        telle ou telle recommandation.
-                    </p>
-
-                    <div class="cta-group">
-                        <a href="/contact"
-                           class="button primary"
-                           data-event="methodologie_cta_click"
-                           data-cta-label="Discuter d’un projet"
-                           data-section="methodologie">
-                            Discuter d’un projet
-                        </a>
-                        <a href="/services"
-                           class="button secondary"
-                           data-event="methodologie_cta_click"
-                           data-cta-label="Voir les services"
-                           data-section="methodologie">
-                            Voir les services
-                        </a>
-                    </div>
-                </div>
-                <div class="section-media-image">
-                    <img class="image-pexels is-portrait"
-                         src="https://images.pexels.com/photos/3861968/pexels-photo-3861968.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                         alt="Dirigeante accompagnée par un consultant qui présente un plan d’action sur tablette">
-                </div>
-            </div>
-        </section>
+        <section class="hero"><div class="container split"><div><p class="eyebrow">Méthodologie</p><h1>Une méthode simple : comprendre, automatiser, documenter.</h1><p class="lead">Un projet d’automatisation doit rester lisible. Avant de connecter des outils, on clarifie le processus, les responsabilités et les exceptions.</p></div><aside class="panel"><h2>Ce que vous gardez</h2><ul class="check-list"><li>La validation des règles métier.</li><li>La visibilité sur les accès utilisés.</li><li>Une documentation compréhensible.</li><li>La possibilité de faire évoluer le workflow.</li></ul></aside></div></section>
+        <section class="section bg-soft"><div class="container"><div class="method-list"><article class="method-step"><div><h3>Audit rapide</h3><p>On part d’un irritant précis : relances, demandes entrantes, fichier de suivi, CRM ou SAV.</p></div></article><article class="method-step"><div><h3>Cartographie du processus</h3><p>On dessine les étapes actuelles, les outils, les responsables et les points où l’information se perd.</p></div></article><article class="method-step"><div><h3>Prototype</h3><p>Un premier workflow est monté sur un périmètre réduit pour tester la logique avant déploiement.</p></div></article><article class="method-step"><div><h3>Mise en production</h3><p>Le scénario est activé avec contrôles, logs, alertes et validation humaine quand elle est nécessaire.</p></div></article><article class="method-step"><div><h3>Documentation</h3><p>Vous recevez un schéma, la liste des outils connectés, les règles du workflow et la checklist de maintenance.</p></div></article><article class="method-step"><div><h3>Amélioration</h3><p>On ajuste selon les retours terrain, les volumes, les exceptions nouvelles et l’évolution de vos outils.</p></div></article></div></div></section>
+        <section class="section bg-paper"><div class="container split"><div><p class="eyebrow">Cadrage</p><h2>Ce qui est décidé avant de construire.</h2><p class="lead">Le cadrage évite les automatisations fragiles. On sait ce qui entre dans le workflow, ce qui doit sortir, et ce qui doit rester sous contrôle humain.</p></div><div class="panel"><ul class="plain-list"><li>Déclencheur du workflow.</li><li>Données nécessaires et données à exclure.</li><li>Règles d’arrêt, de relance et d’erreur.</li><li>Personnes à notifier.</li><li>Indicateurs à suivre après lancement.</li></ul></div></div></section>
+        <section class="section final-cta"><div class="container center"><h2>La meilleure méthode commence par un processus réel.</h2><p class="lead">Apportez un exemple concret : un formulaire, un fichier, une relance ou une demande client. Nous le cartographions avant de parler technique.</p><div class="cta-row"><a href="/contact" class="button primary">Demander un audit gratuit</a><a href="/services" class="button secondary">Voir les services</a></div></div></section>
     </main>
-
-    <!-- FOOTER -->
     <footer class="site-footer">
-        <div class="container">
-            <div class="footer-columns">
-                <div>
-                    <h3>ACDT Solutions</h3>
-                    <p>Automatisation et intégration pour TPE.</p>
-                    <p><strong>Email :</strong> <a href="mailto:contact@acdt-solutions.com">contact@acdt-solutions.com</a></p>
-                    <p><strong> </strong> </p>
-                </div>
-                <div>
-                    <h3>Menu</h3>
-                    <ul>
-                        <li><a href="/services">Services</a></li>
-                        <li><a href="/tarifs">Tarifs</a></li>
-                        <li><a href="/etudes-de-cas">Études de cas</a></li>
-                        <!-- TODO: Reactivate the Blog link when the blog page is ready -->
-                        <!-- <li><a href="/blog">Blog</a></li> -->
-                        <li><a href="/a-propos">À propos</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                        <li><a href="/rdv">Prendre RDV</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3>Légal</h3>
-                    <ul>
-                        <li><a href="/mentions-legales">Mentions légales</a></li>
-                        <li><a href="/politique-de-confidentialite">Confidentialité</a></li>
-                        <li><a href="/politique-cookies">Cookies</a></li>
-                        <li><a href="/conditions-generales-utilisation">CGU</a></li>
-                        <li><a href="/conditions-generales-vente">CGV</a></li>
-                    </ul>
-                </div>
+        <div class="container footer-columns">
+            <div>
+                <h3>ACDT Solutions</h3>
+                <p>Automatisations n8n, intégrations d'outils métier et workflows documentés pour TPE/PME.</p>
+                <p><strong>Email :</strong> <a href="mailto:contact@acdt-solutions.com">contact@acdt-solutions.com</a></p>
             </div>
-            <p class="copy">&copy; 2025 ACDT Solutions. Tous droits réservés.</p>
+            <div>
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="/services">Services</a></li>
+                    <li><a href="/tarifs">Tarifs</a></li>
+                    <li><a href="/methodologie">Méthodologie</a></li>
+                    <li><a href="/etudes-de-cas">Cas d’usage</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/rdv">Prendre RDV</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Légal</h3>
+                <ul>
+                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                    <li><a href="/politique-de-confidentialite">Confidentialité</a></li>
+                    <li><a href="/politique-cookies">Cookies</a></li>
+                    <li><a href="/conditions-generales-utilisation">CGU</a></li>
+                    <li><a href="/conditions-generales-vente">CGV</a></li>
+                </ul>
+            </div>
         </div>
+        <p class="copy">&copy; 2026 ACDT Solutions. Tous droits réservés.</p>
     </footer>
-
-    <!-- CHATBOT -->
     <button id="chat-toggle" class="chat-button" aria-label="Ouvrir le chat">Chat</button>
     <div id="chat-panel" class="chat-panel" aria-hidden="true">
         <div class="chat-header">
+            <span>Assistant ACDT</span>
             <button id="chat-close" aria-label="Fermer">×</button>
-            Chatbot
         </div>
         <div class="chat-messages" id="chat-messages"></div>
         <form id="chat-form" class="chat-form">
             <label for="chat-input" class="visually-hidden">Votre message</label>
-            <input type="text" id="chat-input" aria-label="Votre message" placeholder="Tapez votre message…" />
+            <input type="text" id="chat-input" aria-label="Votre message" placeholder="Décrivez votre besoin..." />
             <button type="submit">Envoyer</button>
         </form>
-       <!-- <div class="chat-suggestions">
-            <button type="button" data-suggest-id="pricing">Tarifs</button>
-            <button type="button" data-suggest-id="services">Services</button>
-        </div> --> 
     </div>
-
     <script src="/assets/app.js" defer></script>
 </body>
 </html>

@@ -43,13 +43,22 @@ function initNav() {
     if (!navToggle || !navList) return;
 
     navToggle.addEventListener('click', () => {
-        document.body.classList.toggle('nav-open');
+        const isOpen = document.body.classList.toggle('nav-open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
     });
 
     
     navList.addEventListener('click', (e) => {
         if (e.target.tagName === 'A') {
             document.body.classList.remove('nav-open');
+            navToggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.body.classList.remove('nav-open');
+            navToggle.setAttribute('aria-expanded', 'false');
         }
     });
 }

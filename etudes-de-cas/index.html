@@ -21,232 +21,104 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Études de cas – ACDT Solutions</title>
-    <meta name="description" content="Découvrez comment l’automatisation et l’intégration n8n ont permis à des TPE / PME de gagner du temps, de réduire les erreurs et de mieux suivre leurs clients.">
+    <title>Cas d’usage automatisation PME – ACDT Solutions</title>
+    <meta name="description" content="Exemples de workflows n8n pour demandes entrantes, relances devis, SAV, Google Sheets, CRM et tableaux de bord TPE/PME.">
     <link rel="canonical" href="https://acdt-solutions.com/etudes-de-cas">
     <link rel="stylesheet" href="/assets/styles.css">
     <link rel="alternate" hreflang="fr" href="https://acdt-solutions.com/etudes-de-cas">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="ACDT Solutions">
-    <meta property="og:title" content="Études de cas – ACDT Solutions">
-    <meta property="og:description" content="Exemples concrets d’automatisations et d’intégrations réalisées pour des TPE / PME.">
+    <meta property="og:title" content="Cas d’usage automatisation PME – ACDT Solutions">
+    <meta property="og:description" content="Exemples de workflows n8n pour demandes entrantes, relances devis, SAV, Google Sheets, CRM et tableaux de bord TPE/PME.">
     <meta property="og:url" content="https://acdt-solutions.com/etudes-de-cas">
-    <meta property="og:image" content="https://acdt-solutions.com/assets/og-default.jpg">
+    <meta property="og:image" content="https://acdt-solutions.com/assets/og-default.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Études de cas – ACDT Solutions">
-    <meta name="twitter:description" content="Exemples concrets d’automatisations et d’intégrations pour les TPE / PME.">
-    <meta name="twitter:image" content="https://acdt-solutions.com/assets/og-default.jpg">
-
+    <meta name="twitter:title" content="Cas d’usage automatisation PME – ACDT Solutions">
+    <meta name="twitter:description" content="Exemples de workflows n8n pour demandes entrantes, relances devis, SAV, Google Sheets, CRM et tableaux de bord TPE/PME.">
+    <meta name="twitter:image" content="https://acdt-solutions.com/assets/og-default.png">
     <script defer data-domain="acdt-solutions.com" src="https://plausible.io/js/script.tagged-events.js"></script>
     <script>window.plausible = window.plausible || function(){(window.plausible.q = window.plausible.q || []).push(arguments)};</script>
-
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      "name": "Études de cas – ACDT Solutions",
-      "url": "https://acdt-solutions.com/etudes-de-cas",
-      "description": "Sélection d’études de cas d’automatisation et d’intégration pour TPE / PME."
+      "@type": ["Organization", "WebSite"],
+      "name": "ACDT Solutions",
+      "url": "https://acdt-solutions.com",
+      "description": "Automatisation n8n et intégration d'outils métier pour TPE et PME françaises."
     }
     </script>
 </head>
 <body>
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXXCW598"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NXXCW598" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
     <a href="#main-content" class="skip-link">Aller au contenu</a>
-
     <header class="site-header">
         <div class="container header-inner">
             <a href="/" class="logo">ACDT Solutions</a>
-            <button class="nav-toggle" type="button" aria-label="Ouvrir le menu">
+            <button class="nav-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false">
                 <span class="nav-toggle-bar"></span>
                 <span class="nav-toggle-bar"></span>
                 <span class="nav-toggle-bar"></span>
             </button>
             <nav aria-label="Navigation principale">
                 <ul class="nav-list">
-                    <li><a href="/services">Services</a></li>
-                    <li><a href="/tarifs">Tarifs</a></li>
-                    <li><a href="/methodologie">Méthodologie</a></li>
-                    <li><a href="/etudes-de-cas">Études de cas</a></li>
-                    <!-- TODO: Reactivate the Blog link when the blog page is ready -->
-                    <!-- <li><a href="/blog">Blog</a></li> -->
-                    <li><a href="/a-propos">À propos</a></li>
-                    <li><a href="/contact" data-event="nav_contact_click">Contact</a></li>
-                    <li class="nav-cta">
-                        <a href="/rdv"
-                           class="button primary"
-                           data-event="nav_rdv_click"
-                           data-cta-label="Prendre RDV">
-                           Prendre RDV
-                        </a>
-                    </li>
+                    <li><a href="/services">Services</a></li><li><a href="/tarifs">Tarifs</a></li><li><a href="/methodologie">Méthodologie</a></li><li><a href="/etudes-de-cas" aria-current="page">Cas d’usage</a></li><li><a href="/a-propos">À propos</a></li><li><a href="/contact" data-event="nav_contact_click">Contact</a></li>
+                    <li class="nav-cta"><a href="/rdv" class="button primary" data-event="nav_rdv_click" data-cta-label="Audit gratuit">Audit gratuit</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
     <main id="main-content">
-        <section class="section-padding page-title bg-light section-media">
-            <div class="container section-media-inner">
-                <div class="section-media-content">
-                    <p class="section-kicker">Études de cas</p>
-                    <h1>Des systèmes concrets, des gains mesurables.</h1>
-                    <p class="section-subtitle">
-                        Voici quelques exemples de missions menées auprès de TPE / PME.
-                        Les chiffres sont volontairement simplifiés, mais les logiques sont réelles :
-                        moins de tâches manuelles, plus de visibilité, moins d’oublis.
-                    </p>
-                </div>
-                <div class="section-media-image">
-                    <img class="image-pexels"
-                         src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                         alt="Consultants analysant un tableau de bord de données dans une salle de réunion moderne">
-                </div>
-            </div>
-        </section>
-
-        <section class="section-padding">
-            <div class="container services-grid">
-                <!-- Cas 1 -->
-                <article class="service-card">
-                    <h3>Agence de services B2B – Suivi des leads automatisé</h3>
-                    <p>
-                        Objectif : ne plus perdre de demandes entrantes.
-                        Nous avons connecté le site vitrine, le CRM et Google Sheets via n8n.
-                    </p>
-                    <ul class="about-list">
-                        <li>Création automatique d’un lead dans le CRM à chaque formulaire envoyé.</li>
-                        <li>Tableau de suivi dans Google Sheets mis à jour en temps réel.</li>
-                        <li>Relance automatique par email après X jours sans réponse.</li>
-                    </ul>
-                    <p class="about-highlight">
-                        Résultat : moins de leads oubliés, meilleure visibilité sur le pipe commercial.
-                    </p>
-                </article>
-
-                <!-- Cas 2 -->
-                <article class="service-card">
-                    <h3>Cabinet de conseil – Reporting mensuel sans copier-coller</h3>
-                    <p>
-                        Objectif : arrêter de passer des heures à consolider des données
-                        dans des présentations clients.
-                    </p>
-                    <ul class="about-list">
-                        <li>Connexion des sources (Sheets, CRM, facturation) à un tableau de bord unique.</li>
-                        <li>Mise à jour automatique des indicateurs clés.</li>
-                        <li>Export prêt à être intégré dans les supports clients.</li>
-                    </ul>
-                    <p class="about-highlight">
-                        Résultat : plusieurs heures gagnées par mois, moins d’erreurs de copie.
-                    </p>
-                </article>
-
-                <!-- Cas 3 -->
-                <article class="service-card">
-                    <h3>PME de services – Onboarding clients structuré</h3>
-                    <p>
-                        Objectif : fluidifier l’onboarding et ne plus oublier aucune étape clé
-                        après la signature d’un contrat.
-                    </p>
-                    <ul class="about-list">
-                        <li>Génération automatique d’une checklist d’onboarding à chaque nouveau client.</li>
-                        <li>Notifications internes envoyées aux bonnes personnes au bon moment.</li>
-                        <li>Suivi de l’avancement dans un tableau unique partagé.</li>
-                    </ul>
-                    <p class="about-highlight">
-                        Résultat : expérience client plus fluide, moins de stress côté équipe.
-                    </p>
-                </article>
-            </div>
-
-        </section>
-
-        <section class="section-padding section-media bg-light">
-            <div class="container section-media-inner">
-                <div class="section-media-content">
-                    <p class="section-kicker">Passez à l’action</p>
-                    <h2>Imaginez votre propre étude de cas.</h2>
-                    <p>
-                        Nous appliquons la même rigueur à chaque mission : cadrage précis, suivi des indicateurs clés
-                        et transmission claire aux équipes. Les résultats vus ici sont reproductibles dans votre contexte.
-                    </p>
-                    <div class="cta-group">
-                        <a href="/contact" class="button primary" data-event="cases_contact_cta" data-cta-label="Parler de mon cas">
-                            Discuter de votre cas
-                        </a>
-                        <a href="/services" class="button secondary" data-event="cases_services_cta" data-cta-label="Voir les services">
-                            Voir les services proposés
-                        </a>
-                    </div>
-                </div>
-                <div class="section-media-image">
-                    <img class="image-pexels"
-                         src="https://images.pexels.com/photos/3182826/pexels-photo-3182826.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;w=900"
-                         alt="Manager présentant une analyse de performance sur écran dans un open space lumineux">
-                </div>
-            </div>
-        </section>
+        <section class="hero"><div class="container split"><div><p class="eyebrow">Cas d’usage</p><h1>Exemples de workflows, sans faux témoignages.</h1><p class="lead">Ces scénarios illustrent des problèmes fréquents en TPE/PME. Ils ne sont pas présentés comme des témoignages clients tant qu’ils ne sont pas vérifiables et autorisés.</p></div><aside class="panel"><h2>Lecture utile</h2><p>Utilisez ces exemples pour repérer un processus proche du vôtre, puis adaptons-le à vos outils.</p></aside></div></section>
+        <section class="section bg-soft"><div class="container grid grid-3"><article class="card use-card"><h3>Demandes entrantes</h3><p><strong>Flux :</strong> formulaire vers CRM, ligne de suivi, tâche assignée, accusé de réception.</p><p><strong>But :</strong> éviter qu’une demande client reste dans une boîte mail.</p></article><article class="card use-card"><h3>Relances devis</h3><p><strong>Flux :</strong> statut devis, rappel J+3, email préparé, notification interne si absence de réponse.</p><p><strong>But :</strong> relancer sans dépendre de la mémoire de quelqu’un.</p></article><article class="card use-card"><h3>Suivi SAV</h3><p><strong>Flux :</strong> message client, catégorie, priorité, responsable, tableau de suivi.</p><p><strong>But :</strong> savoir ce qui est urgent et qui traite le sujet.</p></article><article class="card use-card"><h3>Tableau de pilotage</h3><p><strong>Flux :</strong> données CRM et Sheets consolidées chaque jour.</p><p><strong>But :</strong> suivre les volumes, retards et relances sans copier-coller.</p></article><article class="card use-card"><h3>Onboarding client</h3><p><strong>Flux :</strong> signature, checklist, documents à demander, rendez-vous à planifier.</p><p><strong>But :</strong> rendre chaque démarrage client plus régulier.</p></article><article class="card use-card"><h3>Préqualification chatbot</h3><p><strong>Flux :</strong> questions simples, résumé, contact, notification équipe.</p><p><strong>But :</strong> recevoir des demandes mieux cadrées depuis le site.</p></article></div></section>
+        <section class="section final-cta"><div class="container center"><h2>Votre cas d’usage est probablement une variante de l’un de ces flux.</h2><p class="lead">Partons d’un exemple réel et vérifions si une automatisation ciblée suffit.</p><div class="cta-row"><a href="/contact" class="button primary">Demander un audit gratuit</a></div></div></section>
     </main>
-
     <footer class="site-footer">
-        <div class="container">
-            <div class="footer-columns">
-                <div>
-                    <h3>ACDT Solutions</h3>
-                    <p>Automatisation et intégration pour TPE.</p>
-                    <p><strong>Email :</strong> <a href="mailto:contact@acdt-solutions.com">contact@acdt-solutions.com</a></p>
-                    <p><strong> </strong> </p>
-                </div>
-                <div>
-                    <h3>Menu</h3>
-                    <ul>
-                        <li><a href="/services">Services</a></li>
-                        <li><a href="/tarifs">Tarifs</a></li>
-                        <li><a href="/etudes-de-cas">Études de cas</a></li>
-                        <!-- TODO: Reactivate the Blog link when the blog page is ready -->
-                        <!-- <li><a href="/blog">Blog</a></li> -->
-                        <li><a href="/a-propos">À propos</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                        <li><a href="/rdv">Prendre RDV</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3>Légal</h3>
-                    <ul>
-                        <li><a href="/mentions-legales">Mentions légales</a></li>
-                        <li><a href="/politique-de-confidentialite">Confidentialité</a></li>
-                        <li><a href="/politique-cookies">Cookies</a></li>
-                        <li><a href="/conditions-generales-utilisation">CGU</a></li>
-                        <li><a href="/conditions-generales-vente">CGV</a></li>
-                    </ul>
-                </div>
+        <div class="container footer-columns">
+            <div>
+                <h3>ACDT Solutions</h3>
+                <p>Automatisations n8n, intégrations d'outils métier et workflows documentés pour TPE/PME.</p>
+                <p><strong>Email :</strong> <a href="mailto:contact@acdt-solutions.com">contact@acdt-solutions.com</a></p>
             </div>
-            <p class="copy">&copy; 2025 ACDT Solutions. Tous droits réservés.</p>
+            <div>
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="/services">Services</a></li>
+                    <li><a href="/tarifs">Tarifs</a></li>
+                    <li><a href="/methodologie">Méthodologie</a></li>
+                    <li><a href="/etudes-de-cas">Cas d’usage</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/rdv">Prendre RDV</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Légal</h3>
+                <ul>
+                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                    <li><a href="/politique-de-confidentialite">Confidentialité</a></li>
+                    <li><a href="/politique-cookies">Cookies</a></li>
+                    <li><a href="/conditions-generales-utilisation">CGU</a></li>
+                    <li><a href="/conditions-generales-vente">CGV</a></li>
+                </ul>
+            </div>
         </div>
+        <p class="copy">&copy; 2026 ACDT Solutions. Tous droits réservés.</p>
     </footer>
-
     <button id="chat-toggle" class="chat-button" aria-label="Ouvrir le chat">Chat</button>
     <div id="chat-panel" class="chat-panel" aria-hidden="true">
         <div class="chat-header">
+            <span>Assistant ACDT</span>
             <button id="chat-close" aria-label="Fermer">×</button>
-            Chatbot
         </div>
         <div class="chat-messages" id="chat-messages"></div>
         <form id="chat-form" class="chat-form">
             <label for="chat-input" class="visually-hidden">Votre message</label>
-            <input type="text" id="chat-input" aria-label="Votre message" placeholder="Tapez votre message…" />
+            <input type="text" id="chat-input" aria-label="Votre message" placeholder="Décrivez votre besoin..." />
             <button type="submit">Envoyer</button>
         </form>
-       <!-- <div class="chat-suggestions">
-            <button type="button" data-suggest-id="pricing">Tarifs</button>
-            <button type="button" data-suggest-id="services">Services</button>
-        </div> --> 
     </div>
-
     <script src="/assets/app.js" defer></script>
 </body>
 </html>
