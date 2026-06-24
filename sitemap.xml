@@ -47,8 +47,11 @@
     <url><loc>https://acdt-solutions.com/politique-cookies/</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
     <url><loc>https://acdt-solutions.com/politique-de-confidentialite/</loc><changefreq>yearly</changefreq><priority>0.5</priority></url>
 
+    <!-- Blog -->
+    <url><loc>https://acdt-solutions.com/blog/</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://acdt-solutions.com/blog/alleger-suivi-demandes-cabinet-avocat/</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
     <!-- Pages placeholder -->
-    <url><loc>https://acdt-solutions.com/blog/</loc><changefreq>never</changefreq><priority>0.3</priority></url>
     <url><loc>https://acdt-solutions.com/etudes-de-cas/</loc><changefreq>never</changefreq><priority>0.3</priority></url>
 
 </urlset>

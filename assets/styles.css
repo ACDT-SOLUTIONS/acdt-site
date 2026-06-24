@@ -815,6 +815,37 @@ a:hover {
     margin-bottom: 0;
 }
 
+.article-container {
+    max-width: 820px;
+}
+
+.article-page h1 {
+    margin-bottom: 1.5rem;
+}
+
+.article-page h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.article-lead {
+    font-size: 1.12rem;
+    color: var(--color-text-dark);
+}
+
+.article-flow {
+    padding: 18px 20px;
+    border-left: 4px solid var(--color-primary-blue);
+    border-radius: 12px;
+    background: var(--color-background-light);
+    color: var(--color-text-dark);
+    font-weight: 600;
+}
+
+.article-cta {
+    max-width: 820px;
+}
+
 /* --- 13. Page Méthodologie --- */
 .method-steps {
     display: flex;
