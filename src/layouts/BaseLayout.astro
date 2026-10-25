@@ -9,6 +9,8 @@ import Seo from '@/components/seo/Seo.astro';
 import Analytics from '@/components/integrations/Analytics.astro';
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
+import { estPubliee } from '@/config/publication.mjs';
+import { VERSION_PUBLIQUE } from '@/lib/publication';
 
 interface Props {
   title: string;
@@ -16,6 +18,8 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+// En développement, signale les pages absentes de la version publique (voir src/config/publication.mjs).
+const brouillon = !VERSION_PUBLIQUE && !Astro.url.pathname.startsWith('/404') && !estPubliee(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -31,6 +35,11 @@ const { title, description } = Astro.props;
   </head>
   <body>
     <a class="skip-link" href="#contenu">Aller au contenu</a>
+    {
+      brouillon && (
+        <p class="brouillon mono">Page non publiée — visible uniquement en développement</p>
+      )
+    }
     <Header />
     <main id="contenu">
       <slot />
@@ -54,5 +63,14 @@ const { title, description } = Astro.props;
 
   .skip-link:focus {
     transform: none;
+  }
+
+  .brouillon {
+    padding: 0.35rem var(--gutter);
+    background: var(--signal-100);
+    font-size: var(--step--2);
+    letter-spacing: 0.04em;
+    text-align: center;
+    color: var(--signal-600);
   }
 </style>

@@ -1,64 +1,101 @@
 ---
 import { getCollection } from 'astro:content';
 import { lienEvaluation } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
 
 // Porte d'entrée vers les rubriques : uniquement des repères de navigation, pas le détail des offres.
+// En version publique, seuls les liens vers des pages publiées sont actifs ; les offres non publiées
+// restent annoncées « à venir » et deviennent cliquables dès leur publication.
 const solutions = (await getCollection('solutions')).sort((a, b) => a.data.numero.localeCompare(b.data.numero));
 const secteurs = (await getCollection('secteurs', (s) => s.data.publie)).sort((a, b) => a.data.ordre - b.data.ordre);
 const cas = await getCollection('simulations');
+
+interface Repere {
+  label: string;
+  prefixe?: string;
+  href?: string;
+}
+
+const repere = (label: string, href: string, prefixe?: string): Repere => ({
+  label,
+  prefixe,
+  href: lienVisible(href) ? href : undefined,
+});
 
 const rubriques = [
   {
     href: '/solutions/',
     titre: 'Solutions',
     texte: 'Quatre familles de solutions, construites à partir de vos problèmes métier.',
-    reperes: solutions.map((s) => s.data.numero),
+    reperes: solutions.map((s) => repere(s.data.titre, `/solutions/${s.id}/`, s.data.numero)),
     compteur: `${solutions.length} familles`,
+    secondaire: undefined,
   },
   {
     href: '/secteurs/',
     titre: "Secteurs d'activité",
     texte: 'Les solutions appliquées aux contraintes de votre profession.',
-    reperes: secteurs.map((s) => s.data.nom),
+    reperes: secteurs.map((s) => repere(s.data.nom, `/secteurs/${s.id}/`)),
     compteur: `${secteurs.length} secteurs`,
+    secondaire: undefined,
   },
   {
     href: '/cas-pratiques/',
     titre: 'Cas pratiques',
     texte: 'Des scénarios chiffrés, avec leurs hypothèses, leurs sources et leurs limites.',
-    reperes: [],
+    reperes: [] as Repere[],
     compteur: `${cas.length} ${cas.length > 1 ? 'scénarios' : 'scénario'}`,
+    secondaire: lienVisible(lienEvaluation.href) ? lienEvaluation : undefined,
   },
-];
+]
+  .map((r) => ({ ...r, lien: lienVisible(r.href) }))
+  // Une rubrique sans page d'ensemble publiée ni repère publié n'est pas affichée.
+  .filter((r) => r.lien || r.reperes.some((x) => x.href));
+
+const seule = rubriques.length === 1;
 ---
 
-<ul class="orientation">
+<ul class:list={['orientation', { 'orientation--seule': seule }]}>
   {
     rubriques.map((r, i) => (
-      <li class="rubrique">
+      <li class:list={['rubrique', { 'rubrique--lien': r.lien }]}>
         <div class="rubrique__top">
           <span class="rubrique__index mono">{String(i + 1).padStart(2, '0')}</span>
           <span class="rubrique__compteur mono">{r.compteur}</span>
         </div>
-        <h3>
-          <a href={r.href}>{r.titre}</a>
-        </h3>
+        <h3>{r.lien ? <a href={r.href}>{r.titre}</a> : r.titre}</h3>
         <p class="rubrique__texte">{r.texte}</p>
         {r.reperes.length > 0 && (
-          <ul class="rubrique__reperes mono" aria-hidden="true">
-            {r.reperes.map((x) => (
-              <li>{x}</li>
-            ))}
+          <ul class="rubrique__reperes" aria-hidden={r.lien ? 'true' : undefined}>
+            {r.reperes.map((x) =>
+              x.href && !r.lien ? (
+                <li>
+                  <a class="repere repere--lien" href={x.href}>
+                    {x.prefixe && <span class="mono">{x.prefixe}</span>}
+                    {x.label}
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </li>
+              ) : (
+                <li class:list={['repere', { 'repere--a-venir': !x.href }]}>
+                  {x.prefixe && <span class="mono">{x.prefixe}</span>}
+                  {x.label}
+                  {!x.href && <span class="repere__statut mono">à venir</span>}
+                </li>
+              ),
+            )}
           </ul>
         )}
-        {r.href === '/cas-pratiques/' && (
-          <a class="rubrique__secondaire" href={lienEvaluation.href}>
-            {lienEvaluation.label}
+        {r.secondaire && (
+          <a class="rubrique__secondaire" href={r.secondaire.href}>
+            {r.secondaire.label}
           </a>
         )}
-        <span class="rubrique__fleche" aria-hidden="true">
-          →
-        </span>
+        {r.lien && (
+          <span class="rubrique__fleche" aria-hidden="true">
+            →
+          </span>
+        )}
       </li>
     ))
   }
@@ -89,17 +126,17 @@ const rubriques = [
       border-color var(--duration-base) var(--ease-out);
   }
 
-  .rubrique:hover {
+  .rubrique--lien:hover {
     transform: translateY(-4px);
     border-color: var(--color-accent);
   }
 
-  .rubrique:focus-within {
+  .rubrique--lien:focus-within {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
 
-  .rubrique :focus-visible {
+  .rubrique--lien :focus-visible {
     outline: none;
   }
 
@@ -144,12 +181,36 @@ const rubriques = [
     list-style: none;
   }
 
-  .rubrique__reperes li {
+  .repere {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     padding: 0.15rem 0.5rem;
     border-radius: var(--radius-s);
     background: var(--color-accent-soft);
+    font-family: var(--font-mono);
     font-size: var(--step--2);
     color: var(--color-accent);
+  }
+
+  .repere--a-venir {
+    background: var(--color-surface-sunken);
+    color: var(--color-text-muted);
+  }
+
+  .repere__statut {
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .repere--lien {
+    text-decoration: none;
+  }
+
+  .repere--lien:hover {
+    text-decoration: underline;
   }
 
   /* Lien secondaire placé au-dessus du lien étendu de la carte */
@@ -173,7 +234,44 @@ const rubriques = [
     transition: transform var(--duration-base) var(--ease-out);
   }
 
-  .rubrique:hover .rubrique__fleche {
+  .rubrique--lien:hover .rubrique__fleche {
     transform: translateX(6px);
+  }
+
+  /* Une seule rubrique (version publique actuelle) : carte large, repères en liste lisible. */
+  .orientation--seule .rubrique {
+    min-height: 0;
+  }
+
+  .orientation--seule .rubrique__reperes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .orientation--seule .repere {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    min-height: 3.5rem;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-m);
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: 520;
+  }
+
+  .orientation--seule .repere .mono {
+    font-size: var(--step--2);
+    opacity: 0.7;
+  }
+
+  .orientation--seule .repere--lien span[aria-hidden] {
+    margin-left: auto;
+  }
+
+  .orientation--seule .repere__statut {
+    margin-left: auto;
   }
 </style>

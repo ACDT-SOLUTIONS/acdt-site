@@ -4,6 +4,8 @@ export const site = {
     "Automatisation des processus et IA appliquée pour les cabinets d'avocats, les TPE-PME, les artisans et les entreprises de services. Prestations sur devis.",
   email: 'contact@acdt-solutions.com',
   locale: 'fr_FR',
+  // Page de réservation déjà utilisée par l'ancien site (vérifiée en ligne le 25/10/2026).
+  reservation: 'https://cal.com/frederic-ekima-ndemba',
 } as const;
 
 export interface LienNav {
@@ -39,5 +41,6 @@ export const liensLegaux: LienNav[] = [
   { label: 'Mentions légales', href: '/mentions-legales/' },
   { label: 'Confidentialité', href: '/confidentialite/' },
   { label: 'Cookies', href: '/cookies/' },
+  { label: 'CGU', href: '/cgu/' },
   { label: 'CGV', href: '/cgv/' },
 ];

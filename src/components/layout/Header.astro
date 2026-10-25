@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Logo from './Logo.astro';
 import Button from '@/components/ui/Button.astro';
 import { ctaPrincipal, lienEvaluation, navigationPrincipale, type RubriqueNav } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
 
 interface Entree {
   label: string;
@@ -34,8 +35,19 @@ const sousMenus: Record<NonNullable<RubriqueNav['sousMenu']>, { hub: string; ent
 };
 
 const courant = Astro.url.pathname;
-const estActif = (r: RubriqueNav) =>
-  courant.startsWith(r.href) || (r.sousMenu === 'cas-pratiques' && courant.startsWith(lienEvaluation.href));
+const estActif = (r: RubriqueNav, entrees: Entree[]) =>
+  courant.startsWith(r.href) || entrees.some((e) => courant.startsWith(e.href));
+
+// En version publique, seules les rubriques menant à au moins une page publiée sont affichées.
+// Une rubrique dont la page d'ensemble n'est pas publiée garde son menu, sans lien « Toutes les… ».
+const rubriques = navigationPrincipale.flatMap((r) => {
+  const menu = r.sousMenu ? sousMenus[r.sousMenu] : undefined;
+  const hubVisible = lienVisible(r.href);
+  if (!menu) return hubVisible ? [{ ...r, entrees: [] as Entree[], hub: undefined }] : [];
+  const entrees = menu.entrees.filter((e) => lienVisible(e.href));
+  if (!hubVisible && entrees.length === 0) return [];
+  return [{ ...r, entrees, hub: hubVisible ? menu.hub : undefined }];
+});
 ---
 
 <header class="site-header">
@@ -50,10 +62,9 @@ const estActif = (r: RubriqueNav) =>
     <nav id="navigation-principale" class="site-header__nav" aria-label="Navigation principale">
       <ul class="nav-list">
         {
-          navigationPrincipale.map((r) => {
-            const menu = r.sousMenu && sousMenus[r.sousMenu];
-            const actif = estActif(r);
-            if (!menu) {
+          rubriques.map((r) => {
+            const actif = estActif(r, r.entrees);
+            if (!r.sousMenu) {
               return (
                 <li>
                   <a class="nav-link" href={r.href} aria-current={actif ? 'page' : undefined}>
@@ -78,7 +89,7 @@ const estActif = (r: RubriqueNav) =>
                 </button>
                 <div class="nav-menu" id={id} hidden>
                   <ul>
-                    {menu.entrees.map((e) => (
+                    {r.entrees.map((e) => (
                       <li>
                         <a href={e.href} aria-current={courant === e.href ? 'page' : undefined}>
                           {e.prefixe && <span class="nav-menu__prefixe mono">{e.prefixe}</span>}
@@ -87,9 +98,11 @@ const estActif = (r: RubriqueNav) =>
                       </li>
                     ))}
                   </ul>
-                  <a class="nav-menu__hub mono" href={r.href}>
-                    {menu.hub} <span aria-hidden="true">→</span>
-                  </a>
+                  {r.hub && (
+                    <a class="nav-menu__hub mono" href={r.href}>
+                      {r.hub} <span aria-hidden="true">→</span>
+                    </a>
+                  )}
                 </div>
               </li>
             );

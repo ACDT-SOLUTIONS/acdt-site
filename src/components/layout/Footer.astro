@@ -1,21 +1,40 @@
 ---
 import { getCollection } from 'astro:content';
 import Logo from './Logo.astro';
-import { ctaPrincipal, lienEvaluation, liensLegaux, site } from '@/config/site';
+import { ctaPrincipal, lienEvaluation, liensLegaux, site, type LienNav } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
 
 const solutions = (await getCollection('solutions')).sort((a, b) => a.data.numero.localeCompare(b.data.numero));
 const secteurs = (await getCollection('secteurs', (s) => s.data.publie)).sort((a, b) => a.data.ordre - b.data.ordre);
 const annee = new Date().getFullYear();
 
-const liensAcdt = [
-  { label: 'Cas pratiques', href: '/cas-pratiques/' },
-  lienEvaluation,
-  { label: 'Méthode', href: '/methode/' },
-  { label: 'Ressources', href: '/ressources/' },
-  { label: 'À propos', href: '/a-propos/' },
-  { label: 'Contact', href: '/contact/' },
-  ctaPrincipal,
-];
+const visibles = (liens: LienNav[]) => liens.filter((l) => lienVisible(l.href));
+
+// Colonnes construites à partir des seuls liens affichables ; une colonne vide disparaît.
+const colonnes = [
+  {
+    titre: { label: 'Solutions', href: '/solutions/' },
+    liens: visibles(solutions.map((s) => ({ label: s.data.titre, href: `/solutions/${s.id}/` }))),
+  },
+  {
+    titre: { label: 'Secteurs', href: '/secteurs/' },
+    liens: visibles(secteurs.map((s) => ({ label: s.data.nom, href: `/secteurs/${s.id}/` }))),
+  },
+  {
+    titre: { label: 'ACDT', href: '' },
+    liens: visibles([
+      { label: 'Cas pratiques', href: '/cas-pratiques/' },
+      lienEvaluation,
+      { label: 'Méthode', href: '/methode/' },
+      { label: 'Ressources', href: '/ressources/' },
+      { label: 'À propos', href: '/a-propos/' },
+      { label: 'Contact', href: '/contact/' },
+      ctaPrincipal,
+    ]),
+  },
+].filter((c) => c.liens.length > 0);
+
+const legaux = visibles(liensLegaux);
 ---
 
 <footer class="site-footer">
@@ -28,32 +47,38 @@ const liensAcdt = [
       </div>
 
       <nav class="site-footer__cols" aria-label="Plan du site">
-        <div>
-          <h2 class="mono"><a href="/solutions/">Solutions</a></h2>
-          <ul>
-            {solutions.map((s) => <li><a href={`/solutions/${s.id}/`}>{s.data.titre}</a></li>)}
-          </ul>
-        </div>
-        <div>
-          <h2 class="mono"><a href="/secteurs/">Secteurs</a></h2>
-          <ul>
-            {secteurs.map((s) => <li><a href={`/secteurs/${s.id}/`}>{s.data.nom}</a></li>)}
-          </ul>
-        </div>
-        <div>
-          <h2 class="mono">ACDT</h2>
-          <ul>
-            {liensAcdt.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
-          </ul>
-        </div>
+        {
+          colonnes.map((c) => (
+            <div>
+              <h2 class="mono">
+                {c.titre.href && lienVisible(c.titre.href) ? <a href={c.titre.href}>{c.titre.label}</a> : c.titre.label}
+              </h2>
+              <ul>
+                {c.liens.map((l) => (
+                  <li>
+                    <a href={l.href}>{l.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
       </nav>
     </div>
 
     <div class="site-footer__bottom">
       <p class="mono">© {annee} {site.nom}</p>
-      <ul>
-        {liensLegaux.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
-      </ul>
+      {
+        legaux.length > 0 && (
+          <ul>
+            {legaux.map((l) => (
+              <li>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </div>
 </footer>

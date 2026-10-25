@@ -2,9 +2,21 @@
 import Button from '@/components/ui/Button.astro';
 import FlowIllustration from './FlowIllustration.astro';
 import { ctaPrincipal } from '@/config/site';
+import { getCollection } from 'astro:content';
 import { scenarioMisEnAvant } from '@/lib/simulations';
+import { lienVisible } from '@/lib/publication';
 
+// Bouton secondaire : le cas pratique chiffré s'il est consultable, sinon la première offre publiée.
 const { scenario } = await scenarioMisEnAvant();
+const lienCas = `/cas-pratiques/${scenario.id}/`;
+const premiereOffre = (await getCollection('solutions'))
+  .sort((a, b) => a.data.numero.localeCompare(b.data.numero))
+  .find((s) => lienVisible(`/solutions/${s.id}/`));
+const secondaire = lienVisible(lienCas)
+  ? { label: 'Découvrir un cas pratique chiffré', href: lienCas }
+  : premiereOffre
+    ? { label: premiereOffre.data.titre, href: `/solutions/${premiereOffre.id}/` }
+    : undefined;
 
 const engagements = [
   { label: 'Sur devis', detail: 'après analyse de votre situation' },
@@ -26,9 +38,13 @@ const engagements = [
       </p>
       <div class="hero__actions">
         <Button href={ctaPrincipal.href} size="l" arrow>{ctaPrincipal.label}</Button>
-        <Button href={`/cas-pratiques/${scenario.id}/`} variant="secondary" size="l">
-          Découvrir un cas pratique chiffré
-        </Button>
+        {
+          secondaire && (
+            <Button href={secondaire.href} variant="secondary" size="l">
+              {secondaire.label}
+            </Button>
+          )
+        }
       </div>
       <dl class="hero__facts">
         {

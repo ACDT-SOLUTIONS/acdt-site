@@ -1,6 +1,7 @@
 ---
 import JsonLd from './JsonLd.astro';
 import type { LienNav } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
 
 interface Props {
   /** Chemin depuis l'accueil (exclu), la dernière entrée étant la page courante. */
@@ -9,10 +10,13 @@ interface Props {
 
 const chemin: LienNav[] = [{ label: 'Accueil', href: '/' }, ...Astro.props.items];
 
+// Un niveau intermédiaire non publié reste affiché comme simple libellé, sans lien,
+// et n'est pas déclaré dans les données structurées (qui exigent une URL par niveau).
+const cheminDeclare = chemin.filter((l, i) => i === chemin.length - 1 || lienVisible(l.href));
 const data = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
-  itemListElement: chemin.map((l, i) => ({
+  itemListElement: cheminDeclare.map((l, i) => ({
     '@type': 'ListItem',
     position: i + 1,
     name: l.label,
@@ -28,9 +32,7 @@ const data = {
         i === chemin.length - 1 ? (
           <li aria-current="page">{l.label}</li>
         ) : (
-          <li>
-            <a href={l.href}>{l.label}</a>
-          </li>
+          <li>{lienVisible(l.href) ? <a href={l.href}>{l.label}</a> : l.label}</li>
         ),
       )
     }

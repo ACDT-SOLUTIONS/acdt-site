@@ -1,6 +1,7 @@
 ---
 import Button from '@/components/ui/Button.astro';
 import { ctaPrincipal, type LienNav } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
 
 interface Props {
   eyebrow?: string;
@@ -39,7 +40,7 @@ const {
       </p>
       <div class="cta-band__actions">
         <Button href={principal.href} variant="inverse" size="l" arrow>{principal.label}</Button>
-        <a class="cta-band__link" href={secondaire.href}>{secondaire.label}</a>
+        {lienVisible(secondaire.href) && <a class="cta-band__link" href={secondaire.href}>{secondaire.label}</a>}
       </div>
     </div>
   </div>

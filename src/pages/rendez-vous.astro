@@ -2,9 +2,9 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/layout/PageHero.astro';
 import Section from '@/components/layout/Section.astro';
-import SectionHeader from '@/components/ui/SectionHeader.astro';
-import Placeholder from '@/components/ui/Placeholder.astro';
+import Button from '@/components/ui/Button.astro';
 import { site } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
 ---
 
 <BaseLayout title="Prendre rendez-vous" description="Réserver un premier échange avec ACDT Solutions.">
@@ -13,39 +13,86 @@ import { site } from '@/config/site';
     Un premier échange pour comprendre votre situation et identifier ce qui mérite d'être automatisé.
   </PageHero>
 
-  <Section labelledby="creneau-titre">
-    <h2 id="creneau-titre" class="visually-hidden">Choisir un créneau</h2>
+  <Section labelledby="reserver-titre">
     <div class="rdv">
-      <Placeholder label="Module à connecter">
-        Module de prise de rendez-vous (Cal.com). Non connecté dans la maquette.
-      </Placeholder>
-      <p class="rdv__alternative">
-        Vous pouvez aussi nous écrire : <a href={`mailto:${site.email}`}>{site.email}</a> ou passer par la
-        <a href="/contact/">page contact</a>.
-      </p>
-    </div>
-  </Section>
+      <div class="rdv__carte">
+        <p class="rdv__label mono">Réservation en ligne</p>
+        <h2 id="reserver-titre">Choisissez un créneau.</h2>
+        <p>
+          La réservation s'effectue sur Cal.com, un service de prise de rendez-vous en ligne. Vous y choisissez la date
+          et l'heure qui vous conviennent.
+        </p>
+        <Button href={site.reservation} size="l" arrow>Réserver un créneau</Button>
+        <p class="rdv__note">Le lien ouvre le site Cal.com.</p>
+      </div>
 
-  <Section tone="sunken" labelledby="deroule-titre">
-    <SectionHeader eyebrow="Premier échange" index="01" id="deroule-titre">
-      <Fragment slot="title">Comment il se déroule.</Fragment>
-    </SectionHeader>
-    <Placeholder>Durée, préparation éventuelle, ce que vous en retirez. <a href="/methode/">Voir la méthode</a>.</Placeholder>
+      <aside class="rdv__alternative">
+        <p class="rdv__label mono">Vous préférez écrire ?</p>
+        <a class="rdv__email" href={`mailto:${site.email}`}>{site.email}</a>
+        {lienVisible('/contact/') && <a href="/contact/">Toutes les façons de nous contacter</a>}
+      </aside>
+    </div>
   </Section>
 </BaseLayout>
 
 <style>
   .rdv {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--space-6);
   }
 
-  .rdv :global(.placeholder) {
-    min-height: 28rem;
-    align-content: start;
+  .rdv__carte {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    padding: clamp(var(--space-5), 4vw, var(--space-7));
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .rdv__label {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  h2 {
+    font-size: var(--step-3);
+  }
+
+  .rdv__carte p:not(.rdv__label) {
+    max-width: 34rem;
+    color: var(--color-text-muted);
+  }
+
+  .rdv__note {
+    font-size: var(--step--2);
   }
 
   .rdv__alternative {
-    color: var(--color-text-muted);
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    justify-items: start;
+    padding: var(--space-5) 0;
+  }
+
+  .rdv__email {
+    font-size: var(--step-1);
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 64rem) {
+    .rdv {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .rdv__alternative {
+      padding: var(--space-6);
+    }
   }
 </style>

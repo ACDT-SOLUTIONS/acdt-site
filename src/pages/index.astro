@@ -8,8 +8,11 @@ import CtaBand from '@/components/layout/CtaBand.astro';
 import Hero from '@/components/home/Hero.astro';
 import Orientation from '@/components/home/Orientation.astro';
 import { site } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
 
 const solutions = await getCollection('solutions');
+// Tant que seules des offres sont publiées, l'introduction ne promet pas de rubriques absentes.
+const toutesRubriques = lienVisible('/secteurs/') || lienVisible('/cas-pratiques/');
 const url = Astro.site!.href;
 
 const organisation = {
@@ -34,7 +37,11 @@ const organisation = {
   <Section tone="sunken" labelledby="orientation-titre">
     <SectionHeader eyebrow="Par où commencer" align="split" id="orientation-titre">
       <Fragment slot="title">Trouvez ce qui <em class="accent">vous concerne.</em></Fragment>
-      Partez de votre besoin, de votre métier ou d'un exemple chiffré.
+      {
+        toutesRubriques
+          ? "Partez de votre besoin, de votre métier ou d'un exemple chiffré."
+          : 'Nos solutions sont publiées progressivement : chacune devient accessible dès qu’elle est prête.'
+      }
     </SectionHeader>
     <Orientation />
   </Section>

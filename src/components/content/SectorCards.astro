@@ -1,5 +1,6 @@
 ---
 import { getCollection, getEntries } from 'astro:content';
+import { lienVisible } from '@/lib/publication';
 
 interface Props {
   /** Limiter aux secteurs liés à une famille. */
@@ -31,13 +32,15 @@ const items = await Promise.all(secteurs.map(async (s) => ({ ...s, familles: awa
   {
     items.map((s) => {
       const enPreparation = !s.data.publie;
+      // Lien vers la page métier uniquement si elle est consultable (publiée, ou en développement).
+      const lien = !enPreparation && lienVisible(`/secteurs/${s.id}/`);
       return (
-        <li class:list={['sector', { 'sector--pending': enPreparation }]}>
+        <li class:list={['sector', { 'sector--pending': enPreparation, 'sector--statique': !enPreparation && !lien }]}>
           {enPreparation && <p class="sector__status mono">En préparation</p>}
-          <h3>{enPreparation ? s.data.nom : <a href={`/secteurs/${s.id}/`}>{s.data.nom}</a>}</h3>
+          <h3>{lien ? <a href={`/secteurs/${s.id}/`}>{s.data.nom}</a> : s.data.nom}</h3>
           <p class="sector__accroche">{textes?.[s.id] ?? s.data.accroche}</p>
           {s.data.mention && <p class="sector__mention">{s.data.mention}</p>}
-          {!enPreparation && textes && (
+          {lien && textes && (
             <p class="sector__lien mono" aria-hidden="true">
               Voir le secteur →
             </p>
@@ -77,12 +80,12 @@ const items = await Promise.all(secteurs.map(async (s) => ({ ...s, familles: awa
       border-color var(--duration-base) var(--ease-out);
   }
 
-  .sector:not(.sector--pending):hover {
+  .sector:not(.sector--pending, .sector--statique):hover {
     transform: translateY(-3px);
     border-color: var(--color-line-strong);
   }
 
-  .sector:not(.sector--pending):focus-within {
+  .sector:not(.sector--pending, .sector--statique):focus-within {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
