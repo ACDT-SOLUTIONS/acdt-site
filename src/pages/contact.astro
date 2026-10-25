@@ -3,7 +3,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/layout/PageHero.astro';
 import Section from '@/components/layout/Section.astro';
 import Button from '@/components/ui/Button.astro';
+import ContactForm from '@/components/integrations/ContactForm.astro';
 import { ctaPrincipal, site } from '@/config/site';
+import { PUBLIC_FORMULAIRE_URL } from 'astro:env/server';
 ---
 
 <BaseLayout title="Contact" description="Contacter ACDT Solutions par email ou prendre rendez-vous.">
@@ -25,6 +27,14 @@ import { ctaPrincipal, site } from '@/config/site';
         <p class="moyen__valeur">Un premier échange</p>
         <Button href={ctaPrincipal.href} variant="secondary" arrow>{ctaPrincipal.label}</Button>
       </li>
+      {
+        PUBLIC_FORMULAIRE_URL && (
+          <li class="moyen moyen--large">
+            <p class="moyen__label mono">Formulaire</p>
+            <ContactForm />
+          </li>
+        )
+      }
     </ul>
   </Section>
 </BaseLayout>
@@ -47,6 +57,11 @@ import { ctaPrincipal, site } from '@/config/site';
     border: 1px solid var(--color-line);
     border-radius: var(--radius-l);
     background: var(--color-surface);
+  }
+
+  .moyen--large {
+    grid-column: 1 / -1;
+    justify-items: stretch;
   }
 
   .moyen__label {
