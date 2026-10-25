@@ -1,0 +1,98 @@
+---
+interface Props {
+  etapes: { titre: string; texte: string }[];
+  label: string;
+}
+
+// Frise chronologique : ligne continue, une pastille par étape.
+const { etapes, label } = Astro.props;
+---
+
+<ol class="timeline" aria-label={label} style={`--n: ${etapes.length}`}>
+  {
+    etapes.map((e, i) => (
+      <li class="timeline__step">
+        <span class="timeline__dot" aria-hidden="true" />
+        <p class="timeline__n mono">{String(i + 1).padStart(2, '0')}</p>
+        <h3>{e.titre}</h3>
+        <p class="timeline__texte">{e.texte}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: var(--space-6);
+    padding: 0 0 0 var(--space-6);
+    list-style: none;
+  }
+
+  /* Ligne de la frise (verticale sur mobile) */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 0.4rem;
+    bottom: 0.4rem;
+    left: 0.35rem;
+    width: 1px;
+    background: var(--color-line-strong);
+  }
+
+  .timeline__step {
+    position: relative;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .timeline__dot {
+    position: absolute;
+    top: 0.3rem;
+    left: calc(-1 * var(--space-6));
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid var(--color-bg);
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 1px var(--color-accent);
+  }
+
+  .timeline__n {
+    font-size: var(--step--2);
+    color: var(--signal-600);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  .timeline__texte {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .timeline {
+      grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+      gap: var(--space-6);
+      padding: var(--space-6) 0 0;
+    }
+
+    .timeline::before {
+      top: 0.35rem;
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: 1px;
+    }
+
+    .timeline__dot {
+      top: calc(-1 * var(--space-6) - 0.025rem);
+      left: 0;
+    }
+  }
+</style>

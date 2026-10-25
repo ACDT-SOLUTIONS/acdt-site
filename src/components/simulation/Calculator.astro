@@ -1,0 +1,237 @@
+---
+import HypothesesPanel from './HypothesesPanel.astro';
+import ResultsPanel from './ResultsPanel.astro';
+import SourcesLimits from './SourcesLimits.astro';
+import type { ScenarioCharge } from '@/lib/simulations';
+
+interface Props {
+  data: ScenarioCharge;
+}
+
+const { data } = Astro.props;
+const { scenario, secteur, famille, base } = data;
+---
+
+<article class="calc" aria-labelledby="calc-titre">
+  <header class="calc__meta">
+    <p class="calc__tags mono">
+      <span class="calc__tag calc__tag--signal">Scénario de départ</span>
+      <span class="calc__tag">{secteur?.data.nom}</span>
+      <span class="calc__tag">{famille?.data.numero} · {famille?.data.titre}</span>
+    </p>
+    <h2 id="calc-titre">{scenario.data.titre}</h2>
+    <p class="calc__contexte">
+      {scenario.data.contexte}
+      <a href={`/cas-pratiques/${scenario.id}/`}>Voir le cas pratique documenté</a>
+    </p>
+    <p class="calc__avertissement">
+      <strong>Estimation.</strong> Les résultats dépendent entièrement des hypothèses saisies ; ils ne constituent ni une
+      promesse ni le résultat d'un client réel.
+    </p>
+  </header>
+
+  <simulation-gains class="calc__body" data-base={JSON.stringify(base)}>
+    <form class="calc__col calc__col--params" aria-labelledby="params-titre">
+      <h3 id="params-titre" class="calc__subtitle mono">Hypothèses</h3>
+      <HypothesesPanel data={data} interactif />
+      <button type="button" class="calc__reset mono" data-reset hidden>↺ Revenir au scénario de départ</button>
+    </form>
+
+    <div class="calc__col">
+      <h3 class="calc__subtitle mono">Résultats estimés</h3>
+      <ResultsPanel data={data} />
+      <p class="visually-hidden" aria-live="polite" data-resume></p>
+    </div>
+  </simulation-gains>
+
+  <footer class="calc__notes">
+    <SourcesLimits data={data} niveau="h3" />
+  </footer>
+</article>
+
+<script>
+  import { simuler, type ScenarioInputs } from '@/lib/roi/engine';
+  import { formatEuros, formatHeures, formatMois, formatParametre, formatPourcent } from '@/lib/roi/format';
+
+  class SimulationGains extends HTMLElement {
+    private base!: ScenarioInputs;
+    private inputs: HTMLInputElement[] = [];
+
+    connectedCallback() {
+      this.base = JSON.parse(this.dataset.base ?? '{}');
+      this.inputs = [...this.querySelectorAll<HTMLInputElement>('input[type="range"]')];
+      const reset = this.querySelector<HTMLButtonElement>('[data-reset]');
+
+      // Les curseurs n'apparaissent qu'une fois le script chargé : sans JS, le scénario reste lisible.
+      this.inputs.forEach((input) => {
+        input.hidden = false;
+        input.addEventListener('input', () => this.calculer());
+      });
+      if (reset) {
+        reset.hidden = false;
+        reset.addEventListener('click', () => {
+          this.inputs.forEach((input) => (input.value = String(this.base[input.name as keyof ScenarioInputs])));
+          this.calculer();
+        });
+      }
+    }
+
+    private calculer() {
+      const valeurs: ScenarioInputs = { ...this.base };
+      for (const input of this.inputs) {
+        const cle = input.name as keyof ScenarioInputs;
+        valeurs[cle] = Number(input.value);
+        this.ecrire(`[data-val="${cle}"]`, formatParametre(input.dataset.unite ?? '', valeurs[cle]));
+      }
+
+      const r = simuler(valeurs);
+      const apresReaffectation = r.tempsValoriseParMois * valeurs.tauxReaffectation;
+
+      this.ecrire('[data-out="heuresLibereesParMois"]', formatHeures(r.heuresLibereesParMois));
+      this.ecrire('[data-out="tempsValoriseParMois"]', formatEuros(r.tempsValoriseParMois));
+      this.ecrire('[data-out="apresReaffectation"]', formatEuros(apresReaffectation));
+      this.ecrire('[data-out="economiesEffectivesParMois"]', formatEuros(r.economiesEffectivesParMois));
+      this.ecrire('[data-out="gainNetSurHorizon"]', formatEuros(r.gainNetSurHorizon));
+      this.ecrire('[data-out="roiNet"]', formatPourcent(r.roiNet));
+      this.ecrire('[data-out="delaiRetourMois"]', formatMois(r.delaiRetourMois));
+
+      const ratio = (v: number) => `${Math.max(0, Math.min(100, (v / (r.tempsValoriseParMois || 1)) * 100))}%`;
+      this.largeur('valorise', ratio(r.tempsValoriseParMois));
+      this.largeur('reaffecte', ratio(apresReaffectation));
+      this.largeur('effectives', ratio(r.economiesEffectivesParMois));
+
+      this.toggleAttribute('data-negatif', r.economiesEffectivesParMois < 0);
+      this.ecrire(
+        '[data-resume]',
+        `Économies effectives : ${formatEuros(r.economiesEffectivesParMois)} par mois. Gain net : ${formatEuros(r.gainNetSurHorizon)}.`,
+      );
+    }
+
+    private ecrire(selecteur: string, texte: string) {
+      this.querySelectorAll(selecteur).forEach((el) => (el.textContent = texte));
+    }
+
+    private largeur(bar: string, valeur: string) {
+      const el = this.querySelector<HTMLElement>(`[data-bar="${bar}"]`);
+      if (el) el.style.width = valeur;
+    }
+  }
+
+  customElements.define('simulation-gains', SimulationGains);
+</script>
+
+<style>
+  .calc {
+    border: 1px solid var(--color-inverse-line);
+    border-radius: var(--radius-l);
+    background: var(--color-inverse-surface);
+    color: var(--color-inverse-text);
+    overflow: hidden;
+  }
+
+  .calc__meta {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border-bottom: 1px solid var(--color-inverse-line);
+  }
+
+  .calc__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .calc__tag {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--color-inverse-line);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+    color: var(--color-inverse-muted);
+  }
+
+  .calc__tag--signal {
+    border-color: color-mix(in srgb, var(--signal-500) 60%, transparent);
+    color: var(--signal-300);
+  }
+
+  .calc__meta h2 {
+    font-size: var(--step-2);
+  }
+
+  .calc__contexte {
+    max-width: 44rem;
+    color: var(--color-inverse-muted);
+  }
+
+  .calc__contexte a {
+    margin-left: var(--space-2);
+    color: var(--pine-300);
+  }
+
+  .calc__avertissement {
+    font-size: var(--step--1);
+    color: var(--signal-300);
+  }
+
+  .calc__body {
+    display: grid;
+  }
+
+  .calc__col {
+    min-width: 0;
+    padding: var(--space-6);
+  }
+
+  .calc__col--params {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    border-bottom: 1px solid var(--color-inverse-line);
+  }
+
+  .calc__subtitle {
+    margin-bottom: var(--space-4);
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-400);
+  }
+
+  .calc__col--params .calc__subtitle {
+    margin-bottom: 0;
+  }
+
+  .calc__reset {
+    justify-self: start;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--color-inverse-line);
+    border-radius: var(--radius-pill);
+    background: none;
+    font-size: var(--step--2);
+    color: var(--color-inverse-muted);
+  }
+
+  .calc__reset:hover {
+    border-color: var(--color-inverse-muted);
+    color: var(--color-inverse-text);
+  }
+
+  .calc__notes {
+    padding: var(--space-6);
+    border-top: 1px solid var(--color-inverse-line);
+    background: color-mix(in srgb, var(--ink-950) 40%, var(--color-inverse-surface));
+  }
+
+  @media (min-width: 64rem) {
+    .calc__body {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    }
+
+    .calc__col--params {
+      border-bottom: 0;
+      border-right: 1px solid var(--color-inverse-line);
+    }
+  }
+</style>

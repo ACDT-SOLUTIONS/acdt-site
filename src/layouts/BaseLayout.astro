@@ -1,0 +1,58 @@
+---
+import '@fontsource-variable/instrument-sans/wght.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource-variable/geist-mono/wght.css';
+import '@/styles/tokens.css';
+import '@/styles/base.css';
+
+import Seo from '@/components/seo/Seo.astro';
+import Analytics from '@/components/integrations/Analytics.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f5f0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <Seo title={title} description={description} />
+    <slot name="head" />
+    <Analytics />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <Header />
+    <main id="contenu">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: 100;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-s);
+    background: var(--ink-900);
+    color: var(--paper-0);
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+</style>

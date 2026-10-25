@@ -1,0 +1,35 @@
+- id: appels-manques
+  ordre: 1
+  titre: Des appels manqués quand vous n'êtes pas disponible
+  description: En rendez-vous, en intervention ou hors horaires, l'appel part chez quelqu'un d'autre.
+  famille: accueil-telephonique-ia
+
+- id: relances-pieces
+  ordre: 2
+  titre: Des relances faites une par une
+  description: Pièces manquantes, documents à signer, factures en retard — tout dépend de la mémoire de chacun.
+  famille: automatisation-administrative
+
+- id: ressaisie
+  ordre: 3
+  titre: Les mêmes données saisies plusieurs fois
+  description: Du formulaire au tableur, du tableur au logiciel métier, avec les erreurs qui vont avec.
+  famille: automatisation-administrative
+
+- id: demandes-sans-suite
+  ordre: 4
+  titre: Des demandes de prospects restées sans suite
+  description: Un message arrive, personne ne le traite à temps, l'opportunité se perd.
+  famille: crm-automatisation-commerciale
+
+- id: pilotage
+  ordre: 5
+  titre: Aucune vue claire sur l'activité
+  description: Les chiffres existent, mais il faut une demi-journée pour les rassembler.
+  famille: crm-automatisation-commerciale
+
+- id: confidentialite
+  ordre: 6
+  titre: Des données trop sensibles pour n'importe quel outil
+  description: Vous hésitez à confier certains dossiers à un service en ligne, et vous avez raison de vous poser la question.
+  famille: infrastructure-privee

@@ -1,0 +1,284 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Button from '@/components/ui/Button.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import MiniFlow from '@/components/content/MiniFlow.astro';
+import HypothesesPanel from '@/components/simulation/HypothesesPanel.astro';
+import ResultsPanel from '@/components/simulation/ResultsPanel.astro';
+import SourcesLimits from '@/components/simulation/SourcesLimits.astro';
+import { PARAMETRES } from '@/lib/roi/engine';
+import { formatParametre } from '@/lib/roi/format';
+import { chargerScenario } from '@/lib/simulations';
+import { lienEvaluation } from '@/config/site';
+
+export async function getStaticPaths() {
+  const scenarios = await getCollection('simulations');
+  return scenarios.map((scenario) => ({ params: { cas: scenario.id }, props: { scenario } }));
+}
+
+interface Props {
+  scenario: CollectionEntry<'simulations'>;
+}
+
+const data = await chargerScenario(Astro.props.scenario);
+const { scenario, secteur, famille, base } = data;
+const d = scenario.data;
+const clesCouts = ['coutsRecurrentsMensuels', 'investissementInitial'] as const;
+const couts = clesCouts.map((cle) => ({
+  label: PARAMETRES[cle].label,
+  valeur: formatParametre(PARAMETRES[cle].unite, base[cle]),
+  note: d.justifications[cle].note,
+}));
+---
+
+<BaseLayout title={d.titre} description={d.contexte}>
+  <PageHero
+    eyebrow="Cas pratique chiffré"
+    breadcrumbs={[
+      { label: 'Cas pratiques', href: '/cas-pratiques/' },
+      { label: d.titre, href: `/cas-pratiques/${scenario.id}/` },
+    ]}
+  >
+    <Fragment slot="title">{d.titre}</Fragment>
+    <p class="tags mono">
+      {secteur && <a href={`/secteurs/${secteur.id}/`}>{secteur.data.nom}</a>}
+      {famille && <a href={`/solutions/${famille.id}/`}>{famille.data.numero} · {famille.data.titre}</a>}
+    </p>
+    <p class="avertissement">
+      <strong>Scénario d'automatisation.</strong> Ce cas ne présente pas le résultat d'un client réel.
+    </p>
+    <Fragment slot="actions">
+      <Button href="#analyse" arrow>Voir l'analyse économique</Button>
+      <Button href={lienEvaluation.href} variant="secondary">{lienEvaluation.label}</Button>
+    </Fragment>
+  </PageHero>
+
+  <Section labelledby="contexte-titre">
+    <SectionHeader eyebrow="Contexte" index="01" id="contexte-titre">
+      <Fragment slot="title">Le scénario.</Fragment>
+    </SectionHeader>
+    <p class="texte">{d.contexte}</p>
+  </Section>
+
+  <Section tone="sunken" labelledby="processus-titre">
+    <SectionHeader eyebrow="Processus" index="02" id="processus-titre">
+      <Fragment slot="title">Avant et après l'automatisation.</Fragment>
+    </SectionHeader>
+    <div class="processus">
+      <div>
+        <h3 class="sous-titre mono">Processus actuel</h3>
+        {
+          d.processusActuel ? (
+            <MiniFlow etapes={d.processusActuel} label="Processus actuel" />
+          ) : (
+            <Placeholder>Description étape par étape de la façon dont la tâche est réalisée aujourd'hui.</Placeholder>
+          )
+        }
+      </div>
+      <div>
+        <h3 class="sous-titre mono">Automatisation envisagée</h3>
+        {
+          d.processusAutomatise ? (
+            <MiniFlow etapes={d.processusAutomatise} label="Automatisation envisagée" />
+          ) : (
+            famille && (
+              <>
+                <MiniFlow etapes={famille.data.flux} label="Principe de fonctionnement" />
+                <p class="note">Principe général de la famille {famille.data.numero}, à préciser pour ce scénario.</p>
+              </>
+            )
+          )
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section tone="inverse" id="analyse" labelledby="analyse-titre">
+    <SectionHeader eyebrow="Analyse économique" index="03" tone="inverse" id="analyse-titre">
+      <Fragment slot="title">Le calcul, <em class="accent">étape par étape.</em></Fragment>
+    </SectionHeader>
+
+    <div class="analyse">
+      <div class="analyse__bloc">
+        <h3 class="sous-titre mono">Hypothèses de calcul</h3>
+        <HypothesesPanel data={data} exclure={[...clesCouts]} />
+      </div>
+
+      <div class="analyse__colonne">
+        <div class="analyse__bloc">
+          <h3 class="sous-titre mono">Coûts</h3>
+          <dl class="couts">
+            {
+              couts.map((c) => (
+                <div>
+                  <dt>{c.label}</dt>
+                  <dd class="mono">{c.valeur}</dd>
+                  <dd class="couts__note">{c.note}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+        <div class="analyse__bloc">
+          <h3 class="sous-titre mono">Indicateurs et rentabilité potentielle</h3>
+          <ResultsPanel data={data} />
+        </div>
+      </div>
+    </div>
+
+    <div class="analyse__notes">
+      <SourcesLimits data={data} />
+    </div>
+  </Section>
+
+  <Section labelledby="suite-titre">
+    <div class="suite">
+      <h2 id="suite-titre">Et avec vos propres chiffres ?</h2>
+      <Button href={lienEvaluation.href} arrow>{lienEvaluation.label}</Button>
+    </div>
+  </Section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-size: var(--step--2);
+  }
+
+  .tags a {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+  }
+
+  .tags a:hover {
+    border-color: var(--color-text);
+  }
+
+  .avertissement {
+    margin-top: var(--space-4);
+    font-size: var(--step--1);
+    color: var(--signal-600);
+  }
+
+  .texte {
+    max-width: 44rem;
+    font-size: var(--step-1);
+    color: var(--color-text-muted);
+  }
+
+  .sous-titre {
+    margin-bottom: var(--space-4);
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .processus {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .note {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .analyse {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .analyse > *,
+  .analyse__colonne > * {
+    min-width: 0;
+  }
+
+  .analyse__colonne {
+    display: grid;
+    gap: var(--space-6);
+    align-content: start;
+  }
+
+  .analyse__bloc {
+    padding: var(--space-6);
+    border: 1px solid var(--color-inverse-line);
+    border-radius: var(--radius-l);
+    background: var(--color-inverse-surface);
+  }
+
+  .analyse .sous-titre {
+    color: var(--ink-400);
+  }
+
+  .couts {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .couts div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-3);
+    font-size: var(--step--1);
+  }
+
+  .couts dt {
+    color: var(--color-inverse-muted);
+  }
+
+  .couts dd {
+    margin: 0;
+  }
+
+  .couts__note {
+    grid-column: 1 / -1;
+    font-size: var(--step--2);
+    color: var(--ink-400);
+  }
+
+  .analyse__notes {
+    margin-top: var(--space-6);
+    padding: var(--space-6);
+    border: 1px solid var(--color-inverse-line);
+    border-radius: var(--radius-l);
+  }
+
+  .suite {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-line-strong);
+  }
+
+  .suite h2 {
+    font-size: var(--step-3);
+  }
+
+  @media (min-width: 64rem) {
+    .processus {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-8);
+    }
+
+    .analyse {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+    }
+  }
+</style>

@@ -1,0 +1,97 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import MethodSteps from '@/components/content/MethodSteps.astro';
+import FaqSection from '@/components/content/FaqSection.astro';
+
+const phases = [
+  'Premier échange',
+  'Analyse et diagnostic chiffré',
+  'Devis',
+  'Conception',
+  'Tests avec vous',
+  'Mise en service',
+  'Mesure des résultats',
+  'Suivi et maintenance',
+];
+---
+
+<BaseLayout title="Méthode" description="Comment ACDT Solutions accompagne un projet, de l'analyse à la mesure des résultats.">
+  <PageHero eyebrow="Méthode" breadcrumbs={[{ label: 'Méthode', href: '/methode/' }]}>
+    <Fragment slot="title">Analyser, concevoir, <em class="accent">mesurer.</em></Fragment>
+    Une démarche en trois temps, pour que chaque décision repose sur des faits et non sur des promesses.
+  </PageHero>
+
+  <Section labelledby="temps-titre">
+    <SectionHeader eyebrow="Les trois temps" index="01" id="temps-titre">
+      <Fragment slot="title">Notre démarche.</Fragment>
+    </SectionHeader>
+    <MethodSteps />
+  </Section>
+
+  <Section tone="sunken" labelledby="phases-titre">
+    <SectionHeader eyebrow="Déroulé" index="02" id="phases-titre">
+      <Fragment slot="title">D'un premier échange au suivi.</Fragment>
+    </SectionHeader>
+    <ol class="phases">
+      {
+        phases.map((p, i) => (
+          <li>
+            <span class="phases__n mono">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{p}</h3>
+            <p class="phases__todo mono">À rédiger</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section labelledby="donnees-titre">
+    <SectionHeader eyebrow="Données et confidentialité" index="03" id="donnees-titre">
+      <Fragment slot="title">Le cadrage des données.</Fragment>
+    </SectionHeader>
+    <Placeholder>Ce qui est défini avec le client avant tout développement : périmètre, accès, hébergement, conservation.</Placeholder>
+  </Section>
+
+  <FaqSection index="04" />
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .phases {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+    counter-reset: none;
+  }
+
+  .phases li {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .phases__n {
+    font-size: var(--step--2);
+    color: var(--signal-600);
+  }
+
+  .phases h3 {
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  .phases__todo {
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+  }
+</style>

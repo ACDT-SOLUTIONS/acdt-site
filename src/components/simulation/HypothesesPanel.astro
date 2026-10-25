@@ -1,0 +1,226 @@
+---
+import { PARAMETRES } from '@/lib/roi/engine';
+import { formatParametre } from '@/lib/roi/format';
+import { CLES, REGLAGES, type CleParametre, type ScenarioCharge } from '@/lib/simulations';
+
+interface Props {
+  data: ScenarioCharge;
+  /** Curseurs pour les paramètres réglables (outil d'évaluation) ; tableau figé sinon (cas pratique). */
+  interactif?: boolean;
+  /** Paramètres présentés ailleurs sur la page (ex. bloc « Coûts »). */
+  exclure?: CleParametre[];
+}
+
+const { data, interactif = false, exclure = [] } = Astro.props;
+const { base, scenario } = data;
+
+const reglages = interactif ? REGLAGES : [];
+const masques = new Set([...reglages.map((p) => p.cle), ...exclure]);
+const fixes = CLES.filter((c) => !masques.has(c));
+
+const format = (cle: CleParametre) => formatParametre(PARAMETRES[cle].unite, base[cle]);
+const justification = (cle: CleParametre) => scenario.data.justifications[cle];
+---
+
+<div class="hypotheses">
+  {
+    reglages.map((p) => {
+      const j = justification(p.cle);
+      return (
+        <div class="param">
+          <label for={`param-${p.cle}`} class="param__label">
+            <span>{PARAMETRES[p.cle].label}</span>
+            <output class="param__value mono" data-val={p.cle} for={`param-${p.cle}`}>
+              {format(p.cle)}
+            </output>
+          </label>
+          <input
+            id={`param-${p.cle}`}
+            type="range"
+            name={p.cle}
+            min={p.min}
+            max={p.max}
+            step={p.step}
+            value={base[p.cle]}
+            data-unite={PARAMETRES[p.cle].unite}
+            hidden
+          />
+          <p class="param__note">
+            <span class:list={['origine mono', `origine--${j.origine}`]}>
+              {j.origine === 'source' ? 'Source' : 'Hypothèse'}
+            </span>
+            {j.note}
+          </p>
+        </div>
+      );
+    })
+  }
+
+  <dl class:list={['fixes', { 'fixes--seules': !interactif }]}>
+    {
+      fixes.map((cle) => {
+        const j = justification(cle);
+        return (
+          <div>
+            <dt>{PARAMETRES[cle].label}</dt>
+            <dd class="mono">{format(cle)}</dd>
+            <dd class="fixes__note">
+              {!interactif && (
+                <span class:list={['origine mono', `origine--${j.origine}`]}>
+                  {j.origine === 'source' ? 'Source' : 'Hypothèse'}
+                </span>
+              )}
+              {j.note}
+            </dd>
+          </div>
+        );
+      })
+    }
+  </dl>
+</div>
+
+<style>
+  .hypotheses {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+  }
+
+  .param {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .param__label {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    font-size: var(--step--1);
+  }
+
+  .param__value {
+    color: var(--color-inverse-text);
+  }
+
+  .param__note {
+    font-size: var(--step--2);
+    line-height: 1.5;
+    color: var(--color-inverse-muted);
+  }
+
+  .origine {
+    display: inline-block;
+    margin-right: var(--space-2);
+    padding: 0.05rem 0.4rem;
+    border-radius: var(--radius-s);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .origine--hypothese {
+    background: var(--ink-700);
+    color: var(--paper-200);
+  }
+
+  .origine--source {
+    background: color-mix(in srgb, var(--pine-600) 40%, transparent);
+    color: var(--pine-100);
+  }
+
+  input[type='range'] {
+    width: 100%;
+    height: 1.5rem;
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--ink-700);
+  }
+
+  input[type='range']::-moz-range-track {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--ink-700);
+  }
+
+  input[type='range']::-moz-range-progress {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--signal-500);
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: calc(-0.55rem + 1.5px);
+    border: 3px solid var(--color-inverse-surface);
+    border-radius: 50%;
+    background: var(--signal-500);
+    box-shadow: 0 0 0 1px var(--signal-500);
+  }
+
+  input[type='range']::-moz-range-thumb {
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 3px solid var(--color-inverse-surface);
+    border-radius: 50%;
+    background: var(--signal-500);
+    box-shadow: 0 0 0 1px var(--signal-500);
+  }
+
+  input[type='range']:focus-visible {
+    outline: 2px solid var(--signal-300);
+    outline-offset: 4px;
+  }
+
+  .fixes {
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: 1px dashed var(--color-inverse-line);
+  }
+
+  .fixes--seules {
+    gap: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .fixes div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-3);
+    font-size: var(--step--1);
+  }
+
+  .fixes--seules div {
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--color-inverse-line);
+  }
+
+  .fixes dt {
+    color: var(--color-inverse-muted);
+  }
+
+  .fixes dd {
+    margin: 0;
+  }
+
+  .fixes__note {
+    grid-column: 1 / -1;
+    margin-top: var(--space-1) !important;
+    font-size: var(--step--2);
+    color: var(--ink-400);
+  }
+
+  .fixes--seules .fixes__note {
+    color: var(--color-inverse-muted);
+  }
+</style>

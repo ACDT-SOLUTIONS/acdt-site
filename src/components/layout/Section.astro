@@ -1,0 +1,32 @@
+---
+interface Props {
+  tone?: 'default' | 'sunken' | 'inverse';
+  id?: string;
+  labelledby?: string;
+  class?: string;
+}
+
+const { tone = 'default', id, labelledby, class: className } = Astro.props;
+---
+
+<section class:list={['section', `section--${tone}`, className]} id={id} aria-labelledby={labelledby}>
+  <div class="container">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section--sunken {
+    background: var(--color-surface-sunken);
+  }
+
+  .section--inverse {
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+  }
+
+  /* Deux sections claires consécutives : on évite de doubler l'espacement. */
+  .section--default + .section--default {
+    padding-top: 0;
+  }
+</style>

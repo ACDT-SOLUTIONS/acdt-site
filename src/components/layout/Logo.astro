@@ -1,0 +1,54 @@
+---
+interface Props {
+  tone?: 'default' | 'inverse';
+}
+
+const { tone = 'default' } = Astro.props;
+---
+
+<a href="/" class:list={['logo', `logo--${tone}`]} aria-label="ACDT Solutions — accueil">
+  <svg class="logo__mark" viewBox="0 0 28 28" aria-hidden="true">
+    <path d="M5 21 L14 7 L23 21" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    <circle cx="5" cy="21" r="2.6" fill="currentColor" />
+    <circle cx="14" cy="7" r="2.6" fill="currentColor" />
+    <circle class="logo__node" cx="23" cy="21" r="2.6" />
+  </svg>
+  <span class="logo__word">ACDT</span>
+  <span class="logo__suffix mono">Solutions</span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .logo--inverse {
+    color: var(--color-inverse-text);
+  }
+
+  .logo__mark {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  .logo__node {
+    fill: var(--color-signal);
+  }
+
+  .logo__word {
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+  }
+
+  .logo__suffix {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+</style>

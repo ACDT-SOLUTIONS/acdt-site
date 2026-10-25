@@ -1,0 +1,26 @@
+---
+import { PUBLIC_INDEXABLE } from 'astro:env/server';
+import { site } from '@/config/site';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const fullTitle = title === site.nom ? title : `${title} | ${site.nom}`;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{!PUBLIC_INDEXABLE && <meta name="robots" content="noindex, nofollow" />}
+
+<meta property="og:type" content="website" />
+<meta property="og:locale" content={site.locale} />
+<meta property="og:site_name" content={site.nom} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta name="twitter:card" content="summary" />

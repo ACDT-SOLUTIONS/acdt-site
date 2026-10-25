@@ -1,0 +1,76 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import Button from '@/components/ui/Button.astro';
+import { ctaPrincipal, site } from '@/config/site';
+---
+
+<BaseLayout title="Contact" description="Écrire à ACDT Solutions.">
+  <PageHero eyebrow="Contact" breadcrumbs={[{ label: 'Contact', href: '/contact/' }]}>
+    <Fragment slot="title">Écrivez-<em class="accent">nous.</em></Fragment>
+    Décrivez votre situation : nous revenons vers vous pour en parler.
+  </PageHero>
+
+  <Section labelledby="contact-titre">
+    <h2 id="contact-titre" class="visually-hidden">Nous contacter</h2>
+    <div class="contact">
+      <div class="contact__formulaire">
+        <Placeholder label="Formulaire à connecter">
+          Formulaire de contact (nom, entreprise, email, message). Il sera d'abord relié à un endpoint de test isolé,
+          puis au webhook de production lors de la mise en ligne.
+        </Placeholder>
+      </div>
+      <aside class="contact__infos">
+        <h3 class="mono">Email</h3>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <h3 class="mono">Rendez-vous</h3>
+        <p>Vous préférez en parler directement ?</p>
+        <Button href={ctaPrincipal.href} variant="secondary" arrow>{ctaPrincipal.label}</Button>
+      </aside>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .contact__formulaire :global(.placeholder) {
+    min-height: 22rem;
+    align-content: start;
+  }
+
+  .contact__infos {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    justify-items: start;
+  }
+
+  .contact__infos h3 {
+    margin-top: var(--space-4);
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .contact__infos h3:first-child {
+    margin-top: 0;
+  }
+
+  .contact__infos p {
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .contact {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    }
+  }
+</style>

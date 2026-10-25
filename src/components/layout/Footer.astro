@@ -1,0 +1,138 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './Logo.astro';
+import { ctaPrincipal, lienEvaluation, liensLegaux, site } from '@/config/site';
+
+const solutions = (await getCollection('solutions')).sort((a, b) => a.data.numero.localeCompare(b.data.numero));
+const secteurs = (await getCollection('secteurs', (s) => s.data.publie)).sort((a, b) => a.data.ordre - b.data.ordre);
+const annee = new Date().getFullYear();
+
+const liensAcdt = [
+  { label: 'Cas pratiques', href: '/cas-pratiques/' },
+  lienEvaluation,
+  { label: 'Méthode', href: '/methode/' },
+  { label: 'Ressources', href: '/ressources/' },
+  { label: 'À propos', href: '/a-propos/' },
+  { label: 'Contact', href: '/contact/' },
+  ctaPrincipal,
+];
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <Logo tone="inverse" />
+        <p>Analyse des problèmes métier, conception de solutions adaptées, mesure des résultats.</p>
+        <a class="site-footer__email mono" href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+
+      <nav class="site-footer__cols" aria-label="Plan du site">
+        <div>
+          <h2 class="mono"><a href="/solutions/">Solutions</a></h2>
+          <ul>
+            {solutions.map((s) => <li><a href={`/solutions/${s.id}/`}>{s.data.titre}</a></li>)}
+          </ul>
+        </div>
+        <div>
+          <h2 class="mono"><a href="/secteurs/">Secteurs</a></h2>
+          <ul>
+            {secteurs.map((s) => <li><a href={`/secteurs/${s.id}/`}>{s.data.nom}</a></li>)}
+          </ul>
+        </div>
+        <div>
+          <h2 class="mono">ACDT</h2>
+          <ul>
+            {liensAcdt.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="mono">© {annee} {site.nom}</p>
+      <ul>
+        {liensLegaux.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--space-8) var(--space-6);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-muted);
+    font-size: var(--step--1);
+  }
+
+  .site-footer a {
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .site-footer a:hover {
+    color: var(--color-inverse-text);
+  }
+
+  .site-footer__top {
+    display: grid;
+    gap: var(--space-7);
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--color-inverse-line);
+  }
+
+  .site-footer__brand {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 22rem;
+    align-content: start;
+  }
+
+  .site-footer__email {
+    color: var(--color-inverse-text);
+  }
+
+  .site-footer__cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-6);
+  }
+
+  .site-footer h2 {
+    margin-bottom: var(--space-4);
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-400);
+  }
+
+  .site-footer ul {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+    font-size: var(--step--2);
+  }
+
+  .site-footer__bottom ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 60rem) {
+    .site-footer__top {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+  }
+</style>

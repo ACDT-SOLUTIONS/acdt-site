@@ -1,0 +1,42 @@
+---
+// Emplacement réservé à un contenu à rédiger. Le remplacer par le texte définitif sans toucher à la structure.
+interface Props {
+  label?: string;
+  tone?: 'default' | 'inverse';
+}
+
+const { label = 'À rédiger', tone = 'default' } = Astro.props;
+---
+
+<div class:list={['placeholder', `placeholder--${tone}`]}>
+  <p class="placeholder__label mono">{label}</p>
+  <div class="placeholder__body"><slot /></div>
+</div>
+
+<style>
+  .placeholder {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border: 1px dashed var(--color-line-strong);
+    border-radius: var(--radius-m);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .placeholder__label {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  .placeholder--inverse {
+    border-color: var(--ink-500);
+    color: var(--color-inverse-muted);
+  }
+
+  .placeholder--inverse .placeholder__label {
+    color: var(--signal-300);
+  }
+</style>

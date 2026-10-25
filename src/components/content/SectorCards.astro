@@ -1,0 +1,163 @@
+---
+import { getCollection, getEntries } from 'astro:content';
+
+interface Props {
+  /** Limiter aux secteurs liés à une famille. */
+  famille?: string;
+  /** Afficher aussi les secteurs non publiés, sous forme de carte « En préparation ». */
+  avecPreparation?: boolean;
+  /** Texte propre à la page qui remplace l'accroche générique, par identifiant de secteur. L'ordre des clés fixe l'ordre d'affichage. */
+  textes?: Record<string, string>;
+}
+
+const { famille, avecPreparation = false, textes } = Astro.props;
+const ordreImpose = textes ? Object.keys(textes) : null;
+
+const secteurs = (
+  await getCollection(
+    'secteurs',
+    (s) =>
+      (avecPreparation || s.data.publie) &&
+      (!famille || s.data.familles.some((f) => f.id === famille)) &&
+      (!ordreImpose || ordreImpose.includes(s.id)),
+  )
+).sort((a, b) =>
+  ordreImpose ? ordreImpose.indexOf(a.id) - ordreImpose.indexOf(b.id) : a.data.ordre - b.data.ordre,
+);
+const items = await Promise.all(secteurs.map(async (s) => ({ ...s, familles: await getEntries(s.data.familles) })));
+---
+
+<ul class="sectors">
+  {
+    items.map((s) => {
+      const enPreparation = !s.data.publie;
+      return (
+        <li class:list={['sector', { 'sector--pending': enPreparation }]}>
+          {enPreparation && <p class="sector__status mono">En préparation</p>}
+          <h3>{enPreparation ? s.data.nom : <a href={`/secteurs/${s.id}/`}>{s.data.nom}</a>}</h3>
+          <p class="sector__accroche">{textes?.[s.id] ?? s.data.accroche}</p>
+          {s.data.mention && <p class="sector__mention">{s.data.mention}</p>}
+          {!enPreparation && textes && (
+            <p class="sector__lien mono" aria-hidden="true">
+              Voir le secteur →
+            </p>
+          )}
+          <p class="sector__familles mono" aria-label="Familles de solutions concernées">
+            {s.familles.map((f) => (
+              <span title={f.data.titre}>{f.data.numero}</span>
+            ))}
+          </p>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .sectors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .sector {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out);
+  }
+
+  .sector:not(.sector--pending):hover {
+    transform: translateY(-3px);
+    border-color: var(--color-line-strong);
+  }
+
+  .sector:not(.sector--pending):focus-within {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .sector :focus-visible {
+    outline: none;
+  }
+
+  h3 {
+    font-size: var(--step-2);
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .sector__accroche {
+    color: var(--color-text-muted);
+  }
+
+  .sector__familles {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: auto;
+    padding-top: var(--space-2);
+  }
+
+  .sector__familles span {
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-s);
+    background: var(--color-accent-soft);
+    font-size: var(--step--2);
+    color: var(--color-accent);
+  }
+
+  .sector--pending {
+    border-style: dashed;
+    border-color: var(--color-line-strong);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .sector--pending h3,
+  .sector--pending .sector__accroche {
+    color: var(--color-text-muted);
+  }
+
+  .sector--pending .sector__familles span {
+    background: var(--color-surface-sunken);
+    color: var(--color-text-muted);
+  }
+
+  .sector__status {
+    align-self: flex-start;
+    padding: 0.15rem 0.55rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .sector__mention {
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .sector__lien {
+    font-size: var(--step--2);
+    color: var(--color-accent);
+  }
+</style>

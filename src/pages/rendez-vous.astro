@@ -1,0 +1,51 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import { site } from '@/config/site';
+---
+
+<BaseLayout title="Prendre rendez-vous" description="Réserver un premier échange avec ACDT Solutions.">
+  <PageHero eyebrow="Rendez-vous" breadcrumbs={[{ label: 'Prendre rendez-vous', href: '/rendez-vous/' }]}>
+    <Fragment slot="title">Prendre <em class="accent">rendez-vous.</em></Fragment>
+    Un premier échange pour comprendre votre situation et identifier ce qui mérite d'être automatisé.
+  </PageHero>
+
+  <Section labelledby="creneau-titre">
+    <h2 id="creneau-titre" class="visually-hidden">Choisir un créneau</h2>
+    <div class="rdv">
+      <Placeholder label="Module à connecter">
+        Module de prise de rendez-vous (Cal.com). Non connecté dans la maquette.
+      </Placeholder>
+      <p class="rdv__alternative">
+        Vous pouvez aussi nous écrire : <a href={`mailto:${site.email}`}>{site.email}</a> ou passer par la
+        <a href="/contact/">page contact</a>.
+      </p>
+    </div>
+  </Section>
+
+  <Section tone="sunken" labelledby="deroule-titre">
+    <SectionHeader eyebrow="Premier échange" index="01" id="deroule-titre">
+      <Fragment slot="title">Comment il se déroule.</Fragment>
+    </SectionHeader>
+    <Placeholder>Durée, préparation éventuelle, ce que vous en retirez. <a href="/methode/">Voir la méthode</a>.</Placeholder>
+  </Section>
+</BaseLayout>
+
+<style>
+  .rdv {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .rdv :global(.placeholder) {
+    min-height: 28rem;
+    align-content: start;
+  }
+
+  .rdv__alternative {
+    color: var(--color-text-muted);
+  }
+</style>

@@ -1,0 +1,12 @@
+- id: integrations
+  titre: Intégrations entre logiciels
+  description: Vos outils échangent leurs données au lieu d'être ressaisis.
+- id: agents-ia
+  titre: Agents IA
+  description: Lecture, tri et rédaction confiés à l'IA, sous contrôle humain.
+- id: tableaux-de-bord
+  titre: Tableaux de bord
+  description: Les indicateurs utiles, à jour sans export manuel.
+- id: n8n
+  titre: n8n
+  description: Orchestrateur open source, hébergeable sur votre infrastructure.

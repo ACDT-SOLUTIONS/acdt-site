@@ -1,0 +1,87 @@
+---
+interface Props {
+  eyebrow: string;
+  index?: string;
+  align?: 'start' | 'split';
+  tone?: 'default' | 'inverse';
+  id?: string;
+}
+
+const { eyebrow, index, align = 'start', tone = 'default', id } = Astro.props;
+---
+
+<header class:list={['section-header', `section-header--${align}`, `section-header--${tone}`]}>
+  <p class="section-header__eyebrow mono">
+    {index && <span class="section-header__index">{index}</span>}
+    {eyebrow}
+  </p>
+  <div class="section-header__body">
+    <h2 id={id}><slot name="title" /></h2>
+    {Astro.slots.has('default') && <div class="section-header__lead"><slot /></div>}
+  </div>
+</header>
+
+<style>
+  .section-header {
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: clamp(var(--space-6), 4vw, var(--space-8));
+  }
+
+  .section-header__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .section-header__eyebrow::after {
+    content: '';
+    flex: 1;
+    max-width: 6rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+  }
+
+  .section-header__index {
+    color: var(--color-signal);
+  }
+
+  .section-header__body {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  h2 {
+    max-width: 20ch;
+    font-size: var(--step-4);
+  }
+
+  .section-header__lead {
+    max-width: 38rem;
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 60rem) {
+    .section-header--split .section-header__body {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: end;
+      gap: var(--space-8);
+    }
+  }
+
+  .section-header--inverse .section-header__eyebrow,
+  .section-header--inverse .section-header__lead {
+    color: var(--color-inverse-muted);
+  }
+
+  .section-header--inverse h2 {
+    color: var(--color-inverse-text);
+  }
+</style>

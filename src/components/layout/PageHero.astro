@@ -1,0 +1,115 @@
+---
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import type { LienNav } from '@/config/site';
+
+interface Props {
+  eyebrow: string;
+  breadcrumbs: LienNav[];
+  numero?: string;
+}
+
+const { eyebrow, breadcrumbs, numero } = Astro.props;
+const aAside = Astro.slots.has('aside');
+---
+
+<header class:list={['page-hero', { 'page-hero--aside': aAside }]}>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+    <div class="page-hero__inner">
+      <div class="page-hero__copy">
+        <p class="page-hero__eyebrow mono">
+          {numero && <span class="page-hero__numero">{numero}</span>}
+          {eyebrow}
+        </p>
+        <h1><slot name="title" /></h1>
+        {Astro.slots.has('default') && <div class="page-hero__lead"><slot /></div>}
+        {Astro.slots.has('actions') && <div class="page-hero__actions"><slot name="actions" /></div>}
+      </div>
+      {aAside && <div class="page-hero__aside"><slot name="aside" /></div>}
+    </div>
+  </div>
+</header>
+
+<style>
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--space-6) clamp(var(--space-7), 6vw, var(--space-9));
+    border-bottom: 1px solid var(--color-line);
+    isolation: isolate;
+  }
+
+  /* Même trame millimétrée que le hero d'accueil, plus discrète */
+  .page-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+    background-size: 3.5rem 3.5rem;
+    mask-image: radial-gradient(ellipse 60% 70% at 85% 30%, #000 10%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 70% at 85% 30%, #000 10%, transparent 70%);
+    opacity: 0.6;
+  }
+
+  .page-hero__inner {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+    margin-top: clamp(var(--space-6), 5vw, var(--space-8));
+  }
+
+  .page-hero__inner > * {
+    min-width: 0;
+  }
+
+  .page-hero__copy {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .page-hero__eyebrow {
+    display: flex;
+    gap: var(--space-3);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .page-hero__numero {
+    color: var(--signal-600);
+  }
+
+  h1 {
+    max-width: 20ch;
+    font-size: var(--step-5);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  h1 :global(.accent) {
+    color: var(--color-accent);
+  }
+
+  .page-hero__lead {
+    max-width: 40rem;
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  .page-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 64rem) {
+    .page-hero--aside .page-hero__inner {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    }
+  }
+</style>

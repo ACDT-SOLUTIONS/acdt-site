@@ -1,0 +1,173 @@
+---
+import { getCollection } from 'astro:content';
+import MiniFlow from './MiniFlow.astro';
+
+interface Props {
+  /** Limiter à certaines familles ; toutes par défaut. */
+  ids?: string[];
+}
+
+const { ids } = Astro.props;
+const solutions = (await getCollection('solutions', (s) => !ids || ids.includes(s.id))).sort((a, b) =>
+  a.data.numero.localeCompare(b.data.numero),
+);
+---
+
+<ol class="families">
+  {
+    solutions.map((s) => (
+      <li class="family">
+        <div class="family__intro">
+          <p class="family__numero mono" aria-hidden="true">
+            {s.data.numero}
+          </p>
+          <div class="family__text">
+            <h3>
+              <a href={`/solutions/${s.id}/`}>{s.data.titre}</a>
+            </h3>
+            <p class="family__accroche">{s.data.accroche}</p>
+            <p class="family__description">{s.data.description}</p>
+            {s.data.mention && (
+              <p class="family__mention">
+                <span class="mono">Sous réserve</span> {s.data.mention}
+              </p>
+            )}
+            <a class="family__lien mono" href={`/solutions/${s.id}/`}>
+              Découvrir cette solution <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="family__detail">
+          <MiniFlow etapes={s.data.flux} label={`Exemple de flux : ${s.data.titre}`} />
+          <ul class="family__capacites" aria-label="Ce que couvre cette famille">
+            {s.data.capacites.map((c) => (
+              <li>{c}</li>
+            ))}
+          </ul>
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .families {
+    display: grid;
+    padding: 0;
+    list-style: none;
+  }
+
+  .family {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-7);
+    border-top: 1px solid var(--color-line-strong);
+  }
+
+  .family__intro {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  .family__numero {
+    font-size: var(--step-3);
+    line-height: 1;
+    color: var(--color-text-subtle);
+  }
+
+  .family__text {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  h3 {
+    font-size: var(--step-2);
+  }
+
+  h3 a {
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size var(--duration-base) var(--ease-out);
+  }
+
+  h3 a:hover {
+    background-size: 100% 1px;
+  }
+
+  .family__accroche {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-style: italic;
+    line-height: 1.35;
+    color: var(--color-accent);
+  }
+
+  .family__description {
+    max-width: 36rem;
+    color: var(--color-text-muted);
+  }
+
+  .family__mention {
+    max-width: 36rem;
+    padding: var(--space-3) var(--space-4);
+    border-left: 2px solid var(--color-signal);
+    background: var(--color-surface);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .family__mention .mono {
+    display: block;
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  .family__lien {
+    justify-self: start;
+    margin-top: var(--space-2);
+    font-size: var(--step--1);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .family__lien:hover {
+    text-decoration: underline;
+  }
+
+  .family__detail {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+  }
+
+  .family__capacites {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .family__capacites li {
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .family {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: var(--space-8);
+    }
+  }
+</style>

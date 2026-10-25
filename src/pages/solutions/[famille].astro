@@ -1,0 +1,389 @@
+---
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Button from '@/components/ui/Button.astro';
+import Callout from '@/components/ui/Callout.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import ProblemList from '@/components/content/ProblemList.astro';
+import MiniFlow from '@/components/content/MiniFlow.astro';
+import SectorCards from '@/components/content/SectorCards.astro';
+import CaseCards from '@/components/content/CaseCards.astro';
+import FaqSection from '@/components/content/FaqSection.astro';
+import FlowIllustration from '@/components/home/FlowIllustration.astro';
+import IssueCards from '@/components/solution/IssueCards.astro';
+import ServiceCards from '@/components/solution/ServiceCards.astro';
+import ModeTabs from '@/components/solution/ModeTabs.astro';
+import ProcessSteps from '@/components/solution/ProcessSteps.astro';
+import DemoCall from '@/components/solution/DemoCall.astro';
+import BenefitGrid from '@/components/solution/BenefitGrid.astro';
+import Timeline from '@/components/solution/Timeline.astro';
+import QuoteNote from '@/components/solution/QuoteNote.astro';
+import ConfidentialityNote from '@/components/solution/ConfidentialityNote.astro';
+import { ctaPrincipal } from '@/config/site';
+
+export async function getStaticPaths() {
+  const solutions = await getCollection('solutions');
+  return solutions.map((solution) => ({ params: { famille: solution.id }, props: { solution } }));
+}
+
+interface Props {
+  solution: CollectionEntry<'solutions'>;
+}
+
+const { solution } = Astro.props;
+const s = solution.data;
+
+// Rédaction détaillée (src/content/pages-solutions/<famille>.yaml). Chaque section absente reste « À rédiger ».
+const p = (await getEntry('pagesSolutions', solution.id))?.data;
+const nbCas = (await getCollection('simulations', (c) => c.data.famille.id === solution.id)).length;
+
+// Numérotation des sections selon celles réellement affichées.
+// Sans rédaction, « accompagnement » partage la section des bénéfices ; avec rédaction, il a sa propre frise.
+const sections = [
+  'problemes',
+  'prestations',
+  p?.modes ? 'modes' : null,
+  'fonctionnement',
+  'benefices',
+  !p ? 'accompagnement' : null,
+  'secteurs',
+  !p || nbCas > 0 ? 'cas' : null,
+  p?.accompagnement ? 'accompagnement' : null,
+  'faq',
+].filter((cle): cle is string => cle !== null);
+const idx = (cle: string) => String(sections.indexOf(cle) + 1).padStart(2, '0');
+
+const textesSecteurs = p?.secteurs
+  ? Object.fromEntries(p.secteurs.items.map((i) => [i.secteur.id, i.texte]))
+  : undefined;
+---
+
+<BaseLayout title={s.titre} description={p?.hero.accroche ?? s.accroche}>
+  <PageHero
+    eyebrow="Solution"
+    numero={s.numero}
+    breadcrumbs={[
+      { label: 'Solutions', href: '/solutions/' },
+      { label: s.titre, href: `/solutions/${solution.id}/` },
+    ]}
+  >
+    <Fragment slot="title">{s.titre}</Fragment>
+    <p class="accroche">{p?.hero.accroche ?? s.accroche}</p>
+    {
+      p ? (
+        <>
+          <p>{p.hero.contexte}</p>
+          <p class="promesse">{p.hero.promesse}</p>
+        </>
+      ) : (
+        <p>{s.description}</p>
+      )
+    }
+    {
+      s.mention && (
+        <p class="mention">
+          <span class="mono">Sous réserve</span> {s.mention}
+        </p>
+      )
+    }
+    <Fragment slot="actions">
+      <Button href={ctaPrincipal.href} arrow>{ctaPrincipal.label}</Button>
+      {
+        p?.hero.cta ? (
+          <Button href={p.hero.cta.href} variant="secondary">{p.hero.cta.label}</Button>
+        ) : (
+          <Button href="#cas" variant="secondary">Voir les cas pratiques</Button>
+        )
+      }
+    </Fragment>
+    <div slot="aside">
+      {
+        solution.id === 'accueil-telephonique-ia' ? (
+          <FlowIllustration />
+        ) : (
+          <MiniFlow etapes={s.flux} label={`Exemple de flux : ${s.titre}`} />
+        )
+      }
+    </div>
+  </PageHero>
+
+  <!-- Problèmes résolus -->
+  <Section labelledby="problemes-titre">
+    <SectionHeader eyebrow="Problèmes résolus" index={idx('problemes')} align="split" id="problemes-titre">
+      <Fragment slot="title">{p?.problemes?.titre ?? 'Les situations que nous traitons.'}</Fragment>
+      {p?.problemes?.lead}
+    </SectionHeader>
+    {
+      p?.problemes ? (
+        <>
+          <IssueCards items={p.problemes.items} />
+          {p.problemes.complement && (
+            <div class="bloc-suivant">
+              <Callout titre={p.problemes.complement.titre} texte={p.problemes.complement.texte} />
+            </div>
+          )}
+        </>
+      ) : (
+        <ProblemList famille={solution.id} afficherFamille={false} />
+      )
+    }
+  </Section>
+
+  <!-- Prestations -->
+  <Section tone="sunken" labelledby="prestations-titre">
+    <SectionHeader eyebrow="Prestations" index={idx('prestations')} align="split" id="prestations-titre">
+      <Fragment slot="title">{p?.prestations?.titre ?? 'Ce que couvre cette solution.'}</Fragment>
+      {p?.prestations?.lead}
+    </SectionHeader>
+    {
+      p?.prestations ? (
+        <ServiceCards items={p.prestations.items} />
+      ) : (
+        <ol class="prestations">
+          {s.capacites.map((c, i) => (
+            <li>
+              <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+              {c}
+            </li>
+          ))}
+        </ol>
+      )
+    }
+  </Section>
+
+  <!-- Modes de fonctionnement -->
+  {
+    p?.modes && (
+      <Section labelledby="modes-titre" id="modes">
+        <SectionHeader eyebrow="Modes de fonctionnement" index={idx('modes')} id="modes-titre">
+          <Fragment slot="title">{p.modes.titre}</Fragment>
+        </SectionHeader>
+        <ModeTabs items={p.modes.items} note={p.modes.note} />
+      </Section>
+    )
+  }
+
+  <!-- Fonctionnement -->
+  <Section tone={p?.modes ? 'sunken' : 'default'} labelledby="processus-titre">
+    <SectionHeader eyebrow="Comment cela fonctionne" index={idx('fonctionnement')} align="split" id="processus-titre">
+      <Fragment slot="title">{p?.fonctionnement?.titre ?? 'Comment cela fonctionne.'}</Fragment>
+      {p?.fonctionnement?.lead}
+    </SectionHeader>
+    {
+      p?.fonctionnement ? (
+        <>
+          <ProcessSteps etapes={p.fonctionnement.etapes} label="Étapes de traitement d'un appel" />
+          {p.fonctionnement.conclusion && (
+            <div class="bloc-suivant">
+              <Callout fort={p.fonctionnement.conclusion} />
+            </div>
+          )}
+        </>
+      ) : (
+        <div class="processus">
+          <MiniFlow etapes={s.flux} label={`Exemple de flux : ${s.titre}`} />
+          <Placeholder label="À documenter">Autres exemples de processus automatisés, avec leur diagramme.</Placeholder>
+        </div>
+      )
+    }
+  </Section>
+
+  <!-- Démonstration -->
+  {p?.demo && <DemoCall demo={p.demo} />}
+
+  <!-- Bénéfices potentiels -->
+  {
+    p?.benefices ? (
+      <Section labelledby="benefices-titre">
+        <SectionHeader eyebrow="Bénéfices potentiels" index={idx('benefices')} id="benefices-titre">
+          <Fragment slot="title">{p.benefices.titre}</Fragment>
+        </SectionHeader>
+        <BenefitGrid items={p.benefices.items} />
+        {p.benefices.evaluation && (
+          <div class="bloc-suivant">
+            <Callout
+              titre={p.benefices.evaluation.titre}
+              texte={p.benefices.evaluation.texte}
+              fort={p.benefices.evaluation.fort}
+              tone="neutre"
+            />
+          </div>
+        )}
+      </Section>
+    ) : (
+      <Section tone="sunken" labelledby="benefices-titre">
+        <div class="duo">
+          <div>
+            <SectionHeader eyebrow="Bénéfices potentiels" index={idx('benefices')} id="benefices-titre">
+              <Fragment slot="title">Ce que vous pouvez en attendre.</Fragment>
+            </SectionHeader>
+            <Placeholder>Bénéfices potentiels, formulés sans promesse de résultat et renvoyant aux cas pratiques.</Placeholder>
+          </div>
+          <div>
+            <SectionHeader eyebrow="Accompagnement" index={idx('accompagnement')} id="modalites-titre">
+              <Fragment slot="title">Comment nous travaillons.</Fragment>
+            </SectionHeader>
+            <Placeholder>
+              Modalités d'accompagnement propres à cette solution. <a href="/methode/">Voir la méthode générale</a>.
+            </Placeholder>
+          </div>
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- Secteurs concernés -->
+  <Section tone={p ? 'sunken' : 'default'} labelledby="secteurs-titre">
+    <SectionHeader eyebrow="Secteurs concernés" index={idx('secteurs')} id="secteurs-titre">
+      <Fragment slot="title">{p?.secteurs?.titre ?? 'Pour quels métiers.'}</Fragment>
+    </SectionHeader>
+    <SectorCards famille={solution.id} textes={textesSecteurs} />
+    {
+      p?.secteurs?.conclusion && (
+        <div class="bloc-suivant">
+          <Callout fort={p.secteurs.conclusion} />
+        </div>
+      )
+    }
+  </Section>
+
+  <!-- Cas pratiques -->
+  {
+    sections.includes('cas') && (
+      <Section labelledby="cas-titre" id="cas">
+        <SectionHeader eyebrow="Cas pratiques" index={idx('cas')} id="cas-titre">
+          <Fragment slot="title">Exemples chiffrés.</Fragment>
+        </SectionHeader>
+        <CaseCards famille={solution.id} />
+      </Section>
+    )
+  }
+
+  <!-- Accompagnement -->
+  {
+    p?.accompagnement && (
+      <Section labelledby="accompagnement-titre">
+        <SectionHeader
+          eyebrow="Un déploiement adapté à vos outils"
+          index={idx('accompagnement')}
+          id="accompagnement-titre"
+        >
+          <Fragment slot="title">{p.accompagnement.titre}</Fragment>
+        </SectionHeader>
+        <Timeline etapes={p.accompagnement.etapes} label="Étapes de l'accompagnement" />
+        {p.accompagnement.devis && (
+          <div class="bloc-suivant bloc-suivant--large">
+            <QuoteNote devis={p.accompagnement.devis} />
+          </div>
+        )}
+      </Section>
+    )
+  }
+
+  <!-- FAQ (et confidentialité si rédigée) -->
+  <FaqSection index={idx('faq')} eyebrow={p?.confidentialite ? 'Questions fréquentes et confidentialité' : undefined}>
+    {p?.confidentialite && <ConfidentialityNote confidentialite={p.confidentialite} />}
+  </FaqSection>
+
+  {
+    p?.cta ? (
+      <CtaBand eyebrow="Étude personnalisée" secondaire={p.cta.secondaire}>
+        <Fragment slot="title">{p.cta.titre}</Fragment>
+        {p.cta.texte}
+      </CtaBand>
+    ) : (
+      <CtaBand />
+    )
+  }
+</BaseLayout>
+
+<style>
+  .accroche {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--step-2);
+    line-height: 1.25;
+    color: var(--color-accent);
+  }
+
+  .accroche + p {
+    margin-top: var(--space-3);
+  }
+
+  .promesse {
+    margin-top: var(--space-3);
+    font-weight: 560;
+    color: var(--color-text);
+  }
+
+  .mention {
+    margin-top: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-left: 2px solid var(--color-signal);
+    background: var(--color-surface);
+    font-size: var(--step--1);
+  }
+
+  .mention .mono {
+    display: block;
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  .bloc-suivant {
+    margin-top: var(--space-6);
+  }
+
+  .bloc-suivant--large {
+    margin-top: var(--space-8);
+  }
+
+  .prestations {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .prestations li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    font-size: var(--step-1);
+    font-weight: 520;
+    line-height: 1.3;
+  }
+
+  .prestations .mono {
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--color-text-subtle);
+  }
+
+  .processus {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .duo {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 64rem) {
+    .duo {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

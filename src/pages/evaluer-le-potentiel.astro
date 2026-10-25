@@ -1,0 +1,42 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import Calculator from '@/components/simulation/Calculator.astro';
+import FaqSection from '@/components/content/FaqSection.astro';
+import { lienEvaluation } from '@/config/site';
+import { scenarioMisEnAvant } from '@/lib/simulations';
+
+const data = await scenarioMisEnAvant();
+---
+
+<BaseLayout title={lienEvaluation.label} description="Estimez le potentiel d'automatisation d'une tâche à partir de vos propres hypothèses.">
+  <PageHero eyebrow="Outil d'évaluation" breadcrumbs={[{ label: lienEvaluation.label, href: lienEvaluation.href }]}>
+    <Fragment slot="title">Évaluer le potentiel <em class="accent">d'automatisation.</em></Fragment>
+    Partez d'un scénario documenté et remplacez ses hypothèses par celles de votre activité.
+  </PageHero>
+
+  <Section tone="inverse" labelledby="calc-titre">
+    <Calculator data={data} />
+  </Section>
+
+  <Section labelledby="lecture-titre">
+    <SectionHeader eyebrow="Mode d'emploi" index="01" id="lecture-titre">
+      <Fragment slot="title">Lire les résultats.</Fragment>
+    </SectionHeader>
+    <Placeholder>
+      Explication des quatre notions (temps libéré, temps valorisé, économies effectives, retour sur investissement
+      net) et de la manière de choisir ses hypothèses.
+    </Placeholder>
+  </Section>
+
+  <FaqSection index="02" />
+
+  <CtaBand>
+    <Fragment slot="title">Faire analyser <em class="accent">votre situation.</em></Fragment>
+    Une estimation reste une estimation. Lors de l'analyse, nous mesurons vos volumes et vos coûts réels.
+  </CtaBand>
+</BaseLayout>

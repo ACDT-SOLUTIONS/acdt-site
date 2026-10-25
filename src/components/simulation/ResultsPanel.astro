@@ -1,0 +1,234 @@
+---
+import { FORMULES } from '@/lib/roi/engine';
+import { formatEuros, formatHeures, formatMois, formatPourcent } from '@/lib/roi/format';
+import type { ScenarioCharge } from '@/lib/simulations';
+
+interface Props {
+  data: ScenarioCharge;
+}
+
+// Les attributs data-out / data-bar permettent à l'outil d'évaluation de mettre ces valeurs à jour.
+const { base, resultat: r } = Astro.props.data;
+const apresReaffectation = r.tempsValoriseParMois * base.tauxReaffectation;
+const ratio = (v: number) => `${Math.max(0, Math.min(100, (v / (r.tempsValoriseParMois || 1)) * 100))}%`;
+---
+
+<div class="results">
+  <ol class="metrics">
+    <li class="metric">
+      <p class="metric__label"><span class="mono">1</span> Temps libéré</p>
+      <p class="metric__value mono">
+        <span data-out="heuresLibereesParMois">{formatHeures(r.heuresLibereesParMois)}</span><small> / mois</small>
+      </p>
+      <p class="metric__def">Heures qui ne sont plus consacrées à la tâche.</p>
+      <p class="metric__formule mono">{FORMULES.tempsLibere}</p>
+    </li>
+    <li class="metric">
+      <p class="metric__label">
+        <span class="mono">2</span> Temps valorisé <span class="metric__badge mono">valeur théorique</span>
+      </p>
+      <p class="metric__value mono">
+        <span data-out="tempsValoriseParMois">{formatEuros(r.tempsValoriseParMois)}</span><small> / mois</small>
+      </p>
+      <p class="metric__def">Ce que représentent ces heures au coût horaire chargé. Ce n'est pas encore une économie.</p>
+      <p class="metric__formule mono">{FORMULES.tempsValorise}</p>
+    </li>
+    <li class="metric metric--key">
+      <p class="metric__label"><span class="mono">3</span> Économies effectives</p>
+      <p class="metric__value mono">
+        <span data-out="economiesEffectivesParMois">{formatEuros(r.economiesEffectivesParMois)}</span><small> / mois</small>
+      </p>
+      <p class="metric__def">La part réellement récupérée, une fois les coûts récurrents déduits.</p>
+      <p class="metric__formule mono">{FORMULES.economiesEffectives}</p>
+    </li>
+    <li class="metric metric--key">
+      <p class="metric__label"><span class="mono">4</span> Retour sur investissement net</p>
+      <p class="metric__value mono">
+        <span data-out="gainNetSurHorizon">{formatEuros(r.gainNetSurHorizon)}</span>
+        <small class="metric__horizon">sur {base.horizonMois} mois</small>
+      </p>
+      <p class="metric__def">
+        Soit <strong class="mono" data-out="roiNet">{formatPourcent(r.roiNet)}</strong> de l'investissement initial.
+        Délai de retour : <strong class="mono" data-out="delaiRetourMois">{formatMois(r.delaiRetourMois)}</strong>.
+      </p>
+      <p class="metric__formule mono">{FORMULES.gainNet}</p>
+    </li>
+  </ol>
+
+  <figure class="cascade" aria-label="Du temps valorisé aux économies effectives, par mois">
+    <div class="cascade__row">
+      <span class="cascade__label">Temps valorisé</span>
+      <span class="cascade__bar"><span style={`width: ${ratio(r.tempsValoriseParMois)}`} data-bar="valorise"></span></span>
+      <span class="cascade__val mono" data-out="tempsValoriseParMois">{formatEuros(r.tempsValoriseParMois)}</span>
+    </div>
+    <div class="cascade__row">
+      <span class="cascade__label">Après réaffectation</span>
+      <span class="cascade__bar"><span style={`width: ${ratio(apresReaffectation)}`} data-bar="reaffecte"></span></span>
+      <span class="cascade__val mono" data-out="apresReaffectation">{formatEuros(apresReaffectation)}</span>
+    </div>
+    <div class="cascade__row cascade__row--final">
+      <span class="cascade__label">Après coûts récurrents</span>
+      <span class="cascade__bar">
+        <span style={`width: ${ratio(r.economiesEffectivesParMois)}`} data-bar="effectives"></span>
+      </span>
+      <span class="cascade__val mono" data-out="economiesEffectivesParMois">{formatEuros(r.economiesEffectivesParMois)}</span>
+    </div>
+  </figure>
+</div>
+
+<style>
+  .metrics {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1px;
+    padding: 0;
+    border: 1px solid var(--color-inverse-line);
+    border-radius: var(--radius-m);
+    background: var(--color-inverse-line);
+    list-style: none;
+    overflow: hidden;
+  }
+
+  .metric {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--color-inverse-surface);
+  }
+
+  .metric--key {
+    background: color-mix(in srgb, var(--pine-700) 22%, var(--color-inverse-surface));
+  }
+
+  .metric__label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--step--1);
+    color: var(--color-inverse-muted);
+  }
+
+  .metric__label > .mono {
+    display: inline-grid;
+    place-items: center;
+    width: 1.3rem;
+    height: 1.3rem;
+    border: 1px solid var(--color-inverse-line);
+    border-radius: 50%;
+    font-size: 0.68rem;
+  }
+
+  .metric__badge {
+    padding: 0.05rem 0.4rem;
+    border: 1px dashed var(--ink-500);
+    border-radius: var(--radius-s);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .metric__value {
+    font-size: var(--step-3);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-inverse-text);
+  }
+
+  .metric--key .metric__value {
+    color: var(--pine-300);
+  }
+
+  :global(simulation-gains[data-negatif]) .metric--key .metric__value {
+    color: var(--signal-300);
+  }
+
+  .metric__value small {
+    font-size: var(--step--1);
+    letter-spacing: 0;
+    color: var(--color-inverse-muted);
+  }
+
+  .metric__value small.metric__horizon {
+    display: block;
+    margin-top: var(--space-1);
+  }
+
+  .metric__def {
+    font-size: var(--step--1);
+    color: var(--color-inverse-muted);
+  }
+
+  .metric__def strong {
+    font-weight: 500;
+    color: var(--color-inverse-text);
+  }
+
+  .metric__formule {
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-inverse-line);
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: var(--ink-400);
+  }
+
+  .cascade {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  .cascade__row {
+    display: grid;
+    grid-template-columns: 9.5rem minmax(0, 1fr) 5.5rem;
+    gap: var(--space-3);
+    align-items: center;
+    font-size: var(--step--2);
+  }
+
+  .cascade__label {
+    color: var(--color-inverse-muted);
+  }
+
+  .cascade__bar {
+    height: 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--ink-700);
+    overflow: hidden;
+  }
+
+  .cascade__bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--ink-400);
+    transition: width var(--duration-base) var(--ease-out);
+  }
+
+  .cascade__row--final .cascade__bar span {
+    background: var(--pine-300);
+  }
+
+  .cascade__val {
+    text-align: right;
+  }
+
+  @media (min-width: 36rem) {
+    .metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .cascade__row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .cascade__bar {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+</style>

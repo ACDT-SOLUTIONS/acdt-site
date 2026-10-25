@@ -1,0 +1,59 @@
+---
+interface Props {
+  confidentialite: { titre: string; sousTitre: string; points: string[] };
+}
+
+const { titre, sousTitre, points } = Astro.props.confidentialite;
+---
+
+<aside class="confidentialite" aria-labelledby="confidentialite-titre">
+  <p class="confidentialite__titre mono" id="confidentialite-titre">{titre}</p>
+  <p class="confidentialite__sous-titre">{sousTitre}</p>
+  <ul>
+    {points.map((p) => <li>{p}</li>)}
+  </ul>
+</aside>
+
+<style>
+  .confidentialite {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border-radius: var(--radius-l);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-muted);
+  }
+
+  .confidentialite__titre {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--signal-300);
+  }
+
+  .confidentialite__sous-titre {
+    font-size: var(--step-1);
+    font-weight: 560;
+    line-height: 1.3;
+    color: var(--color-inverse-text);
+  }
+
+  ul {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  li::before {
+    content: '—';
+    color: var(--ink-400);
+  }
+</style>

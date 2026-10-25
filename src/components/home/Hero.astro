@@ -1,0 +1,158 @@
+---
+import Button from '@/components/ui/Button.astro';
+import FlowIllustration from './FlowIllustration.astro';
+import { ctaPrincipal } from '@/config/site';
+import { scenarioMisEnAvant } from '@/lib/simulations';
+
+const { scenario } = await scenarioMisEnAvant();
+
+const engagements = [
+  { label: 'Sur devis', detail: 'après analyse de votre situation' },
+  { label: 'Chiffres justifiés', detail: 'hypothèses, formules et sources publiées' },
+  { label: 'Vos outils', detail: 'conservés en priorité' },
+];
+---
+
+<section class="hero" aria-labelledby="hero-titre">
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      <p class="hero__eyebrow mono">Automatisation · IA appliquée · Infrastructure privée</p>
+      <h1 id="hero-titre">
+        Automatiser ce qui vous coûte du temps, <em class="accent">et le prouver en&nbsp;chiffres.</em>
+      </h1>
+      <p class="hero__lead">
+        ACDT Solutions analyse vos problèmes métier, conçoit des automatisations adaptées à vos outils et mesure
+        leurs résultats. Pour les cabinets d'avocats, les TPE-PME, les artisans et les entreprises de services.
+      </p>
+      <div class="hero__actions">
+        <Button href={ctaPrincipal.href} size="l" arrow>{ctaPrincipal.label}</Button>
+        <Button href={`/cas-pratiques/${scenario.id}/`} variant="secondary" size="l">
+          Découvrir un cas pratique chiffré
+        </Button>
+      </div>
+      <dl class="hero__facts">
+        {
+          engagements.map((e) => (
+            <div>
+              <dt class="mono">{e.label}</dt>
+              <dd>{e.detail}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <div class="hero__visual">
+      <FlowIllustration />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(var(--space-7), 6vw, var(--space-9)) var(--space-section);
+    isolation: isolate;
+  }
+
+  /* Trame millimétrée discrète, estompée vers les bords */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+    background-size: 3.5rem 3.5rem;
+    mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, #000 20%, transparent 75%);
+    opacity: 0.7;
+  }
+
+  .hero__inner {
+    display: grid;
+    gap: clamp(var(--space-7), 6vw, var(--space-9));
+    align-items: center;
+  }
+
+  .hero__inner > * {
+    min-width: 0;
+  }
+
+  .hero__copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+
+  .hero__eyebrow {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  h1 {
+    max-width: 16ch;
+    font-size: var(--step-5);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+
+  h1 .accent {
+    color: var(--color-accent);
+  }
+
+  .hero__lead {
+    max-width: 36rem;
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
+
+  .hero__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: var(--space-4);
+    max-width: 40rem;
+    margin-top: var(--space-4);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .hero__facts dt {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text);
+  }
+
+  .hero__facts dd {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 30rem) {
+    .hero__actions :global(.button) {
+      width: 100%;
+      white-space: normal;
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    }
+  }
+</style>

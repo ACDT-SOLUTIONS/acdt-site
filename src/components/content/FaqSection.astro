@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import JsonLd from '@/components/seo/JsonLd.astro';
+import Faq from './Faq.astro';
+
+interface Props {
+  index?: string;
+  eyebrow?: string;
+}
+
+// Questions dont `pages` contient le chemin de la page courante. Rien n'est rendu s'il n'y en a pas.
+// Slot « title » : titre de section ; slot par défaut : contenu complémentaire sous le titre (ex. encadré).
+const { index, eyebrow = 'Questions fréquentes' } = Astro.props;
+const chemin = Astro.url.pathname;
+const questions = (await getCollection('faq', (q) => q.data.pages.includes(chemin))).sort(
+  (a, b) => a.data.ordre - b.data.ordre,
+);
+
+const data = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: questions.map((q) => ({
+    '@type': 'Question',
+    name: q.data.question,
+    acceptedAnswer: { '@type': 'Answer', text: q.data.reponse },
+  })),
+};
+---
+
+{
+  questions.length > 0 && (
+    <Section labelledby="faq-titre">
+      <div class="faq-layout">
+        <div class="faq-layout__aside">
+          <SectionHeader eyebrow={eyebrow} index={index} id="faq-titre">
+            <Fragment slot="title">{Astro.slots.has('title') ? <slot name="title" /> : 'Vos questions.'}</Fragment>
+          </SectionHeader>
+          <slot />
+        </div>
+        <Faq questions={questions} />
+      </div>
+      <JsonLd data={data} />
+    </Section>
+  )
+}
+
+<style>
+  .faq-layout {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .faq-layout > * {
+    min-width: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .faq-layout {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
+      gap: var(--space-8);
+      align-items: start;
+    }
+  }
+</style>

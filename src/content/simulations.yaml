@@ -1,0 +1,48 @@
+- id: avocats-relances-pieces
+  titre: Relance automatique des pièces clients
+  secteur: cabinets-avocats
+  famille: automatisation-administrative
+  miseEnAvant: true
+  contexte: >-
+    Scénario d'automatisation pour un cabinet qui ouvre une trentaine de nouveaux dossiers par mois
+    et relance chaque client en moyenne quatre fois pour obtenir ses pièces.
+  parametres:
+    occurrencesParMois: 120
+    minutesParOccurrence: 6
+    tauxAutomatisation: 0.8
+    coutHoraireCharge: 38
+    tauxReaffectation: 0.5
+    coutsRecurrentsMensuels: 45
+    investissementInitial: 1800
+    horizonMois: 24
+  justifications:
+    occurrencesParMois:
+      origine: hypothese
+      note: 30 dossiers × 4 relances. À remplacer par vos volumes réels.
+    minutesParOccurrence:
+      origine: hypothese
+      note: Rédaction, envoi et mise à jour du suivi pour une relance.
+    tauxAutomatisation:
+      origine: hypothese
+      note: 20 % des relances restent traitées à la main (cas particuliers).
+    coutHoraireCharge:
+      origine: source
+      source: cout-horaire-main-oeuvre
+      note: Hypothèse de travail en attendant la source vérifiée.
+    tauxReaffectation:
+      origine: hypothese
+      note: Hypothèse prudente — la moitié du temps libéré seulement est réellement réemployée.
+    coutsRecurrentsMensuels:
+      origine: hypothese
+      note: Hébergement, abonnements et maintenance courante.
+    investissementInitial:
+      origine: hypothese
+      note: Montant fictif pour la simulation. Ce n'est ni un tarif ni un devis.
+    horizonMois:
+      origine: hypothese
+      note: Durée retenue pour l'analyse.
+  limites:
+    - Ce scénario est une simulation ; il ne décrit pas le résultat d'un client réel.
+    - Le temps libéré ne devient une économie que s'il est réaffecté à une activité utile ou évite un coût.
+    - L'investissement initial est fictif ; le coût réel n'est connu qu'après analyse et devis.
+    - La conduite du changement et les évolutions futures ne sont pas chiffrées ici.

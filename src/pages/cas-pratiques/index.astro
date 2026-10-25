@@ -1,0 +1,121 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Button from '@/components/ui/Button.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import CaseCards from '@/components/content/CaseCards.astro';
+import FaqSection from '@/components/content/FaqSection.astro';
+import { lienEvaluation } from '@/config/site';
+
+const principes = [
+  { titre: 'Hypothèses explicites', texte: 'Chaque paramètre indique sa valeur et son origine.' },
+  { titre: 'Formules publiées', texte: 'Le calcul est affiché, étape par étape.' },
+  { titre: 'Sources vérifiables', texte: 'Les références externes sont citées et datées.' },
+  { titre: 'Limites affichées', texte: "Ce que l'estimation ne couvre pas est écrit noir sur blanc." },
+];
+---
+
+<BaseLayout title="Cas pratiques" description="Des scénarios d'automatisation chiffrés et documentés.">
+  <PageHero eyebrow="Cas pratiques" breadcrumbs={[{ label: 'Cas pratiques', href: '/cas-pratiques/' }]}>
+    <Fragment slot="title">Des scénarios chiffrés, <em class="accent">hypothèses à l'appui.</em></Fragment>
+    Ces cas pratiques sont des scénarios d'automatisation. Ils ne présentent pas les résultats de clients.
+  </PageHero>
+
+  <Section labelledby="demarche-titre">
+    <SectionHeader eyebrow="Notre démarche" index="01" id="demarche-titre">
+      <Fragment slot="title">Comment nous chiffrons.</Fragment>
+    </SectionHeader>
+    <ul class="principes">
+      {
+        principes.map((p) => (
+          <li>
+            <h3>{p.titre}</h3>
+            <p>{p.texte}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section tone="sunken" labelledby="liste-titre">
+    <SectionHeader eyebrow="Scénarios" index="02" id="liste-titre">
+      <Fragment slot="title">Tous les cas pratiques.</Fragment>
+    </SectionHeader>
+    <CaseCards />
+  </Section>
+
+  <Section labelledby="outil-titre">
+    <div class="outil">
+      <div>
+        <p class="outil__eyebrow mono">Outil</p>
+        <h2 id="outil-titre">Testez vos propres hypothèses.</h2>
+        <p>Reprenez un scénario et remplacez ses valeurs par celles de votre activité.</p>
+      </div>
+      <Button href={lienEvaluation.href} arrow>{lienEvaluation.label}</Button>
+    </div>
+  </Section>
+
+  <FaqSection index="03" />
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .principes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .principes li {
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 2px solid var(--color-text);
+  }
+
+  .principes h3 {
+    font-size: var(--step-1);
+  }
+
+  .principes p {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .outil {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+
+  .outil__eyebrow {
+    margin-bottom: var(--space-2);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  .outil h2 {
+    margin-bottom: var(--space-2);
+    font-size: var(--step-2);
+  }
+
+  .outil p {
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .outil {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+</style>

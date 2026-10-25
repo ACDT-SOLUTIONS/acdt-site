@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import { liensLegaux, type LienNav } from '@/config/site';
+
+// Une page par lien légal du pied de page ; le contenu sera repris et mis à jour séparément.
+export function getStaticPaths() {
+  return liensLegaux.map((lien) => ({ params: { legal: lien.href.replaceAll('/', '') }, props: { lien } }));
+}
+
+interface Props {
+  lien: LienNav;
+}
+
+const { lien } = Astro.props;
+---
+
+<BaseLayout title={lien.label} description={`${lien.label} — ACDT Solutions.`}>
+  <PageHero eyebrow="Informations légales" breadcrumbs={[lien]}>
+    <Fragment slot="title">{lien.label}</Fragment>
+  </PageHero>
+
+  <Section>
+    <div class="legal">
+      <Placeholder>Contenu juridique à reprendre et à mettre à jour.</Placeholder>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .legal {
+    max-width: var(--container-narrow);
+  }
+</style>

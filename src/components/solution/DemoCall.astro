@@ -1,0 +1,407 @@
+---
+import Button from '@/components/ui/Button.astro';
+
+interface Props {
+  demo: {
+    titre: string;
+    accroche: string;
+    intro: string;
+    numero: string;
+    tel: string;
+    scenario: { titre: string; texte: string[] };
+    duree: string;
+    avertissement: string;
+    etapes: string[];
+    remarque?: string;
+    suite: { texte: string; cta: { label: string; href: string } };
+  };
+}
+
+const { demo } = Astro.props;
+---
+
+<section class="demo" id="demonstration" aria-labelledby="demo-titre">
+  <div class="container">
+    <div class="demo__panel">
+      <div class="demo__intro">
+        <p class="demo__eyebrow mono">Démonstration</p>
+        <h2 id="demo-titre">{demo.titre}</h2>
+        <p class="demo__accroche">{demo.accroche}</p>
+        <p class="demo__texte">{demo.intro}</p>
+
+        <div class="demo__scenario">
+          <p class="demo__scenario-titre">{demo.scenario.titre}</p>
+          {demo.scenario.texte.map((t) => <p>{t}</p>)}
+        </div>
+      </div>
+
+      <div class="demo__appel">
+        <p class="demo__label mono">Numéro de démonstration</p>
+        <p class="demo__numero mono">{demo.numero}</p>
+
+        <div class="demo__actions">
+          <Button href={demo.tel} variant="inverse" size="l">
+            <svg class="demo__icone" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"
+                fill="currentColor"></path>
+            </svg>
+            Appeler la démonstration
+          </Button>
+          <copy-number data-numero={demo.numero.replaceAll(' ', '')}>
+            <button type="button" class="demo__copier" hidden>
+              <span data-libelle>Copier le numéro</span>
+            </button>
+            <span class="visually-hidden" role="status" data-statut></span>
+          </copy-number>
+        </div>
+
+        <ul class="demo__meta mono">
+          <li>Scénario fictif</li>
+          <li>Durée : {demo.duree}</li>
+        </ul>
+
+        <p class="demo__avertissement" role="note">
+          <span class="mono">Important</span>
+          {demo.avertissement}
+        </p>
+
+        <details class="demo__guide">
+          <summary>
+            Comment tester ? <span aria-hidden="true">+</span>
+          </summary>
+          <ol>
+            {demo.etapes.map((e) => <li>{e}</li>)}
+          </ol>
+          {demo.remarque && <p class="demo__remarque">{demo.remarque}</p>}
+        </details>
+      </div>
+
+      <div class="demo__suite">
+        <p>{demo.suite.texte}</p>
+        <a class="demo__suite-lien" href={demo.suite.cta.href}>
+          {demo.suite.cta.label} <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // API presse-papiers, limitée à une seconde (certains navigateurs ne répondent jamais), puis méthode de secours.
+  async function copier(texte: string): Promise<boolean> {
+    if (navigator.clipboard) {
+      try {
+        await Promise.race([
+          navigator.clipboard.writeText(texte),
+          new Promise((_, rejeter) => setTimeout(() => rejeter(new Error('délai dépassé')), 1000)),
+        ]);
+        return true;
+      } catch {
+        // on tente la méthode de secours
+      }
+    }
+    const zone = document.createElement('textarea');
+    zone.value = texte;
+    zone.setAttribute('readonly', '');
+    zone.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.append(zone);
+    zone.select();
+    const ok = document.execCommand('copy');
+    zone.remove();
+    return ok;
+  }
+
+  class CopyNumber extends HTMLElement {
+    connectedCallback() {
+      const bouton = this.querySelector<HTMLButtonElement>('button');
+      const libelle = this.querySelector('[data-libelle]');
+      const statut = this.querySelector('[data-statut]');
+      const numero = this.dataset.numero ?? '';
+      // Sans JavaScript, le bouton reste masqué : le numéro est de toute façon affiché.
+      if (!bouton || !libelle || !statut) return;
+      bouton.hidden = false;
+
+      let minuteur: number | undefined;
+      bouton.addEventListener('click', async () => {
+        if (await copier(numero)) {
+          libelle.textContent = 'Numéro copié';
+          statut.textContent = 'Numéro copié dans le presse-papiers.';
+        } else {
+          libelle.textContent = 'Copie impossible';
+          statut.textContent = 'La copie a échoué. Le numéro reste affiché à l’écran.';
+        }
+        window.clearTimeout(minuteur);
+        minuteur = window.setTimeout(() => {
+          libelle.textContent = 'Copier le numéro';
+          statut.textContent = '';
+        }, 2500);
+      });
+    }
+  }
+
+  customElements.define('copy-number', CopyNumber);
+</script>
+
+<style>
+  .demo {
+    padding-block: var(--space-section);
+  }
+
+  .demo__panel {
+    position: relative;
+    display: grid;
+    gap: var(--space-7);
+    padding: clamp(var(--space-6), 5vw, var(--space-8));
+    border-radius: var(--radius-l);
+    background: var(--pine-800);
+    color: var(--paper-50);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .demo__panel > * {
+    min-width: 0;
+  }
+
+  /* Trame du site, en négatif */
+  .demo__panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+    background-size: 3.5rem 3.5rem;
+    mask-image: radial-gradient(ellipse 50% 70% at 85% 30%, #000, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 50% 70% at 85% 30%, #000, transparent 70%);
+  }
+
+  .demo__intro {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .demo__eyebrow,
+  .demo__label {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pine-300);
+  }
+
+  h2 {
+    max-width: 18ch;
+    font-size: var(--step-4);
+  }
+
+  .demo__accroche {
+    font-family: var(--font-serif);
+    font-size: var(--step-2);
+    font-style: italic;
+    line-height: 1.2;
+    color: var(--pine-300);
+  }
+
+  .demo__texte {
+    max-width: 34rem;
+    color: var(--pine-100);
+  }
+
+  .demo__scenario {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 34rem;
+    margin-top: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: var(--radius-m);
+    background: rgb(0 0 0 / 0.15);
+    font-size: var(--step--1);
+    color: var(--pine-100);
+  }
+
+  .demo__scenario-titre {
+    font-size: var(--step-0);
+    font-weight: 600;
+    color: var(--paper-50);
+  }
+
+  .demo__appel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    align-content: start;
+    padding: var(--space-6);
+    border: 1px solid rgb(255 255 255 / 0.16);
+    border-radius: var(--radius-l);
+    background: color-mix(in srgb, var(--ink-950) 35%, var(--pine-800));
+  }
+
+  .demo__numero {
+    font-size: clamp(1.5rem, 7vw, 3.4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    color: var(--paper-0);
+  }
+
+  .demo__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .demo__icone {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.35rem;
+    vertical-align: -0.15em;
+  }
+
+  .demo__copier {
+    min-height: 3.25rem;
+    padding: 0.9rem 1.3rem;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    border-radius: var(--radius-pill);
+    background: none;
+    font-size: var(--step--1);
+    color: var(--paper-50);
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .demo__copier:hover {
+    border-color: var(--paper-50);
+  }
+
+  .demo__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .demo__meta li {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+    color: var(--pine-100);
+  }
+
+  .demo__avertissement {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border-left: 2px solid var(--signal-500);
+    border-radius: 0 var(--radius-m) var(--radius-m) 0;
+    background: rgb(0 0 0 / 0.22);
+    font-size: var(--step--1);
+    color: var(--paper-50);
+  }
+
+  .demo__avertissement .mono {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--signal-300);
+  }
+
+  .demo__guide {
+    border-top: 1px solid rgb(255 255 255 / 0.16);
+  }
+
+  .demo__guide summary {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--space-4);
+    font-weight: 560;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .demo__guide summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .demo__guide summary span {
+    color: var(--pine-300);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .demo__guide[open] summary span {
+    transform: rotate(45deg);
+  }
+
+  .demo__guide ol {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-left: 1.25rem;
+    font-size: var(--step--1);
+    color: var(--pine-100);
+  }
+
+  .demo__guide li::marker {
+    font-family: var(--font-mono);
+    color: var(--pine-300);
+  }
+
+  .demo__remarque {
+    margin-top: var(--space-3);
+    font-size: var(--step--2);
+    color: var(--pine-100);
+  }
+
+  .demo__suite {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+    border-top: 1px solid rgb(255 255 255 / 0.16);
+    color: var(--pine-100);
+  }
+
+  .demo__suite-lien {
+    font-weight: 560;
+    color: var(--paper-50);
+  }
+
+  .demo :focus-visible {
+    outline-color: var(--signal-300);
+  }
+
+  @media (max-width: 30rem) {
+    .demo__panel,
+    .demo__appel {
+      padding: var(--space-5);
+    }
+
+    .demo__actions :global(.button),
+    .demo__copier {
+      width: 100%;
+    }
+
+    .demo__actions copy-number {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .demo__panel {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: var(--space-8);
+    }
+
+    .demo__suite {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
