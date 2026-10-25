@@ -2,13 +2,18 @@
 import { getCollection } from 'astro:content';
 import Logo from './Logo.astro';
 import { ctaPrincipal, lienEvaluation, liensLegaux, site, type LienNav } from '@/config/site';
-import { lienVisible } from '@/lib/publication';
+import { lienEffectif } from '@/lib/publication';
 
 const solutions = (await getCollection('solutions')).sort((a, b) => a.data.numero.localeCompare(b.data.numero));
 const secteurs = (await getCollection('secteurs', (s) => s.data.publie)).sort((a, b) => a.data.ordre - b.data.ordre);
 const annee = new Date().getFullYear();
 
-const visibles = (liens: LienNav[]) => liens.filter((l) => lienVisible(l.href));
+// Lien vers la page publiée, ou vers l'ancienne page équivalente encore en ligne ; sinon retiré.
+const visibles = (liens: LienNav[]) =>
+  liens.flatMap((l) => {
+    const href = lienEffectif(l.href);
+    return href ? [{ ...l, href }] : [];
+  });
 
 // Colonnes construites à partir des seuls liens affichables ; une colonne vide disparaît.
 const colonnes = [
@@ -26,6 +31,7 @@ const colonnes = [
       { label: 'Cas pratiques', href: '/cas-pratiques/' },
       lienEvaluation,
       { label: 'Méthode', href: '/methode/' },
+      { label: 'Tarifs', href: '/tarifs/' },
       { label: 'Ressources', href: '/ressources/' },
       { label: 'À propos', href: '/a-propos/' },
       { label: 'Contact', href: '/contact/' },
@@ -51,7 +57,11 @@ const legaux = visibles(liensLegaux);
           colonnes.map((c) => (
             <div>
               <h2 class="mono">
-                {c.titre.href && lienVisible(c.titre.href) ? <a href={c.titre.href}>{c.titre.label}</a> : c.titre.label}
+                {c.titre.href && lienEffectif(c.titre.href) ? (
+                  <a href={lienEffectif(c.titre.href)}>{c.titre.label}</a>
+                ) : (
+                  c.titre.label
+                )}
               </h2>
               <ul>
                 {c.liens.map((l) => (

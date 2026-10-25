@@ -1,0 +1,116 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import FaqSection from '@/components/content/FaqSection.astro';
+import QuoteNote from '@/components/solution/QuoteNote.astro';
+import { lienVisible } from '@/lib/publication';
+
+// Ancienne URL conservée. Aucun prix : uniquement des textes déjà validés
+// (page permanence, CGV, FAQ « prix »), réutilisés depuis leurs sources.
+const permanence = await getEntry('pagesSolutions', 'accueil-telephonique-ia');
+const devisPermanence = permanence?.data.accompagnement?.devis;
+const lienPermanence = '/solutions/accueil-telephonique-ia/';
+
+// Extraits de l'article 2 et 3 des CGV.
+const engagements = [
+  "Toute prestation fera l'objet d'un devis détaillé, valable pour une durée de trente (30) jours.",
+  'Seules les prestations et les livrables mentionnés explicitement dans le devis signé font partie de la commande.',
+  'Les prix des prestations sont ceux figurant sur le devis. Ils sont entendus Hors Taxes (HT).',
+];
+---
+
+<BaseLayout
+  title="Tarifs"
+  description="Toutes les prestations d'ACDT Solutions sont sur devis, établi après analyse de vos besoins."
+>
+  <PageHero eyebrow="Tarifs" breadcrumbs={[{ label: 'Tarifs', href: '/tarifs/' }]}>
+    <Fragment slot="title">Des prestations <em class="accent">sur devis.</em></Fragment>
+  </PageHero>
+
+  <Section labelledby="devis-titre">
+    <SectionHeader eyebrow="Le devis" index="01" id="devis-titre">
+      <Fragment slot="title">Ce que précise le devis.</Fragment>
+    </SectionHeader>
+    <ul class="engagements">
+      {
+        engagements.map((e) => (
+          <li>
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 8.5 6.5 12 13 4.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+            </svg>
+            {e}
+          </li>
+        ))
+      }
+    </ul>
+    {
+      lienVisible('/conditions-generales-vente/') && (
+        <p class="renvoi">
+          Voir les <a href="/conditions-generales-vente/">conditions générales de vente</a>.
+        </p>
+      )
+    }
+  </Section>
+
+  {
+    devisPermanence && (
+      <Section tone="sunken" labelledby="exemple-titre">
+        <SectionHeader eyebrow="Exemple" index="02" id="exemple-titre">
+          <Fragment slot="title">
+            {lienVisible(lienPermanence) ? (
+              <a href={lienPermanence}>Accueil et permanence téléphonique IA</a>
+            ) : (
+              'Accueil et permanence téléphonique IA'
+            )}
+          </Fragment>
+        </SectionHeader>
+        <QuoteNote devis={devisPermanence} />
+      </Section>
+    )
+  }
+
+  <FaqSection index="03" />
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .engagements {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 48rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .engagements li {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+    gap: var(--space-3);
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .engagements svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.3rem;
+    color: var(--color-accent);
+  }
+
+  .renvoi {
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+  }
+
+  :global(h2) a {
+    text-decoration: none;
+  }
+
+  :global(h2) a:hover {
+    text-decoration: underline;
+  }
+</style>

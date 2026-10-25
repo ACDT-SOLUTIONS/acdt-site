@@ -1,11 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import { lienEvaluation } from '@/config/site';
-import { lienVisible } from '@/lib/publication';
+import { lienEffectif, lienVisible } from '@/lib/publication';
 
 // Porte d'entrée vers les rubriques : uniquement des repères de navigation, pas le détail des offres.
-// En version publique, seuls les liens vers des pages publiées sont actifs ; les offres non publiées
-// restent annoncées « à venir » et deviennent cliquables dès leur publication.
+// En version publique, chaque repère mène à la nouvelle page publiée ou, à défaut, à l'ancienne page
+// équivalente encore en ligne ; sans l'une ni l'autre, il est annoncé « à venir ».
 const solutions = (await getCollection('solutions')).sort((a, b) => a.data.numero.localeCompare(b.data.numero));
 const secteurs = (await getCollection('secteurs', (s) => s.data.publie)).sort((a, b) => a.data.ordre - b.data.ordre);
 const cas = await getCollection('simulations');
@@ -19,7 +19,7 @@ interface Repere {
 const repere = (label: string, href: string, prefixe?: string): Repere => ({
   label,
   prefixe,
-  href: lienVisible(href) ? href : undefined,
+  href: lienEffectif(href),
 });
 
 const rubriques = [
@@ -48,9 +48,18 @@ const rubriques = [
     secondaire: lienVisible(lienEvaluation.href) ? lienEvaluation : undefined,
   },
 ]
-  .map((r) => ({ ...r, lien: lienVisible(r.href) }))
-  // Une rubrique sans page d'ensemble publiée ni repère publié n'est pas affichée.
-  .filter((r) => r.lien || r.reperes.some((x) => x.href));
+  .map((r) => {
+    // Page d'ensemble publiée : toute la carte est cliquable. Sinon, l'ancienne page équivalente
+    // (relais) est proposée en lien secondaire, et les repères restent cliquables un par un.
+    const relais = lienVisible(r.href) ? undefined : lienEffectif(r.href);
+    return {
+      ...r,
+      lien: lienVisible(r.href),
+      secondaire: r.secondaire ?? (relais ? { label: 'Voir la présentation de nos services', href: relais } : undefined),
+    };
+  })
+  // Une rubrique sans page d'ensemble ni repère consultable n'est pas affichée.
+  .filter((r) => r.lien || r.secondaire || r.reperes.some((x) => x.href));
 
 const seule = rubriques.length === 1;
 ---

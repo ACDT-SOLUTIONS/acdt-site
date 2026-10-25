@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import Logo from './Logo.astro';
 import Button from '@/components/ui/Button.astro';
 import { ctaPrincipal, lienEvaluation, navigationPrincipale, type RubriqueNav } from '@/config/site';
-import { lienVisible } from '@/lib/publication';
+import { lienEffectif } from '@/lib/publication';
 
 interface Entree {
   label: string;
@@ -38,15 +38,18 @@ const courant = Astro.url.pathname;
 const estActif = (r: RubriqueNav, entrees: Entree[]) =>
   courant.startsWith(r.href) || entrees.some((e) => courant.startsWith(e.href));
 
-// En version publique, seules les rubriques menant à au moins une page publiée sont affichées.
-// Une rubrique dont la page d'ensemble n'est pas publiée garde son menu, sans lien « Toutes les… ».
+// En version publique, chaque lien mène à la page publiée ou, à défaut, à l'ancienne page équivalente
+// encore en ligne (relais). Les rubriques sans aucune destination ne sont pas affichées.
 const rubriques = navigationPrincipale.flatMap((r) => {
   const menu = r.sousMenu ? sousMenus[r.sousMenu] : undefined;
-  const hubVisible = lienVisible(r.href);
-  if (!menu) return hubVisible ? [{ ...r, entrees: [] as Entree[], hub: undefined }] : [];
-  const entrees = menu.entrees.filter((e) => lienVisible(e.href));
-  if (!hubVisible && entrees.length === 0) return [];
-  return [{ ...r, entrees, hub: hubVisible ? menu.hub : undefined }];
+  const hubHref = lienEffectif(r.href);
+  if (!menu) return hubHref ? [{ ...r, href: hubHref, entrees: [] as Entree[], hub: undefined }] : [];
+  const entrees = menu.entrees.flatMap((e) => {
+    const href = lienEffectif(e.href);
+    return href ? [{ ...e, href }] : [];
+  });
+  if (!hubHref && entrees.length === 0) return [];
+  return [{ ...r, href: hubHref ?? r.href, entrees, hub: hubHref ? menu.hub : undefined }];
 });
 ---
 

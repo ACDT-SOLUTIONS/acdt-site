@@ -39,8 +39,8 @@ export const lienEvaluation: LienNav = {
 
 export const liensLegaux: LienNav[] = [
   { label: 'Mentions légales', href: '/mentions-legales/' },
-  { label: 'Confidentialité', href: '/confidentialite/' },
-  { label: 'Cookies', href: '/cookies/' },
-  { label: 'CGU', href: '/cgu/' },
-  { label: 'CGV', href: '/cgv/' },
+  { label: 'Confidentialité', href: '/politique-de-confidentialite/' },
+  { label: 'Cookies', href: '/politique-cookies/' },
+  { label: 'CGU', href: '/conditions-generales-utilisation/' },
+  { label: 'CGV', href: '/conditions-generales-vente/' },
 ];

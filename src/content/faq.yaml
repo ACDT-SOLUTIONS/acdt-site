@@ -2,7 +2,7 @@
 
 - id: prix
   ordre: 1
-  pages: [/methode/]
+  pages: [/methode/, /tarifs/]
   question: Combien coûte une prestation ?
   reponse: >-
     Toutes nos prestations sont sur devis. Le coût dépend de vos outils, de vos volumes et du niveau
