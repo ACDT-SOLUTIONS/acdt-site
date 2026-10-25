@@ -6,12 +6,16 @@ Le site publié (branche `main`) n'est pas concerné.
 ## Commandes
 
 ```sh
-npm install        # première fois uniquement
-npm run dev        # maquette en direct : http://localhost:4321/
-npm run test       # tests du moteur de calcul
-npm run build      # vérification des types et du contenu, puis génération dans dist/
-npm run preview    # sert dist/ en local
+npm install                  # première fois uniquement
+npm run dev                  # développement : toutes les pages, http://localhost:4321/
+npm run test                 # tests du moteur de calcul
+npm run build                # build de développement (toutes les pages, noindex)
+npm run build:release        # version publique : pages publiées uniquement, indexable, contrôlée
+npm run verifier:production  # contrôles bloquants avant mise en ligne
+npm run preview              # sert dist/ en local
 ```
+
+Pages publiées : `src/config/publication.mjs`. Procédure de mise en ligne : [DEPLOIEMENT.md](DEPLOIEMENT.md).
 
 ## Repères
 

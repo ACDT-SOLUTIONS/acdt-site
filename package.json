@@ -11,6 +11,7 @@
     "build": "astro check && astro build",
     "build:release": "astro check && PUBLIC_RELEASE=true PUBLIC_INDEXABLE=true astro build && node scripts/verifier-publication.mjs",
     "verifier:production": "node scripts/verifier-publication.mjs --strict",
+    "redirections:nginx": "node scripts/redirections-nginx.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run"

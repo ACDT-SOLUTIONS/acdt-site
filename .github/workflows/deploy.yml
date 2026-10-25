@@ -1,0 +1,168 @@
+# Déploiement de la version publique sur le VPS.
+#
+# Se déclenche uniquement sur `main` (push) ou à la main (workflow_dispatch).
+# Les pushes sur refonte-v2 ne déclenchent rien.
+#
+# Étapes : build de la version publique → contrôles stricts (bloquants) → sauvegarde de la production
+# → publication de dist/ seul → vérification du site en ligne → restauration automatique si échec.
+# Restauration manuelle : Actions › Déploiement production › Run workflow › « restaurer » = nom de la sauvegarde.
+# Procédure complète : DEPLOIEMENT.md.
+
+name: Déploiement production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      restaurer:
+        description: "Nom d'une sauvegarde à restaurer (ex. 20261026-101500). Laisser vide pour déployer main."
+        required: false
+        default: ''
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+env:
+  SITE_DIR: /var/www/acdt_site
+  SAUVEGARDES_DIR: /var/www/acdt_site_sauvegardes
+  URL_PUBLIQUE: https://acdt-solutions.com
+
+jobs:
+  construire:
+    if: ${{ !inputs.restaurer }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+
+      - name: Construire la version publique
+        run: npm run build:release
+        env:
+          ASTRO_TELEMETRY_DISABLED: 1
+          PUBLIC_PLAUSIBLE_DOMAIN: acdt-solutions.com
+          PUBLIC_PLAUSIBLE_SRC: https://plausible.io/js/script.js
+
+      - name: Contrôles stricts avant production (bloquants)
+        run: npm run verifier:production
+
+      - name: Archiver dist/
+        run: tar -czf site.tar.gz -C dist .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site.tar.gz
+          retention-days: 30
+
+  deployer:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+
+      - name: Envoyer l'archive sur le VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: site.tar.gz
+          target: /tmp/acdt-release-${{ github.sha }}
+
+      - name: Sauvegarder puis publier
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: SITE_DIR,SAUVEGARDES_DIR
+          script: |
+            set -euo pipefail
+            ARCHIVE=/tmp/acdt-release-${{ github.sha }}/site.tar.gz
+            command -v rsync >/dev/null || { echo "rsync est absent du serveur : déploiement annulé."; exit 1; }
+            test -d "$SITE_DIR" || { echo "$SITE_DIR introuvable : déploiement annulé."; exit 1; }
+
+            # 1. Sauvegarde complète de la production actuelle (y compris l'ancien .git).
+            HORODATAGE=$(date +%Y%m%d-%H%M%S)
+            mkdir -p "$SAUVEGARDES_DIR"
+            cp -a "$SITE_DIR" "$SAUVEGARDES_DIR/$HORODATAGE"
+            echo "$HORODATAGE" > "$SAUVEGARDES_DIR/DERNIERE"
+            echo "Sauvegarde : $SAUVEGARDES_DIR/$HORODATAGE"
+
+            # 2. Préparation hors du dossier servi, puis synchronisation en place
+            #    (le dossier monté dans le conteneur nginx reste le même).
+            PREPARATION=$(mktemp -d)
+            tar -xzf "$ARCHIVE" -C "$PREPARATION"
+            test -f "$PREPARATION/index.html" || { echo "Archive invalide : déploiement annulé."; exit 1; }
+            rsync -a --delete "$PREPARATION"/ "$SITE_DIR"/
+            rm -rf "$PREPARATION" "$(dirname "$ARCHIVE")"
+
+            # 3. On conserve les 5 dernières sauvegardes.
+            ls -1dt "$SAUVEGARDES_DIR"/2* | tail -n +6 | xargs -r rm -rf
+            echo "Publication terminée."
+
+      - name: Vérifier le site en ligne
+        run: |
+          set -euo pipefail
+          sleep 5
+          verifier() { # url code_attendu [texte_attendu]
+            code=$(curl -s -o page.html -w '%{http_code}' "$URL_PUBLIQUE$1")
+            [ "$code" = "$2" ] || { echo "✗ $1 : HTTP $code (attendu $2)"; return 1; }
+            if [ -n "${3:-}" ]; then grep -q "$3" page.html || { echo "✗ $1 : « $3 » introuvable"; return 1; }; fi
+            echo "✓ $1 : HTTP $code"
+          }
+          verifier / 200 'Automatiser ce qui vous coûte'
+          verifier /solutions/accueil-telephonique-ia/ 200 'tel:+33972199815'
+          verifier /contact/ 200
+          verifier /rendez-vous/ 200 'cal.com'
+          verifier /sitemap.xml 200 '<urlset'
+          verifier /.git/HEAD 404
+          verifier /methode/ 404
+
+      - name: Restaurer automatiquement en cas d'échec
+        if: failure()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: SITE_DIR,SAUVEGARDES_DIR
+          script: |
+            set -euo pipefail
+            test -f "$SAUVEGARDES_DIR/DERNIERE" || { echo "Aucune sauvegarde de ce déploiement : rien à restaurer."; exit 0; }
+            NOM=$(cat "$SAUVEGARDES_DIR/DERNIERE")
+            rsync -a --delete "$SAUVEGARDES_DIR/$NOM"/ "$SITE_DIR"/
+            echo "Production restaurée depuis la sauvegarde $NOM."
+
+  restaurer:
+    if: ${{ inputs.restaurer }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Restaurer une sauvegarde
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          NOM: ${{ inputs.restaurer }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: SITE_DIR,SAUVEGARDES_DIR,NOM
+          script: |
+            set -euo pipefail
+            case "$NOM" in *[!0-9-]*|'') echo "Nom de sauvegarde invalide."; exit 1;; esac
+            test -d "$SAUVEGARDES_DIR/$NOM" || { echo "Sauvegarde $NOM introuvable."; ls -1 "$SAUVEGARDES_DIR"; exit 1; }
+            rsync -a --delete "$SAUVEGARDES_DIR/$NOM"/ "$SITE_DIR"/
+            echo "Production restaurée depuis la sauvegarde $NOM."
