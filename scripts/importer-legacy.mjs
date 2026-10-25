@@ -26,7 +26,25 @@ function remplacer(html, motif, remplacement, page) {
 }
 
 // Corrections de contenu propres à certaines pages (texte exact de l'ancien site → texte corrigé).
+// Services conservés : promesses absolues (disponibilité, résultats garantis) ramenées à des bénéfices potentiels.
 const CORRECTIONS = {
+  '/services/': [
+    [/Ne manquez plus jamais un client potentiel\. Votre assistant virtuel répond 24\/7 sur votre site,\s*qualifie les demandes et vous envoie seulement les prospects chauds\. Vous vendez plus, en dormant\./,
+      'Votre assistant virtuel accueille les visiteurs de votre site, y compris en dehors de vos horaires, qualifie les demandes et vous transmet les prospects les plus pertinents.'],
+  ],
+  '/services/chatbot-entreprise/': [
+    ['qualifie vos prospects et travaille 24/7 pour votre TPE / PME.', 'qualifie vos prospects et accueille vos visiteurs, y compris en dehors de vos horaires.'],
+    ['Répondez 24/7 à vos prospects grâce à un chatbot adapté à votre activité.', 'Un chatbot adapté à votre activité pour accueillir vos prospects.'],
+    ['<h3>Vos gains</h3>', '<h3>Bénéfices potentiels</h3>'],
+    ['<li>Vous ne perdez plus les prospects qui arrivent en dehors des horaires d’ouverture.</li>', '<li>Les prospects qui arrivent en dehors des horaires d’ouverture peuvent être accueillis.</li>'],
+    ['<li>Votre équipe ne traite que les demandes qualifiées.</li>', '<li>Votre équipe peut se concentrer sur les demandes qualifiées.</li>'],
+    ['Plus de réactivité, sans recruter une personne de plus.', 'Davantage de réactivité, sans nécessairement renforcer votre équipe.'],
+  ],
+  '/services/google-sheets-automations/': [
+    ['connecté, automatisé et mis à jour sans aucune action manuelle.', 'connecté, automatisé et mis à jour automatiquement.'],
+    ['<h3>Vos gains concrets</h3>', '<h3>Bénéfices potentiels</h3>'],
+    [/\s*<li>Une croissance plus propre et plus prédictible\.<\/li>/, ''],
+  ],
   '/etudes-de-cas/': [
     [/Études de cas – ACDT Solutions/g, 'Exemples d’automatisations – ACDT Solutions'],
     ['Exemples concrets d’automatisations et d’intégrations réalisées pour des TPE / PME.', 'Exemples d’automatisations envisageables pour des TPE / PME.'],
