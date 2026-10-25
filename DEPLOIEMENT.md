@@ -1,75 +1,125 @@
 # Publication et déploiement
 
-## Deux environnements
+## 1. Environnements
 
 | | Branche | Rôle |
 |---|---|---|
 | Développement | `refonte-v2` | Tout le travail en cours. Aucun push sur cette branche ne déploie quoi que ce soit. |
-| Production | `main` | Ce qui est en ligne sur acdt-solutions.com. Chaque push sur `main` lance `.github/workflows/deploy.yml`. |
+| Production | `main` | Ce qui est en ligne sur acdt-solutions.com. Un push sur `main` lance `.github/workflows/deploy.yml`. |
 
-`main` reçoit les sources complètes depuis `refonte-v2`. Ce qui est **publié** ne dépend pas de la branche mais de
-`src/config/publication.mjs` : une page absente de `PAGES_PUBLIEES` n'est pas générée dans la version publique,
-même si son code est présent sur `main`.
+Ce qui est **publié** ne dépend pas de la branche mais de `src/config/publication.mjs` :
 
-## Cycle de travail
+- `PAGES_PUBLIEES` : nouvelles pages mises en ligne ; toute autre nouvelle page est retirée du build public ;
+- `ANCIENNES_PAGES` : sort de chaque ancienne URL (conservée, redirigée en 301, retirée en 404 ou 410) ;
+- les anciennes pages conservées sont des copies figées de l'ancien site dans `legacy/`
+  (régénérables avec `npm run legacy:importer`), nettoyées de GTM, GA4, du chatbot et des webhooks ;
+- dès qu'une nouvelle page équivalente est publiée, l'ancienne page devient automatiquement une 301 vers elle.
 
-1. **Développer** sur `refonte-v2` : `npm run dev` (toutes les pages, bandeau « Page non publiée » sur les autres).
-2. **Valider** visuellement et fonctionnellement.
-3. **Publier une page** : ajouter son chemin dans `PAGES_PUBLIEES`, puis :
+## 2. Publier une version validée, sans fusion intégrale
+
+On ne fusionne jamais la pointe de `refonte-v2` : on publie un commit précis, validé.
+
+1. Sur `refonte-v2` : ajouter les pages validées à `PAGES_PUBLIEES`, puis
    ```sh
    npm run build:release        # version publique + contrôles
    npm run verifier:production  # contrôles bloquants (pages légales, pages obligatoires)
-   npm run preview              # relecture locale de la version publique
+   npm run preview              # relecture locale (les 301/410 ne sont servis que par nginx)
    ```
-4. **Commit et push** de `refonte-v2`.
-5. **Mettre en production** : fusionner `refonte-v2` dans `main` et pousser `main`.
+2. Commit, puis étiqueter le commit validé : `git tag release-AAAAMMJJ <commit>` et `git push origin release-AAAAMMJJ`.
+3. Fusionner **cette étiquette** dans `main` (les commits postérieurs de `refonte-v2` ne sont pas inclus) :
    ```sh
-   git switch main && git pull && git merge --ff-only refonte-v2 && git push
+   git switch main && git pull
+   git merge --no-ff release-AAAAMMJJ
+   git push origin main          # lance le workflow ; le job de déploiement attend l'approbation « production »
    ```
-   Si un correctif a été fait directement sur `main`, le reporter d'abord : `git switch refonte-v2 && git merge main`.
-6. **Suivre** l'exécution dans GitHub › Actions › « Déploiement production ».
+4. Si un correctif a été fait directement sur `main`, le reporter : `git switch refonte-v2 && git merge main`.
 
-## Ce que fait le déploiement
+Les sources des pages non publiées arrivent sur `main`, mais elles ne sont ni générées ni servies.
 
-1. Build de la version publique sur GitHub (`npm run build:release`), tests et `npm run verifier:production`.
-   **Si un contrôle échoue, rien n'est envoyé sur le serveur.**
-2. Sauvegarde complète de `/var/www/acdt_site` dans `/var/www/acdt_site_sauvegardes/AAAAMMJJ-HHMMSS`
-   (5 sauvegardes conservées).
-3. Publication de `dist/` uniquement, synchronisé en place dans `/var/www/acdt_site` (`rsync --delete`) :
-   ni sources, ni `.git`, ni `.github`, ni `.env` sur le serveur.
-4. Vérification du site en ligne (pages publiées en 200, `/.git/HEAD` et une page non publiée en 404).
-5. En cas d'échec de l'étape 3 ou 4 : restauration automatique de la sauvegarde.
+## 3. Serveur
 
-**Revenir en arrière manuellement** : GitHub › Actions › « Déploiement production » › Run workflow, champ
-`restaurer` = nom de la sauvegarde (affiché dans le journal du déploiement).
+Le dépôt est public : ce document ne contient volontairement ni adresse, ni identifiant, ni détail des autres
+services hébergés. Les constats complets du 26/10/2026 sont conservés hors dépôt.
 
-## Première mise en production : prérequis
+| Point | À savoir |
+|---|---|
+| Accès | utilisateur et clé définis dans les secrets GitHub (`VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`) |
+| Dossier du site | `/var/www/acdt_site`, accessible en écriture à l'utilisateur de déploiement ; `/var/www` ne l'est pas → sauvegardes dans `~/acdt_site_sauvegardes` |
+| Serveur web | service `siteweb` du projet Compose `/root/n8n-compose` (image `nginx:alpine`), site monté en lecture seule, configuration `deploy/nginx/acdt-site.conf` (repère `acdt-site-conf-v1`) |
+| Proxy | Traefik : HTTPS, `www`, http → https |
+| Projet Compose | partagé avec d'autres services, dont n8n : toute opération doit viser **uniquement** `siteweb` (`--no-deps`) et vérifier que les autres conteneurs sont inchangés |
 
-À vérifier par une personne ayant accès au serveur et au compte GitHub :
+## 4. Étape A — Correctif de sécurité nginx (applicable dès maintenant, sur autorisation)
 
-- [ ] **Pages légales validées** : traiter les points `aVerifier` de `src/content/legal/*.md`, vider ces listes,
-      puis ajouter `/mentions-legales/`, `/confidentialite/`, `/cookies/`, `/cgu/`, `/cgv/` à `PAGES_PUBLIEES`.
-      La politique de confidentialité doit notamment couvrir la ligne de démonstration et Cal.com.
-- [ ] **Serveur** : `rsync` installé ; l'utilisateur `VPS_USER` peut écrire dans `/var/www/acdt_site` et créer
-      `/var/www/acdt_site_sauvegardes` ; espace disque suffisant (quelques Mo par sauvegarde).
-- [ ] **nginx** (configuration du conteneur `n8n-compose_siteweb_1`) — recommandé, non bloquant :
-      - redirections 301 des anciennes URL : coller la sortie de `npm run redirections:nginx` ;
-        sans elles, les pages de redirection HTML générées dans `dist/` prennent le relais ;
-      - `error_page 404 /404.html;` pour afficher la page 404 du site ;
-      - `location ~ /\. { deny all; }` pour interdire tout fichier caché.
-- [ ] **GitHub** : environnement `production` créé, avec validation manuelle (Settings › Environments) pour que
-      chaque déploiement attende un clic d'approbation.
-- [ ] **Tests humains** (voir ci-dessous).
+Installe `deploy/nginx/acdt-site.conf` : fichiers cachés et `README.md` en 404, redirections relatives, page 404
+du site, inclusion des règles 301/410 générées. Testé localement avec nginx 1.29.7 sur l'ancien site (`.git`,
+`.github`, `.DS_Store`, `README.md` → 404, pages inchangées) et sur la nouvelle version.
 
-## Tests humains avant publication
+Opérations prévues (coupure de quelques secondes du site uniquement ; n8n non concerné) :
 
-Ces points ne peuvent pas être vérifiés automatiquement :
+```sh
+cd /root/n8n-compose
+# 1. Sauvegarde, selon la convention existante du dossier
+sudo cp compose.yaml compose.before-siteweb-nginx-$(date +%Y%m%d-%H%M%S).yaml
+# 2. Dépôt de la configuration (contenu de deploy/nginx/acdt-site.conf)
+sudo mkdir -p siteweb && sudo tee siteweb/acdt-site.conf < acdt-site.conf >/dev/null
+# 3. Test de la configuration dans un conteneur jetable, sans toucher au site en ligne
+sudo docker run --rm -v /root/n8n-compose/siteweb/acdt-site.conf:/etc/nginx/conf.d/default.conf:ro \
+  -v /var/www/acdt_site:/usr/share/nginx/html:ro nginx:alpine nginx -t
+# 4. Ajout d'une ligne au service siteweb, sous « volumes: »
+#      - ./siteweb/acdt-site.conf:/etc/nginx/conf.d/default.conf:ro
+# 5. Contrôle à blanc, puis application au seul service du site
+N8N_AVANT=$(docker ps -q --filter label=com.docker.compose.service=n8n)
+sudo docker compose up --dry-run --no-deps --pull never -d siteweb
+sudo docker compose up --no-deps --pull never -d siteweb
+# 6. Vérifications
+[ "$(docker ps -q --filter label=com.docker.compose.service=n8n)" = "$N8N_AVANT" ] && echo "n8n inchangé"
+curl -s -o /dev/null -w '%{http_code}\n' https://acdt-solutions.com/            # 200
+curl -s -o /dev/null -w '%{http_code}\n' https://acdt-solutions.com/.git/HEAD   # 404
+curl -s -o /dev/null -w '%{http_code}\n' https://acdt-solutions.com/.DS_Store   # 404
+```
 
-- [ ] Appeler le **09 72 19 98 15** depuis un mobile : l'assistant répond, le scénario « cabinet d'avocats »
-      se déroule, la durée est d'environ deux minutes.
-- [ ] Vérifier la réception (ou non) du **SMS récapitulatif** et son contenu.
-- [ ] Sur mobile, le bouton « Appeler la démonstration » ouvre bien le composeur avec le bon numéro.
-- [ ] « Copier le numéro » fonctionne dans Safari, Chrome et Firefox.
-- [ ] **Cal.com** : effectuer une réservation test, vérifier la confirmation et l'agenda, puis l'annuler.
-- [ ] Envoyer un email à **contact@acdt-solutions.com** depuis une adresse externe et vérifier sa réception.
-- [ ] Plausible : après mise en ligne, vérifier que les visites apparaissent sur le tableau de bord.
+**Retour arrière** : restaurer le `compose.yaml` sauvegardé, puis
+`sudo docker compose up --no-deps --pull never -d siteweb` (retour à la configuration par défaut de l'image).
+
+## 5. Étape B — Première publication du nouveau site
+
+Prérequis, tous bloquants :
+
+- [ ] Étape A appliquée (le workflow refuse de déployer sans la configuration `acdt-site-conf-v1`).
+- [ ] Pages légales complétées : plus aucun `[À COMPLÉTER]` / `[À CONFIRMER]` ni point `aVerifier`
+      dans `src/content/legal/*.md`, puis les cinq URL légales ajoutées à `PAGES_PUBLIEES`.
+- [ ] `npm run verifier:production` satisfait.
+- [ ] GitHub : environnement `production` avec approbation manuelle (Settings › Environments).
+- [ ] Tests humains (section 8).
+
+Le workflow : build sur GitHub, contrôles stricts, vérification des prérequis serveur, sauvegarde complète dans
+`~/acdt_site_sauvegardes/AAAAMMJJ-HHMMSS` (dossier de l’utilisateur de déploiement) (5 conservées), `rsync --delete` de `dist/` seul (le `.git` de
+l'ancien site disparaît du dossier servi), `nginx -t` puis rechargement, vérification en ligne (pages, 301, 410,
+fichiers cachés), restauration automatique en cas d'échec.
+
+## 6. Retour arrière
+
+GitHub › Actions › « Déploiement production » › Run workflow, champ `restaurer` = nom de la sauvegarde (affiché
+dans le journal). La sauvegarde initiale contient l'ancien site complet, y compris son `.git`.
+
+## 7. Formulaire de contact
+
+Prêt mais **désactivé** : il ne s'affiche que si `PUBLIC_FORMULAIRE_URL` est défini.
+
+- Test local, sans service externe : `npm run formulaire:test` puis
+  `PUBLIC_FORMULAIRE_URL=http://localhost:8787 npm run dev` → page `/contact/`.
+- Réactivation en production : seulement après validation de la politique de confidentialité (section 2.4)
+  et un test sur un workflow n8n **de test** dédié ; ajouter alors la variable au workflow de déploiement.
+
+Le chatbot n'est pas repris (traitements de données et coûts à vérifier) ; GTM et GA4 ne sont pas repris.
+
+## 8. Tests humains avant publication
+
+- [ ] Appeler le 09 72 19 98 15 : réponse de l'assistant, scénario « cabinet d'avocats », durée d'environ deux minutes.
+- [ ] SMS récapitulatif : réception et contenu.
+- [ ] Sur mobile : « Appeler la démonstration » ouvre le composeur avec le bon numéro ; « Copier le numéro » fonctionne.
+- [ ] Cal.com : réservation test, confirmation, puis annulation.
+- [ ] Email à contact@acdt-solutions.com depuis une adresse externe.
+- [ ] Plausible : script fourni par le tableau de bord (à reporter dans `PUBLIC_PLAUSIBLE_SRC` s'il diffère de
+      `https://plausible.io/js/script.js`), puis visites visibles après mise en ligne.

@@ -3,8 +3,9 @@
 # Se déclenche uniquement sur `main` (push) ou à la main (workflow_dispatch).
 # Les pushes sur refonte-v2 ne déclenchent rien.
 #
-# Étapes : build de la version publique → contrôles stricts (bloquants) → sauvegarde de la production
-# → publication de dist/ seul → vérification du site en ligne → restauration automatique si échec.
+# Étapes : build de la version publique → contrôles stricts (bloquants) → vérification des prérequis serveur
+# → sauvegarde de la production → publication de dist/ seul → test et rechargement nginx → vérification du site
+# en ligne → restauration automatique en cas d'échec.
 # Restauration manuelle : Actions › Déploiement production › Run workflow › « restaurer » = nom de la sauvegarde.
 # Procédure complète : DEPLOIEMENT.md.
 
@@ -26,7 +27,6 @@ concurrency:
 
 env:
   SITE_DIR: /var/www/acdt_site
-  SAUVEGARDES_DIR: /var/www/acdt_site_sauvegardes
   URL_PUBLIQUE: https://acdt-solutions.com
 
 jobs:
@@ -61,6 +61,7 @@ jobs:
         with:
           name: site
           path: site.tar.gz
+          include-hidden-files: true
           retention-days: 30
 
   deployer:
@@ -81,18 +82,26 @@ jobs:
           source: site.tar.gz
           target: /tmp/acdt-release-${{ github.sha }}
 
-      - name: Sauvegarder puis publier
+      - name: Vérifier, sauvegarder puis publier
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: SITE_DIR,SAUVEGARDES_DIR
+          envs: SITE_DIR
           script: |
             set -euo pipefail
+            SAUVEGARDES_DIR="$HOME/acdt_site_sauvegardes"  # /var/www n'est pas accessible en écriture
             ARCHIVE=/tmp/acdt-release-${{ github.sha }}/site.tar.gz
-            command -v rsync >/dev/null || { echo "rsync est absent du serveur : déploiement annulé."; exit 1; }
-            test -d "$SITE_DIR" || { echo "$SITE_DIR introuvable : déploiement annulé."; exit 1; }
+            # Conteneur nginx du site, retrouvé par ses étiquettes Compose (son nom change à chaque recréation).
+            C=$(docker ps -q --filter label=com.docker.compose.project=n8n-compose --filter label=com.docker.compose.service=siteweb)
+            [ "$(echo "$C" | wc -w)" = 1 ] || { echo "Conteneur du site introuvable ou ambigu : déploiement annulé."; exit 1; }
+
+            # 0. Prérequis : rsync, droits, configuration nginx du site installée (étape A de DEPLOIEMENT.md).
+            command -v rsync >/dev/null || { echo "rsync absent : déploiement annulé."; exit 1; }
+            test -w "$SITE_DIR" || { echo "$SITE_DIR non accessible en écriture : déploiement annulé."; exit 1; }
+            docker exec "$C" nginx -T 2>/dev/null | grep -q acdt-site-conf-v1 \
+              || { echo "Configuration nginx du site non installée : déploiement annulé."; exit 1; }
 
             # 1. Sauvegarde complète de la production actuelle (y compris l'ancien .git).
             HORODATAGE=$(date +%Y%m%d-%H%M%S)
@@ -101,15 +110,24 @@ jobs:
             echo "$HORODATAGE" > "$SAUVEGARDES_DIR/DERNIERE"
             echo "Sauvegarde : $SAUVEGARDES_DIR/$HORODATAGE"
 
-            # 2. Préparation hors du dossier servi, puis synchronisation en place
-            #    (le dossier monté dans le conteneur nginx reste le même).
+            # 2. Préparation hors du dossier servi, puis synchronisation en place (même dossier monté).
             PREPARATION=$(mktemp -d)
             tar -xzf "$ARCHIVE" -C "$PREPARATION"
             test -f "$PREPARATION/index.html" || { echo "Archive invalide : déploiement annulé."; exit 1; }
             rsync -a --delete "$PREPARATION"/ "$SITE_DIR"/
             rm -rf "$PREPARATION" "$(dirname "$ARCHIVE")"
 
-            # 3. On conserve les 5 dernières sauvegardes.
+            # 3. Nouvelles règles de redirection : test puis rechargement ; restauration si la configuration est invalide.
+            if docker exec "$C" nginx -t; then
+              docker exec "$C" nginx -s reload
+            else
+              echo "Configuration nginx invalide : restauration de la sauvegarde."
+              rsync -a --delete "$SAUVEGARDES_DIR/$HORODATAGE"/ "$SITE_DIR"/
+              docker exec "$C" nginx -t && docker exec "$C" nginx -s reload
+              exit 1
+            fi
+
+            # 4. On conserve les 5 dernières sauvegardes.
             ls -1dt "$SAUVEGARDES_DIR"/2* | tail -n +6 | xargs -r rm -rf
             echo "Publication terminée."
 
@@ -117,19 +135,25 @@ jobs:
         run: |
           set -euo pipefail
           sleep 5
-          verifier() { # url code_attendu [texte_attendu]
-            code=$(curl -s -o page.html -w '%{http_code}' "$URL_PUBLIQUE$1")
+          verifier() { # chemin code_attendu [texte_attendu]
+            code=$(curl -s -o page.html -D entetes.txt -w '%{http_code}' "$URL_PUBLIQUE$1")
             [ "$code" = "$2" ] || { echo "✗ $1 : HTTP $code (attendu $2)"; return 1; }
-            if [ -n "${3:-}" ]; then grep -q "$3" page.html || { echo "✗ $1 : « $3 » introuvable"; return 1; }; fi
+            if [ -n "${3:-}" ]; then grep -qi -- "$3" page.html entetes.txt || { echo "✗ $1 : « $3 » introuvable"; return 1; }; fi
             echo "✓ $1 : HTTP $code"
           }
           verifier / 200 'Automatiser ce qui vous coûte'
           verifier /solutions/accueil-telephonique-ia/ 200 'tel:+33972199815'
+          verifier /tarifs/ 200 'sur devis'
           verifier /contact/ 200
           verifier /rendez-vous/ 200 'cal.com'
+          verifier /services/ 200
+          verifier /mentions-legales/ 200
           verifier /sitemap.xml 200 '<urlset'
+          verifier /rdv/ 301 'location: /rendez-vous/'
+          verifier /test/ 410
           verifier /.git/HEAD 404
-          verifier /methode/ 404
+          verifier /.nginx/redirections.conf 404
+          verifier /.DS_Store 404
 
       - name: Restaurer automatiquement en cas d'échec
         if: failure()
@@ -138,12 +162,15 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: SITE_DIR,SAUVEGARDES_DIR
+          envs: SITE_DIR
           script: |
             set -euo pipefail
+            SAUVEGARDES_DIR="$HOME/acdt_site_sauvegardes"  # /var/www n'est pas accessible en écriture
             test -f "$SAUVEGARDES_DIR/DERNIERE" || { echo "Aucune sauvegarde de ce déploiement : rien à restaurer."; exit 0; }
             NOM=$(cat "$SAUVEGARDES_DIR/DERNIERE")
             rsync -a --delete "$SAUVEGARDES_DIR/$NOM"/ "$SITE_DIR"/
+            C=$(docker ps -q --filter label=com.docker.compose.project=n8n-compose --filter label=com.docker.compose.service=siteweb)
+            docker exec "$C" nginx -t && docker exec "$C" nginx -s reload
             echo "Production restaurée depuis la sauvegarde $NOM."
 
   restaurer:
@@ -159,10 +186,13 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: SITE_DIR,SAUVEGARDES_DIR,NOM
+          envs: SITE_DIR,NOM
           script: |
             set -euo pipefail
+            SAUVEGARDES_DIR="$HOME/acdt_site_sauvegardes"  # /var/www n'est pas accessible en écriture
             case "$NOM" in *[!0-9-]*|'') echo "Nom de sauvegarde invalide."; exit 1;; esac
             test -d "$SAUVEGARDES_DIR/$NOM" || { echo "Sauvegarde $NOM introuvable."; ls -1 "$SAUVEGARDES_DIR"; exit 1; }
             rsync -a --delete "$SAUVEGARDES_DIR/$NOM"/ "$SITE_DIR"/
+            C=$(docker ps -q --filter label=com.docker.compose.project=n8n-compose --filter label=com.docker.compose.service=siteweb)
+            docker exec "$C" nginx -t && docker exec "$C" nginx -s reload
             echo "Production restaurée depuis la sauvegarde $NOM."
