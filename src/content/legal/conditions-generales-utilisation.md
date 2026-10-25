@@ -1,12 +1,13 @@
 ---
 titre: "Conditions Générales d'Utilisation (CGU)"
 ordre: 4
-source: "Reprise à l'identique de la page publiée sur l'ancien site (main, ceeb27c)."
+source: "Texte de l'ancien site (main, ceeb27c), complété de champs à renseigner. Non conforme tant que ces champs ne sont pas remplis et vérifiés."
 aVerifier:
-  - "Section 1 : « détails à compléter dans les Mentions Légales »."
-  - "Section 4 : « Les marques et logos figurant sur le Site sont des marques déposées » — à confirmer (dépôt effectif ?)."
+  - "Section 1 : hébergeur à confirmer."
+  - "Section 4 : dépôt effectif des marques et logos, ou suppression de la phrase."
+  - "Date de mise à jour."
 ---
-Date de dernière mise à jour : 28 Novembre 2025
+Date de dernière mise à jour : [À COMPLÉTER] (ancienne version : 28 Novembre 2025)
 
 Les présentes Conditions Générales d'Utilisation (CGU) régissent l’accès et l’utilisation du site web d’ACDT Solutions (ci-après « le Site »). En accédant à ce Site, vous acceptez sans réserve les présentes CGU.
 
@@ -15,7 +16,7 @@ Les présentes Conditions Générales d'Utilisation (CGU) régissent l’accès 
 Le Site est édité par : **ACDT Solutions**  
 Email : contact@acdt-solutions.com
 
-L'hébergement du site est assuré par OVH (détails à compléter dans les Mentions Légales).
+L'hébergement du site est assuré par [À CONFIRMER : hébergeur ; l'ancien texte indiquait OVH] (voir les [Mentions légales](/mentions-legales/)).
 
 ## 2. Objet du Site
 
@@ -29,7 +30,7 @@ L'accès au Site est gratuit et ne nécessite aucune inscription. L'utilisateur 
 
 Tout le contenu présent sur le Site (textes, images, graphismes, logos, icônes, logiciels, etc.), y compris la structure et le design, est la propriété exclusive d'ACDT Solutions ou de ses ayants droit et est protégé par le droit d'auteur et les droits de propriété intellectuelle.
 - Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du Site, quel que soit le moyen ou le procédé utilisé, est interdite, sauf autorisation écrite préalable d'ACDT Solutions.
-- Les marques et logos figurant sur le Site sont des marques déposées. Toute reproduction ou utilisation de ces marques est strictement interdite.
+- [À CONFIRMER : à conserver uniquement si un dépôt de marque existe (numéro de dépôt), sinon à supprimer] Les marques et logos figurant sur le Site sont des marques déposées. Toute reproduction ou utilisation de ces marques est strictement interdite.
 
 ## 5. Obligations de l'Utilisateur
 

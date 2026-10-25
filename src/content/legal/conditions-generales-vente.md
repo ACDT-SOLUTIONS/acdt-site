@@ -1,17 +1,21 @@
 ---
 titre: "Conditions Générales de Vente (CGV)"
 ordre: 5
-source: "Reprise à l'identique de la page publiée sur l'ancien site (main, ceeb27c)."
+source: "Texte de l'ancien site (main, ceeb27c), complété de champs à renseigner. Non conforme tant que ces champs ne sont pas remplis et vérifiés ; relecture juridique recommandée."
 aVerifier:
-  - "Section 1 : identité du prestataire incomplète (adresse, SIRET) et formulation « Le Site est édité par » inadaptée à des CGV."
+  - "Section 1 : identité complète du prestataire."
+  - "Date de mise à jour."
 ---
-Date de dernière mise à jour : 28 Novembre 2025
+Date de dernière mise à jour : [À COMPLÉTER] (ancienne version : 28 Novembre 2025)
 
 Les présentes Conditions Générales de Vente (CGV) s'appliquent, sans restriction ni réserve, à l'ensemble des prestations intellectuelles et d'intégration de systèmes proposées par ACDT Solutions à ses clients professionnels (B2B).
 
 ## 1. Identité du Prestataire
 
-Le Site est édité par : **ACDT Solutions**  
+**ACDT Solutions**, entreprise individuelle exploitée par [À COMPLÉTER : nom et prénom]  
+Adresse : [À COMPLÉTER]  
+SIRET : 99952963900018  
+[À COMPLÉTER : numéro de TVA intracommunautaire, ou régime de TVA applicable]  
 Email : contact@acdt-solutions.com
 
 ## 2. Commande et Contrat (Acceptation)
