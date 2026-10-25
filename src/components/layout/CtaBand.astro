@@ -4,11 +4,16 @@ import { ctaPrincipal, type LienNav } from '@/config/site';
 
 interface Props {
   eyebrow?: string;
+  principal?: LienNav;
   secondaire?: LienNav;
 }
 
 // Bandeau de contact commun à toutes les pages ; titre et texte adaptables par slots.
-const { eyebrow = 'Premier échange', secondaire = { label: 'Ou écrivez-nous', href: '/contact/' } } = Astro.props;
+const {
+  eyebrow = 'Premier échange',
+  principal = ctaPrincipal,
+  secondaire = { label: 'Ou écrivez-nous', href: '/contact/' },
+} = Astro.props;
 ---
 
 <section class="cta-band" aria-labelledby="cta-titre">
@@ -33,7 +38,7 @@ const { eyebrow = 'Premier échange', secondaire = { label: 'Ou écrivez-nous', 
         </slot>
       </p>
       <div class="cta-band__actions">
-        <Button href={ctaPrincipal.href} variant="inverse" size="l" arrow>{ctaPrincipal.label}</Button>
+        <Button href={principal.href} variant="inverse" size="l" arrow>{principal.label}</Button>
         <a class="cta-band__link" href={secondaire.href}>{secondaire.label}</a>
       </div>
     </div>

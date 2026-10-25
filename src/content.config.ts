@@ -181,8 +181,14 @@ const pagesSolutions = defineCollection({
         devis: z.object({ titre: z.string(), facteurs: z.array(z.string()).min(1), texte: z.string() }).optional(),
       })
       .optional(),
-    confidentialite: z.object({ titre: z.string(), sousTitre: z.string(), points: z.array(z.string()).min(1) }).optional(),
-    cta: z.object({ titre: z.string(), texte: z.string(), secondaire: lien }).optional(),
+    confidentialite: z
+      .object({
+        titre: z.string(),
+        sousTitre: z.string(),
+        points: z.array(z.object({ label: z.string(), texte: z.string() })).min(1),
+      })
+      .optional(),
+    cta: z.object({ titre: z.string(), texte: z.string(), principal: lien.optional(), secondaire: lien }).optional(),
   }),
 });
 

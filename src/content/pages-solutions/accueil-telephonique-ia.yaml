@@ -54,12 +54,14 @@ prestations:
     - titre: Qualification des appels
       resume: >-
         Selon vos consignes, il recueille le motif de l'appel, identifie les informations nécessaires et
-        distingue différents types de demandes.
-      details:
-        - titre: Types de demandes distingués
-          texte: >-
-            Nouveau prospect, client existant, demande administrative, rendez-vous ou situation nécessitant
-            une attention particulière.
+        distingue différents types de demandes :
+      # Liste courte, affichée directement : un dépliant n'apporterait rien ici.
+      liste:
+        - Nouveau prospect
+        - Client existant
+        - Demande administrative
+        - Rendez-vous
+        - Situation nécessitant une attention particulière
     - titre: Prise de messages et rendez-vous
       resume: >-
         Les informations recueillies sont organisées dans un compte rendu structuré, transmissible à la
@@ -129,7 +131,7 @@ fonctionnement:
 
 demo:
   titre: Testez notre permanence téléphonique IA
-  accroche: Ne vous contentez pas de nous croire. Appelez.
+  accroche: La meilleure façon de comprendre ? L'essayer.
   intro: >-
     Nous avons préparé une démonstration permettant de découvrir concrètement comment un assistant vocal
     peut accueillir un appel professionnel.
@@ -239,30 +241,34 @@ accompagnement:
       - Coûts récurrents de téléphonie, d'intelligence artificielle et de maintenance
     texte: Nous établissons une proposition adaptée après analyse de vos besoins.
 
+# Version condensée de la section 08 : chaque point de la rédaction est conservé, formulé plus brièvement.
 confidentialite:
   titre: Confidentialité et limites
   sousTitre: Une automatisation encadrée, pas une autonomie sans contrôle.
   points:
-    - >-
-      Les informations recueillies lors des appels peuvent contenir des données personnelles et, selon le
-      secteur, des informations confidentielles.
-    - >-
-      Le projet doit donc préciser les données nécessaires, les destinataires, les accès autorisés, les
-      éventuels prestataires techniques et les durées de conservation applicables.
-    - >-
-      Les appelants doivent être informés de la nature automatisée de leur interlocuteur et du traitement de
-      leurs données selon les obligations applicables.
-    - >-
-      L'assistant n'est pas destiné à remplacer un professionnel qualifié pour des décisions juridiques,
-      médicales ou d'autres décisions sensibles.
-    - >-
-      Certaines fonctionnalités, notamment les transferts avancés, l'intégration à des logiciels métier ou
-      l'utilisation dans des secteurs réglementés, nécessitent une validation technique et éventuellement
-      réglementaire spécifique.
+    - label: Données sensibles
+      texte: Les appels peuvent contenir des données personnelles et, selon le secteur, des informations confidentielles.
+    - label: Cadrage préalable
+      texte: >-
+        Données nécessaires, destinataires, accès autorisés, prestataires techniques et durées de conservation
+        sont précisés dans le projet.
+    - label: Transparence
+      texte: >-
+        Les appelants sont informés qu'ils échangent avec un système automatisé et du traitement de leurs données,
+        selon les obligations applicables.
+    - label: Décisions sensibles
+      texte: >-
+        L'assistant ne remplace pas un professionnel qualifié pour des décisions juridiques, médicales ou d'autres
+        décisions sensibles.
+    - label: Validation spécifique
+      texte: >-
+        Transferts avancés, intégration à des logiciels métier et secteurs réglementés nécessitent une validation
+        technique, et éventuellement réglementaire.
 
 cta:
-  titre: Votre entreprise ne devrait pas devenir injoignable chaque fois que vous êtes occupé.
+  titre: Et si vos appels restaient pris en charge même lorsque vous êtes occupé ?
   texte: >-
     Découvrez comment une permanence téléphonique automatisée peut compléter votre accueil existant, faciliter
     le suivi des demandes et préserver le temps de votre équipe.
+  principal: { label: Étudier ma permanence téléphonique, href: /rendez-vous/ }
   secondaire: { label: Tester la permanence IA, href: "#demonstration" }

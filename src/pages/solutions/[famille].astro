@@ -291,7 +291,7 @@ const textesSecteurs = p?.secteurs
 
   {
     p?.cta ? (
-      <CtaBand eyebrow="Étude personnalisée" secondaire={p.cta.secondaire}>
+      <CtaBand eyebrow="Étude personnalisée" principal={p.cta.principal} secondaire={p.cta.secondaire}>
         <Fragment slot="title">{p.cta.titre}</Fragment>
         {p.cta.texte}
       </CtaBand>
