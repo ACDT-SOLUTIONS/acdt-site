@@ -192,6 +192,17 @@ const pagesSolutions = defineCollection({
   }),
 });
 
+// Pages légales (src/content/legal/<chemin>.md). `aVerifier` liste les points à traiter avant publication.
+const legal = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/legal' }),
+  schema: z.object({
+    titre: z.string(),
+    ordre: z.number(),
+    source: z.string().optional(),
+    aVerifier: z.array(z.string()).default([]),
+  }),
+});
+
 const faq = defineCollection({
   loader: file('src/content/faq.yaml'),
   schema: z.object({
@@ -211,5 +222,6 @@ export const collections = {
   sources,
   simulations,
   pagesSolutions,
+  legal,
   faq,
 };
