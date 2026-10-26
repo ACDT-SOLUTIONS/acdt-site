@@ -33,6 +33,11 @@ jobs:
   construire:
     if: ${{ !inputs.restaurer }}
     runs-on: ubuntu-latest
+    # Lues par le build (HTML généré) et par les contrôles stricts.
+    env:
+      PUBLIC_GA4_ID: G-V9NGFLJYFW
+      # Workflow n8n de production existant (notification, accusé de réception, Google Sheets).
+      PUBLIC_FORMULAIRE_URL: https://n8n.acdt-solutions.com/webhook/dd6d8a34-f999-4fa7-8088-0d654fe535fe
     steps:
       - uses: actions/checkout@v4
 
@@ -48,8 +53,6 @@ jobs:
         run: npm run build:release
         env:
           ASTRO_TELEMETRY_DISABLED: 1
-          PUBLIC_PLAUSIBLE_DOMAIN: acdt-solutions.com
-          PUBLIC_PLAUSIBLE_SRC: https://plausible.io/js/script.js
 
       - name: Contrôles stricts avant production (bloquants)
         run: npm run verifier:production
@@ -100,7 +103,7 @@ jobs:
             # 0. Prérequis : rsync, droits, configuration nginx du site installée (étape A de DEPLOIEMENT.md).
             command -v rsync >/dev/null || { echo "rsync absent : déploiement annulé."; exit 1; }
             test -w "$SITE_DIR" || { echo "$SITE_DIR non accessible en écriture : déploiement annulé."; exit 1; }
-            docker exec "$C" nginx -T 2>/dev/null | grep -q acdt-site-conf-v1 \
+            docker exec "$C" nginx -T 2>/dev/null | grep -q acdt-site-conf-v2 \
               || { echo "Configuration nginx du site non installée : déploiement annulé."; exit 1; }
 
             # 1. Sauvegarde complète de la production actuelle (y compris l'ancien .git).
@@ -144,10 +147,22 @@ jobs:
           verifier / 200 'Automatiser ce qui vous coûte'
           verifier /solutions/accueil-telephonique-ia/ 200 'tel:+33972199815'
           verifier /tarifs/ 200 'sur devis'
-          verifier /contact/ 200
-          verifier /rendez-vous/ 200 'cal.com'
-          verifier /services/ 200
-          verifier /mentions-legales/ 200
+          verifier /contact/ 200 '<contact-form'
+          verifier /contact/ 200 'tel:+33757830279'
+          verifier /contact/ 200 'src="/consentement.js" data-ga4="G-'
+          verifier /consentement.js 200 'acdt-consentement'
+          verifier /rendez-vous/ 200 'cal\.com/\|calendar\.app\.google/\|calendar\.google\.com/'
+          verifier /services/ 200 'src="/consentement.js"'
+          verifier /mentions-legales/ 200 'tel:+33757830279'
+          verifier /politique-de-confidentialite/ 200 'Google Analytics'
+          verifier /politique-cookies/ 200 'data-consentement-ouvrir'
+          verifier /conditions-generales-utilisation/ 200
+          verifier /conditions-generales-vente/ 200 '293 B'
+          for p in / /contact/ /mentions-legales/ /politique-de-confidentialite/ /politique-cookies/ \
+                   /conditions-generales-utilisation/ /conditions-generales-vente/; do
+            curl -s "$URL_PUBLIQUE$p" | grep -q 'À COMPLÉTER\|À CONFIRMER\|googletagmanager\.com/gtm\|noindex' \
+              && { echo "✗ $p : marqueur provisoire, GTM ou noindex présent"; exit 1; } || echo "✓ $p : aucun marqueur provisoire"
+          done
           verifier /sitemap.xml 200 '<urlset'
           verifier /rdv/ 301 'location: /rendez-vous/'
           verifier /test/ 410

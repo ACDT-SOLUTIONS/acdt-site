@@ -1,38 +1,34 @@
 ---
 titre: "Mentions légales"
 ordre: 1
-source: "Texte de l'ancien site (main, ceeb27c), complété de champs à renseigner. Non conforme tant que ces champs ne sont pas remplis et vérifiés."
-aVerifier:
-  - "Identité de l'exploitant : nom, prénom, adresse, téléphone, immatriculation, TVA."
-  - "Directeur de la publication."
-  - "Hébergeur : confirmation et coordonnées."
-  - "Section 5 : moyens de contact réellement actifs."
+source: "Texte de l'ancien site (main, ceeb27c), complété de l'identité de l'entreprise (octobre 2026) et mis en cohérence avec la configuration du nouveau site (GA4 avec consentement, formulaire n8n)."
 ---
+Date de dernière mise à jour : 26 octobre 2026
+
 ## 1. Éditeur du site
 
 Ce site est édité par :
 
-**ACDT Solutions**  
-Entreprise individuelle exploitée par [À COMPLÉTER : nom et prénom de l'entrepreneur]  
-Adresse : [À COMPLÉTER : adresse postale]  
-Téléphone : [À COMPLÉTER]  
-SIRET : 99952963900018  
-[À COMPLÉTER : immatriculation (RCS ou RM) le cas échéant]  
-[À COMPLÉTER : numéro de TVA intracommunautaire, ou régime de TVA applicable]  
-Email : contact@acdt-solutions.com
+**ACDT Solutions** (nom commercial)  
+Entrepreneur individuel : EkimaNdemba Frédéric  
+Adresse : 12 rue Waldeck Rochet, 92000 Nanterre, France  
+Téléphone : <a href="tel:+33757830279">07 57 83 02 79</a>  
+Email : frederic.ekima-ndemba@acdt-solutions.com  
+SIREN : 999 529 639 – SIRET : 999 529 639 00018  
+Immatriculation : Registre national des entreprises (RNE)  
+TVA : TVA non applicable, article 293 B du Code général des impôts (franchise en base de TVA)
 
 ## 2. Responsable de la publication
 
-Le responsable de la publication est : [À COMPLÉTER : nom et prénom], joignable à l'adresse email ci-dessus.
+Le responsable de la publication est EkimaNdemba Frédéric, joignable à l'adresse frederic.ekima-ndemba@acdt-solutions.com.
 
 ## 3. Hébergement
 
 Le site est hébergé par :
 
-[À CONFIRMER : texte de l'ancien site ci-dessous, à vérifier pour le serveur actuel]  
 **OVH SAS**  
 2 rue Kellermann – 59100 Roubaix – France  
-Téléphone : 09 72 10 10 07
+Téléphone (standard de l'hébergeur OVH) : 09 72 10 10 07
 
 ## 4. Propriété intellectuelle
 
@@ -40,19 +36,21 @@ L’ensemble du contenu du site (textes, images, graphismes, logos, vidéos, str
 
 Toute reproduction, représentation, modification ou exploitation, totale ou partielle, est strictement interdite sans accord préalable.
 
+ACDT Solutions est une marque déposée. Toute reproduction ou utilisation de cette marque sans autorisation est interdite.
+
 ## 5. Protection des données personnelles
 
-[À CONFIRMER : l'ancien texte cite « le formulaire de contact » ; indiquer les moyens de contact réellement actifs (email, prise de rendez-vous, formulaire).] Les données collectées via le formulaire de contact sont utilisées exclusivement pour répondre aux demandes des visiteurs.
+Les données transmises via le formulaire de contact, par email ou lors d'une prise de rendez-vous sont utilisées exclusivement pour traiter les demandes des visiteurs.
 
 - Aucune donnée personnelle n’est vendue ou cédée à des tiers.
-- Les données ne sont conservées que le temps nécessaire au traitement.
-- L’utilisateur peut demander la suppression de ses données à tout moment.
+- Les données ne sont conservées que pour la durée indiquée dans la politique de confidentialité.
+- L’utilisateur peut demander l'accès à ses données, leur rectification ou leur suppression à tout moment.
 
-Le détail des traitements, notamment ceux de la ligne de démonstration téléphonique, figure dans la [politique de confidentialité](/politique-de-confidentialite/).
+Le détail des traitements, des prestataires et des durées de conservation, notamment pour la ligne de démonstration téléphonique, figure dans la [politique de confidentialité](/politique-de-confidentialite/).
 
 ### Cookies et mesure d’audience
 
-Le site utilise **Plausible Analytics**, un outil conforme au RGPD, sans cookie, et ne collectant aucune donnée personnelle identifiable.
+Le site utilise **Google Analytics 4** pour mesurer sa fréquentation, uniquement si vous l'acceptez. Aucun cookie de mesure d'audience n'est déposé avant votre accord, que vous pouvez retirer à tout moment. Voir la [politique de cookies](/politique-cookies/).
 
 ## 6. Responsabilité
 

@@ -20,10 +20,13 @@ const pageRedirection = (/** @type {string} */ cible) => {
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Redirection</title><meta name="robots" content="noindex"><link rel="canonical" href="${url}"><meta http-equiv="refresh" content="0;url=${cible}"></head><body><p>Cette page a été déplacée : <a href="${cible}">${url}</a>.</p></body></html>\n`;
 };
 
-/** Script Plausible injecté dans les anciennes pages, avec la même configuration que les nouvelles. */
-function balisePlausible() {
-  const { PUBLIC_PLAUSIBLE_DOMAIN: domaine, PUBLIC_PLAUSIBLE_SRC: src } = process.env;
-  return domaine && src ? `<script defer data-domain="${domaine}" src="${src}"></script>` : '';
+/**
+ * Gestion du consentement (et GA4 après accord) injectée dans les anciennes pages, avec la même configuration
+ * que les nouvelles (voir src/components/integrations/Analytics.astro).
+ */
+function baliseConsentement() {
+  const id = process.env.PUBLIC_GA4_ID;
+  return id ? `<script defer src="/consentement.js" data-ga4="${id}"></script>` : '';
 }
 
 /** Règles nginx des anciennes URL (incluses par la configuration du serveur, voir deploy/nginx/). */
@@ -65,7 +68,7 @@ function publication() {
 
         // 2. Anciennes pages conservées, avec leurs ressources.
         const conservees = anciennesPagesConservees();
-        const analytics = balisePlausible();
+        const analytics = baliseConsentement();
         for (const chemin of conservees) {
           const source = join(LEGACY, chemin, 'index.html');
           const cible = join(racine, chemin, 'index.html');
@@ -108,10 +111,10 @@ export default defineConfig({
       // Aucun secret ici : ces valeurs finissent dans le HTML généré.
       PUBLIC_RELEASE: envField.boolean({ context: 'server', access: 'public', default: false }),
       PUBLIC_INDEXABLE: envField.boolean({ context: 'server', access: 'public', default: false }),
-      PUBLIC_PLAUSIBLE_DOMAIN: envField.string({ context: 'server', access: 'public', optional: true }),
-      PUBLIC_PLAUSIBLE_SRC: envField.string({ context: 'server', access: 'public', optional: true }),
-      // Formulaire de contact : désactivé tant qu'il n'a pas été validé et testé (voir DEPLOIEMENT.md).
-      PUBLIC_FORMULAIRE_URL: envField.string({ context: 'server', access: 'public', optional: true }),
+      // Google Analytics 4 (gtag.js direct, sans GTM), chargé uniquement après consentement.
+      PUBLIC_GA4_ID: envField.string({ context: 'server', access: 'public', optional: true, startsWith: 'G-' }),
+      // Formulaire de contact : webhook n8n de production (voir DEPLOIEMENT.md, section 7). Vide = désactivé.
+      PUBLIC_FORMULAIRE_URL: envField.string({ context: 'server', access: 'public', optional: true, url: true }),
     },
   },
 });

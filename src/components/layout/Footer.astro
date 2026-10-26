@@ -78,17 +78,21 @@ const legaux = visibles(liensLegaux);
 
     <div class="site-footer__bottom">
       <p class="mono">© {annee} {site.nom}</p>
-      {
-        legaux.length > 0 && (
-          <ul>
-            {legaux.map((l) => (
-              <li>
-                <a href={l.href}>{l.label}</a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
+      <ul>
+        {
+          legaux.map((l) => (
+            <li>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))
+        }
+        <li>
+          {/* Affiché par /consentement.js uniquement lorsque la mesure d'audience est active. */}
+          <button type="button" class="site-footer__cookies" data-consentement-ouvrir hidden>
+            Gérer les cookies
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </footer>
@@ -163,6 +167,24 @@ const legaux = visibles(liensLegaux);
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-5);
+  }
+
+  .site-footer__bottom li:has(> [hidden]) {
+    display: none;
+  }
+
+  .site-footer__cookies {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .site-footer__cookies:hover {
+    color: var(--color-inverse-text);
   }
 
   @media (min-width: 60rem) {

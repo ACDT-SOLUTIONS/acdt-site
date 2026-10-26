@@ -1,30 +1,28 @@
 ---
 titre: "Conditions Générales de Vente (CGV)"
 ordre: 5
-source: "Texte de l'ancien site (main, ceeb27c), complété de champs à renseigner. Non conforme tant que ces champs ne sont pas remplis et vérifiés ; relecture juridique recommandée."
-aVerifier:
-  - "Section 1 : identité complète du prestataire."
-  - "Date de mise à jour."
+source: "Texte de l'ancien site (main, ceeb27c), complété de l'identité du prestataire et du régime de TVA (octobre 2026). Relecture juridique recommandée."
 ---
-Date de dernière mise à jour : [À COMPLÉTER] (ancienne version : 28 Novembre 2025)
+Date de dernière mise à jour : 26 octobre 2026
 
 Les présentes Conditions Générales de Vente (CGV) s'appliquent, sans restriction ni réserve, à l'ensemble des prestations intellectuelles et d'intégration de systèmes proposées par ACDT Solutions à ses clients professionnels (B2B).
 
 ## 1. Identité du Prestataire
 
-**ACDT Solutions**, entreprise individuelle exploitée par [À COMPLÉTER : nom et prénom]  
-Adresse : [À COMPLÉTER]  
-SIRET : 99952963900018  
-[À COMPLÉTER : numéro de TVA intracommunautaire, ou régime de TVA applicable]  
+**ACDT Solutions**, nom commercial de l'entrepreneur individuel EkimaNdemba Frédéric  
+Adresse : 12 rue Waldeck Rochet, 92000 Nanterre, France  
+SIREN : 999 529 639 – SIRET : 999 529 639 00018  
+Immatriculation : Registre national des entreprises (RNE)  
+TVA non applicable, article 293 B du Code général des impôts  
 Email : contact@acdt-solutions.com
 
 ## 2. Commande et Contrat (Acceptation)
-- **Devis :** Toute prestation fera l'objet d'un devis détaillé, valable pour une durée de trente (30) jours.
+- **Devis :** Toute prestation fera l'objet d'un devis détaillé, valable pour une durée de trente (30) jours. ACDT Solutions ne publie pas de grille tarifaire : le prix de chaque prestation est fixé dans le devis.
 - **Formation du Contrat :** Le contrat est réputé formé uniquement à la date de réception par ACDT Solutions du devis ou de la proposition commerciale signée par le Client et du paiement de l'acompte prévu.
 - **Périmètre (Scope) :** Seules les prestations et les livrables mentionnés explicitement dans le devis signé font partie de la commande. Toute modification ou ajout non prévu fera l'objet d'un devis complémentaire (Avenant).
 
 ## 3. Conditions de Prix et Paiement
-- **Prix :** Les prix des prestations sont ceux figurant sur le devis. Ils sont entendus Hors Taxes (HT).
+- **Prix :** Les prix des prestations sont ceux figurant sur le devis. ACDT Solutions relevant de la franchise en base de TVA, les prix sont indiqués sans TVA (« TVA non applicable, article 293 B du CGI »). En cas de changement de régime, la TVA sera appliquée au taux en vigueur sur les factures émises après ce changement.
 - **Acompte :** Sauf mention contraire, un acompte de trente pour cent (30 %) du montant total de la prestation est exigé à la signature du devis.
 - **Échéancier :** Le solde est facturé selon les paliers de livraison ou à l'achèvement du projet, comme spécifié dans le devis.
 - **Délai de Paiement :** Les factures sont payables à réception.
@@ -40,14 +38,15 @@ Email : contact@acdt-solutions.com
 - **Garantie :** ACDT Solutions garantit la correction des bugs de fonctionnement des workflows livrés pendant une période de trente (30) jours suivant la recette, à condition que le problème soit de son fait et non dû à une modification des outils tiers (API, mises à jour, etc.).
 - **Maintenance :** Toute intervention hors période de garantie ou visant l'évolution des workflows nécessite la souscription d'un contrat de maintenance et de support séparé.
 
-## 6. Propriété Intellectuelle et Confidentialité
+## 6. Propriété Intellectuelle, Confidentialité et Données Personnelles
 - **Confidentialité :** Chaque partie s'engage à préserver la stricte confidentialité des informations et données échangées ou obtenues dans le cadre de la prestation.
 - **Propriété des Livrables :** Le Client devient propriétaire des livrables (workflows, configurations spécifiques) après le paiement intégral des factures y afférentes. ACDT Solutions conserve la propriété de ses méthodes, outils génériques et savoir-faire interne.
+- **Données Personnelles :** Lorsque la prestation implique le traitement de données personnelles pour le compte du Client, les conditions de ce traitement (données, finalités, prestataires techniques, durées de conservation, sécurité) sont précisées dans le devis ou dans un accord de traitement des données conclu entre les parties, conformément à l'article 28 du RGPD.
 
 ## 7. Responsabilité
 - La responsabilité d'ACDT Solutions ne peut être engagée qu'en cas de faute prouvée. Elle ne saurait être engagée pour un dommage indirect.
-- En tout état de cause, si la responsabilité d'ACDT Solutions devait être reconnue, elle est expressément limitée au montant total HT payé par le Client pour la prestation en cause.
+- En tout état de cause, si la responsabilité d'ACDT Solutions devait être reconnue, elle est expressément limitée au montant total payé par le Client pour la prestation en cause.
 
 ## 8. Droit Applicable et Litiges
 
-Les présentes CGV sont régies par le droit français. Tout différend relatif à leur exécution ou interprétation sera soumis, à défaut de résolution amiable, au tribunal de commerce compétent du siège social d'ACDT Solutions.
+Les présentes CGV sont régies par le droit français. Tout différend relatif à leur exécution ou interprétation sera soumis, à défaut de résolution amiable, à la juridiction compétente dans le ressort de l'adresse professionnelle d'ACDT Solutions.

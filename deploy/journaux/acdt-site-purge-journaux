@@ -1,0 +1,31 @@
+#!/bin/bash
+# Purge des journaux du site acdt-solutions.com : aucune entrée de plus de 7 jours.
+# Installé dans /usr/local/sbin/, lancé toutes les heures par acdt-site-purge-journaux.timer (DEPLOIEMENT.md, étape A2).
+#
+# - Accès : un fichier par jour UTC (access-AAAA-MM-JJ.log, écrit par nginx). Seuls le jour en cours et les
+#   5 précédents sont conservés : la plus ancienne entrée a moins de 7 jours, même si une exécution est
+#   retardée jusqu'à 24 h. Tout autre fichier access-*.log est supprimé.
+# - Erreurs : error.log (nom fixe), dont les lignes de plus de 6 jours sont retirées sur place.
+set -euo pipefail
+
+DOSSIER=/var/log/acdt-site
+[ -d "$DOSSIER" ] || exit 0
+
+declare -A conserver
+for i in 0 1 2 3 4 5; do
+  conserver["access-$(date -u -d "-$i day" +%F).log"]=1
+done
+for f in "$DOSSIER"/access-*.log; do
+  [ -e "$f" ] || continue
+  [ -n "${conserver[$(basename "$f")]:-}" ] || rm -f -- "$f"
+done
+
+ERREURS="$DOSSIER/error.log"
+if [ -s "$ERREURS" ]; then
+  limite=$(date -u -d '-6 day' '+%Y/%m/%d %H:%M:%S')
+  tmp=$(mktemp "$DOSSIER/.error.XXXXXX")
+  awk -v limite="$limite" '/^[0-9]{4}\/[0-9]{2}\/[0-9]{2} / && substr($0, 1, 19) >= limite' "$ERREURS" > "$tmp"
+  # Réécriture sur place : nginx garde le même fichier ouvert (ajout en fin de fichier).
+  cat "$tmp" > "$ERREURS"
+  rm -f -- "$tmp"
+fi

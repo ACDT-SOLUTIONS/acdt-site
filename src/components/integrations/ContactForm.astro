@@ -1,85 +1,257 @@
 ---
 import { PUBLIC_FORMULAIRE_URL } from 'astro:env/server';
+import { site } from '@/config/site';
 import { lienEffectif } from '@/lib/publication';
 
-// Formulaire de contact (même format que l'ancien formulaire n8n : name, company, email, message, formId).
+// Formulaire de contact relié au workflow n8n de production existant (webhook POST, corps JSON :
+// name, company, email, message). Le workflow notifie contact@, envoie un accusé de réception et enregistre la
+// demande dans Google Sheets. Ne pas modifier le format sans modifier le workflow.
 // Désactivé tant que PUBLIC_FORMULAIRE_URL n'est pas défini : rien n'est affiché ni envoyé.
-// Tests : endpoint local (npm run formulaire:test), jamais le webhook de production sans validation.
+// Tests locaux : npm run formulaire:test (jamais le webhook de production pendant le développement).
 const lienConfidentialite = lienEffectif('/politique-de-confidentialite/');
 ---
 
 {
   PUBLIC_FORMULAIRE_URL && (
-    <contact-form data-url={PUBLIC_FORMULAIRE_URL}>
+    <contact-form data-url={PUBLIC_FORMULAIRE_URL} data-email={site.email}>
       <form class="formulaire" novalidate>
-        <div class="champ">
-          <label for="cf-nom">Nom</label>
-          <input id="cf-nom" name="name" type="text" autocomplete="name" required />
+        <p class="formulaire__aide">Tous les champs sont obligatoires, sauf mention contraire.</p>
+
+        <div class="formulaire__ligne">
+          <div class="champ">
+            <label for="cf-nom">Nom</label>
+            <input
+              id="cf-nom"
+              name="name"
+              type="text"
+              autocomplete="name"
+              required
+              minlength="2"
+              maxlength="100"
+              aria-describedby="cf-nom-erreur"
+            />
+            <p class="champ__erreur" id="cf-nom-erreur" hidden />
+          </div>
+          <div class="champ">
+            <label for="cf-societe">
+              Société <span>(facultatif)</span>
+            </label>
+            <input id="cf-societe" name="company" type="text" autocomplete="organization" maxlength="150" />
+          </div>
         </div>
+
         <div class="champ">
-          <label for="cf-societe">
-            Société <span>(facultatif)</span>
-          </label>
-          <input id="cf-societe" name="company" type="text" autocomplete="organization" />
+          <label for="cf-email">Adresse email</label>
+          <input
+            id="cf-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            inputmode="email"
+            spellcheck="false"
+            required
+            maxlength="254"
+            aria-describedby="cf-email-erreur"
+          />
+          <p class="champ__erreur" id="cf-email-erreur" hidden />
         </div>
-        <div class="champ">
-          <label for="cf-email">Email</label>
-          <input id="cf-email" name="email" type="email" autocomplete="email" required />
-        </div>
+
         <div class="champ">
           <label for="cf-message">Message</label>
-          <textarea id="cf-message" name="message" rows="6" required />
+          <p class="champ__aide" id="cf-message-aide">
+            Votre activité, vos outils actuels et ce qui vous fait perdre du temps.
+          </p>
+          <textarea
+            id="cf-message"
+            name="message"
+            rows="6"
+            required
+            minlength="10"
+            maxlength="5000"
+            aria-describedby="cf-message-aide cf-message-erreur"
+          />
+          <p class="champ__erreur" id="cf-message-erreur" hidden />
         </div>
+
         <div class="piege" aria-hidden="true">
-          <label for="cf-site">Ne pas remplir</label>
+          <label for="cf-site">Ne pas remplir ce champ</label>
           <input id="cf-site" name="website" type="text" tabindex="-1" autocomplete="off" />
         </div>
-        {
-          lienConfidentialite && (
-            <p class="mention">
-              Vos données servent uniquement à répondre à votre demande.{' '}
-              <a href={lienConfidentialite}>Politique de confidentialité</a>.
-            </p>
-          )
-        }
-        <button type="submit">Envoyer</button>
-        <p class="statut" role="status" aria-live="polite"></p>
+
+        <p class="mention">
+          Vos informations servent uniquement à traiter votre demande : elles nous sont transmises par email et
+          enregistrées dans notre suivi des demandes.
+          {lienConfidentialite && (
+            <>
+              {' '}
+              En savoir plus et exercer vos droits : <a href={lienConfidentialite}>politique de confidentialité</a>.
+            </>
+          )}
+        </p>
+
+        <div class="formulaire__envoi">
+          <button type="submit">Envoyer le message</button>
+          <p class="statut" role="status" aria-live="polite" />
+        </div>
+        <p class="alerte" role="alert" hidden />
       </form>
+
+      <div class="succes" tabindex="-1" hidden>
+        <p class="succes__titre">Votre message a bien été reçu.</p>
+        <p>
+          Vous devriez recevoir un accusé de réception automatique à l'adresse indiquée ; s'il n'apparaît pas,
+          vérifiez vos courriers indésirables. Nous vous répondrons par email.
+        </p>
+        <button type="button" class="succes__autre">Envoyer un autre message</button>
+      </div>
     </contact-form>
   )
 }
 
 <script>
+  type Champ = HTMLInputElement | HTMLTextAreaElement;
+
+  const DELAI_MIN_MS = 2500; // envoi plus rapide qu'un humain : probablement un robot
+  const DELAI_REPONSE_MS = 15000;
+  const CLE_ENVOIS = 'acdt-formulaire-envois';
+  const ENVOIS_MAX = 3; // par heure et par navigateur
+  const EMAIL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
+
+  function envoisRecents(): number[] {
+    try {
+      const liste = JSON.parse(localStorage.getItem(CLE_ENVOIS) || '[]') as number[];
+      return liste.filter((t) => Date.now() - t < 3600_000);
+    } catch {
+      return [];
+    }
+  }
+
+  function memoriserEnvoi() {
+    try {
+      localStorage.setItem(CLE_ENVOIS, JSON.stringify([...envoisRecents(), Date.now()]));
+    } catch {
+      // stockage indisponible : la limite ne s'applique qu'à la page en cours
+    }
+  }
+
+  function erreurChamp(champ: Champ): string {
+    const valeur = champ.value.trim();
+    if (champ.required && !valeur) {
+      return champ.name === 'email' ? 'Indiquez votre adresse email.' : 'Ce champ est obligatoire.';
+    }
+    if (champ.name === 'email' && valeur && !EMAIL.test(valeur)) {
+      return 'Adresse email invalide (exemple : nom@entreprise.fr).';
+    }
+    if (champ.minLength > 0 && valeur.length < champ.minLength) {
+      return `${champ.minLength} caractères minimum.`;
+    }
+    return '';
+  }
+
   class ContactForm extends HTMLElement {
     connectedCallback() {
       const form = this.querySelector('form');
       const statut = this.querySelector<HTMLElement>('.statut');
+      const alerte = this.querySelector<HTMLElement>('.alerte');
+      const succes = this.querySelector<HTMLElement>('.succes');
       const bouton = this.querySelector<HTMLButtonElement>('button[type="submit"]');
-      const url = this.dataset.url;
-      if (!form || !statut || !bouton || !url) return;
+      const { url, email } = this.dataset;
+      if (!form || !statut || !alerte || !succes || !bouton || !url) return;
+
+      const champs = [...form.querySelectorAll<Champ>('[aria-describedby$="-erreur"]')];
+      const debut = Date.now();
+
+      const afficherErreur = (champ: Champ, message: string) => {
+        const zone = this.querySelector<HTMLElement>(`#${champ.id}-erreur`);
+        champ.setAttribute('aria-invalid', String(Boolean(message)));
+        if (zone) {
+          zone.textContent = message;
+          zone.hidden = !message;
+        }
+      };
+
+      const echec = (message: string) => {
+        statut.textContent = '';
+        alerte.innerHTML = '';
+        alerte.append(message, ' Vous pouvez aussi nous écrire à ');
+        const lien = document.createElement('a');
+        lien.href = `mailto:${email}`;
+        lien.textContent = email ?? '';
+        alerte.append(lien, '.');
+        alerte.hidden = false;
+      };
+
+      // Validation au fil de la saisie une fois le champ quitté, puis à chaque modification.
+      for (const champ of champs) {
+        champ.addEventListener('blur', () => champ.value && afficherErreur(champ, erreurChamp(champ)));
+        champ.addEventListener('input', () => {
+          if (champ.getAttribute('aria-invalid') === 'true') afficherErreur(champ, erreurChamp(champ));
+        });
+      }
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!form.reportValidity()) return;
-        const donnees = Object.fromEntries(new FormData(form)) as Record<string, string>;
-        if (donnees.website) return; // champ piège rempli : envoi ignoré
+        alerte.hidden = true;
+
+        const invalides = champs.filter((c) => {
+          const message = erreurChamp(c);
+          afficherErreur(c, message);
+          return Boolean(message);
+        });
+        if (invalides.length) {
+          statut.textContent = `${invalides.length} champ(s) à corriger.`;
+          invalides[0].focus();
+          return;
+        }
+
+        const donnees = new FormData(form);
+        if (String(donnees.get('website') ?? '') || Date.now() - debut < DELAI_MIN_MS) {
+          echec("Votre message n'a pas pu être envoyé.");
+          return;
+        }
+        if (envoisRecents().length >= ENVOIS_MAX) {
+          echec('Plusieurs messages ont déjà été envoyés depuis ce navigateur dans la dernière heure.');
+          return;
+        }
+
+        // Format attendu par le workflow n8n : exactement ces quatre clés.
+        const corps = {
+          name: String(donnees.get('name') ?? '').trim(),
+          company: String(donnees.get('company') ?? '').trim(),
+          email: String(donnees.get('email') ?? '').trim(),
+          message: String(donnees.get('message') ?? '').trim(),
+        };
 
         bouton.disabled = true;
+        form.setAttribute('aria-busy', 'true');
         statut.textContent = 'Envoi en cours…';
         try {
           const reponse = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...donnees, formId: 'contact_v2' }),
+            body: JSON.stringify(corps),
+            signal: AbortSignal.timeout(DELAI_REPONSE_MS),
           });
+          // Succès uniquement si le webhook a accepté la requête (réponse HTTP 2xx).
           if (!reponse.ok) throw new Error(`HTTP ${reponse.status}`);
+          memoriserEnvoi();
           form.reset();
-          statut.textContent = 'Merci, votre message a bien été envoyé.';
+          statut.textContent = '';
+          form.hidden = true;
+          succes.hidden = false;
+          succes.focus();
         } catch {
-          statut.textContent = "L'envoi a échoué. Vous pouvez nous écrire directement par email.";
+          echec("Votre message n'a pas pu être envoyé. Vos informations sont conservées dans le formulaire : réessayez dans quelques instants.");
         } finally {
           bouton.disabled = false;
+          form.removeAttribute('aria-busy');
         }
+      });
+
+      this.querySelector('.succes__autre')?.addEventListener('click', () => {
+        succes.hidden = true;
+        form.hidden = false;
+        champs[0]?.focus();
       });
     }
   }
@@ -88,14 +260,36 @@ const lienConfidentialite = lienEffectif('/politique-de-confidentialite/');
 </script>
 
 <style>
+  contact-form {
+    display: block;
+  }
+
   .formulaire {
     display: grid;
-    gap: var(--space-4);
+    gap: var(--space-5);
+  }
+
+  .formulaire__aide,
+  .champ__aide {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .formulaire__ligne {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 40rem) {
+    .formulaire__ligne {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .champ {
     display: grid;
     gap: var(--space-2);
+    align-content: start;
   }
 
   label {
@@ -114,7 +308,14 @@ const lienConfidentialite = lienEffectif('/politique-de-confidentialite/');
     padding: 0.75rem 0.9rem;
     border: 1px solid var(--color-line-strong);
     border-radius: var(--radius-m);
-    background: var(--color-surface);
+    background: var(--color-bg);
+    font-size: var(--step-0);
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 9rem;
   }
 
   input:focus-visible,
@@ -122,9 +323,21 @@ const lienConfidentialite = lienEffectif('/politique-de-confidentialite/');
     border-color: var(--color-accent);
   }
 
+  [aria-invalid='true'] {
+    border-color: var(--signal-600);
+  }
+
+  .champ__erreur {
+    font-size: var(--step--1);
+    color: var(--signal-600);
+  }
+
   .piege {
     position: absolute;
     left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
 
   .mention {
@@ -132,23 +345,73 @@ const lienConfidentialite = lienEffectif('/politique-de-confidentialite/');
     color: var(--color-text-muted);
   }
 
+  .formulaire__envoi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
   button {
-    justify-self: start;
     min-height: 2.75rem;
     padding: 0.7rem 1.4rem;
-    border: 0;
+    border: 1px solid var(--color-accent);
     border-radius: var(--radius-pill);
     background: var(--color-accent);
+    font-size: var(--step--1);
     font-weight: 560;
     color: var(--color-on-accent);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  button:hover {
+    background: var(--color-accent-hover);
   }
 
   button:disabled {
     opacity: 0.6;
+    cursor: progress;
   }
 
   .statut {
-    min-height: 1.5em;
     font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .alerte {
+    padding: var(--space-4);
+    border-left: 3px solid var(--signal-600);
+    border-radius: var(--radius-s);
+    background: var(--color-signal-soft);
+    font-size: var(--step--1);
+  }
+
+  .succes {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+    padding: var(--space-5);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-s);
+    background: var(--color-accent-soft);
+  }
+
+  .succes:focus {
+    outline: none;
+  }
+
+  .succes__titre {
+    font-size: var(--step-1);
+    font-weight: 560;
+  }
+
+  .succes__autre {
+    background: transparent;
+    color: var(--color-accent);
+  }
+
+  .succes__autre:hover {
+    background: var(--color-surface);
   }
 </style>

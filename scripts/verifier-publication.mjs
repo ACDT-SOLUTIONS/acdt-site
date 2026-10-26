@@ -16,7 +16,9 @@ import {
 
 const DIST = 'dist';
 const STRICT = process.argv.includes('--strict');
-const SCRIPTS_AUTORISES = ['https://plausible.io/'];
+// Aucun script externe dans le HTML : GA4 (gtag.js) n'est chargé par /consentement.js qu'après consentement.
+const SCRIPTS_AUTORISES = [];
+const GA4 = process.env.PUBLIC_GA4_ID;
 const MARQUEURS_BROUILLON = [
   'À rédiger',
   'À documenter',
@@ -100,15 +102,26 @@ for (const f of pages) {
     }
   }
 
-  // Scripts externes : uniquement ceux autorisés (aucun GTM, GA, chatbot ou webhook).
+  // Scripts externes : uniquement ceux autorisés (aucun GTM, GA chargé d'office, chatbot ou webhook).
   for (const [, src] of visible.matchAll(/<script[^>]*src="(https?:[^"]+)"/g)) {
     if (!SCRIPTS_AUTORISES.some((a) => src.startsWith(a))) echec(`${r} : script externe non autorisé → ${src}`);
   }
   // L'adresse du formulaire, si elle a été explicitement activée, est la seule exception admise.
   const formulaire = process.env.PUBLIC_FORMULAIRE_URL;
   const sansFormulaire = formulaire ? visible.split(formulaire).join('') : visible;
-  if (/googletagmanager|gtag\(|n8n\.acdt-solutions\.com|webhook|chat-panel/i.test(sansFormulaire)) {
-    echec(`${r} : référence à un service non autorisé (GTM, GA, n8n, chatbot)`);
+  if (/googletagmanager|gtag\(|GTM-|n8n\.acdt-solutions\.com|webhook|chat-panel/i.test(sansFormulaire)) {
+    echec(`${r} : référence à un service non autorisé (GTM, GA hors consentement, n8n, chatbot)`);
+  }
+  // Mesure d'audience : uniquement via la gestion du consentement, avec l'identifiant configuré.
+  if (GA4 && !visible.includes(`src="/consentement.js" data-ga4="${GA4}"`)) {
+    echec(`${r} : gestion du consentement (/consentement.js) absente`);
+  }
+  // Réservation : aucun lien vide ni adresse provisoire.
+  if (r === '/rendez-vous/' && !/href="https:\/\/(cal\.com|calendar\.app\.google|calendar\.google\.com)\//.test(visible)) {
+    echec(`${r} : aucun lien de réservation`);
+  }
+  if (r === '/contact/' && !visible.includes('<contact-form')) {
+    bloquer(`${r} : formulaire de contact absent (PUBLIC_FORMULAIRE_URL non défini)`);
   }
 }
 

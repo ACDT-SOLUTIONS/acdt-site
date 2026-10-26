@@ -3,10 +3,42 @@ export const site = {
   description:
     "Automatisation des processus et IA appliquée pour les cabinets d'avocats, les TPE-PME, les artisans et les entreprises de services. Prestations sur devis.",
   email: 'contact@acdt-solutions.com',
+  // Ligne professionnelle de l'éditeur (Onoff). À ne pas confondre avec la ligne de démonstration (OVH).
+  telephone: '07 57 83 02 79',
+  telephoneLien: 'tel:+33757830279',
   locale: 'fr_FR',
-  // Page de réservation déjà utilisée par l'ancien site (vérifiée en ligne le 25/10/2026).
-  reservation: 'https://cal.com/frederic-ekima-ndemba',
 } as const;
+
+/**
+ * Rendez-vous de découverte. Migration Cal.com → Google Agenda (Google Workspace) :
+ * - `google` : URL des deux pages de réservation (même disponibilités, une par modalité). Vides tant qu'elles
+ *   n'ont pas été créées ET testées ; ne jamais y mettre une adresse supposée.
+ * - Tant que les deux ne sont pas renseignées, le site continue d'utiliser `calcom`.
+ * - Une fois la bascule faite et vérifiée en ligne, supprimer `calcom` (voir DEPLOIEMENT.md, section 9).
+ */
+export const rendezVous = {
+  intitule: 'Rendez-vous de découverte — ACDT Solutions',
+  duree: '30 minutes',
+  jours: 'Du lundi au vendredi',
+  plages: ['10h00–12h00', '13h00–16h00'],
+  fuseau: 'heure de Paris',
+  google: {
+    visio: '',
+    telephone: '',
+  },
+  // Page de réservation déjà utilisée par l'ancien site (vérifiée en ligne le 25/10/2026).
+  calcom: 'https://cal.com/frederic-ekima-ndemba',
+};
+
+const URL_GOOGLE_AGENDA = /^https:\/\/(calendar\.app\.google\/|calendar\.google\.com\/calendar\/appointments\/)/;
+for (const [mode, url] of Object.entries(rendezVous.google)) {
+  if (url && !URL_GOOGLE_AGENDA.test(url)) {
+    throw new Error(`rendezVous.google.${mode} : URL de réservation Google Agenda attendue, reçu « ${url} ».`);
+  }
+}
+
+/** Vrai quand les deux pages Google Agenda sont renseignées : Cal.com n'est alors plus proposé. */
+export const reservationGoogle = Boolean(rendezVous.google.visio && rendezVous.google.telephone);
 
 export interface LienNav {
   label: string;

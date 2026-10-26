@@ -1,9 +1,10 @@
 ---
-import { PUBLIC_PLAUSIBLE_DOMAIN, PUBLIC_PLAUSIBLE_SRC } from 'astro:env/server';
+import { PUBLIC_GA4_ID } from 'astro:env/server';
 
-// Plausible seul, sans cookie : chargé uniquement en build de production et si configuré.
-// Rien n'est envoyé pendant le développement local.
-const actif = import.meta.env.PROD && PUBLIC_PLAUSIBLE_DOMAIN && PUBLIC_PLAUSIBLE_SRC;
+// Google Analytics 4, soumis au consentement : seule la bannière (/consentement.js, script local) est chargée.
+// gtag.js n'est ajouté qu'après acceptation. Uniquement en build de production et si l'identifiant est défini :
+// rien n'est envoyé pendant le développement local.
+const actif = import.meta.env.PROD && PUBLIC_GA4_ID;
 ---
 
-{actif && <script is:inline defer data-domain={PUBLIC_PLAUSIBLE_DOMAIN} src={PUBLIC_PLAUSIBLE_SRC} />}
+{actif && <script is:inline defer src="/consentement.js" data-ga4={PUBLIC_GA4_ID} />}

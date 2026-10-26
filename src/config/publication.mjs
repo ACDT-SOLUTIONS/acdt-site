@@ -20,13 +20,12 @@ export const PAGES_PUBLIEES = [
   '/tarifs/',
   '/contact/',
   '/rendez-vous/',
-  // Pages légales (mêmes URL que l'ancien site) : à ajouter une fois les documents complétés et validés
-  // (marqueurs [À COMPLÉTER] et points « aVerifier » de src/content/legal/*.md).
-  // '/mentions-legales/',
-  // '/politique-de-confidentialite/',
-  // '/politique-cookies/',
-  // '/conditions-generales-utilisation/',
-  // '/conditions-generales-vente/',
+  // Pages légales (mêmes URL que l'ancien site). Points restant à vérifier : DEPLOIEMENT.md, section 10.
+  '/mentions-legales/',
+  '/politique-de-confidentialite/',
+  '/politique-cookies/',
+  '/conditions-generales-utilisation/',
+  '/conditions-generales-vente/',
 ];
 
 /**
@@ -64,7 +63,7 @@ export const PAGES_OBLIGATOIRES = [
  * @type {Record<string, AnciennePage>}
  */
 export const ANCIENNES_PAGES = {
-  '/rdv/': { statut: 'rediriger', remplacee_par: '/rendez-vous/', note: 'Même service Cal.com.' },
+  '/rdv/': { statut: 'rediriger', remplacee_par: '/rendez-vous/', note: 'Ancienne page de réservation.' },
   '/services/': { statut: 'conserver', remplacee_par: '/solutions/', relais: true, note: 'Présentation des services.' },
   '/services/automatisations-sur-mesure/': {
     statut: 'conserver',

@@ -108,4 +108,21 @@ const chemin = `/${page.id}/`;
   .legal__texte :global(strong) {
     color: var(--color-text);
   }
+
+  /* Bouton « Modifier mes choix » de la politique de cookies, affiché par /consentement.js. */
+  .legal__texte :global(.legal__bouton) {
+    min-height: 2.75rem;
+    padding: 0.7rem 1.4rem;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font-size: var(--step--1);
+    font-weight: 560;
+    color: var(--color-accent);
+    cursor: pointer;
+  }
+
+  .legal__texte :global(.legal__bouton:hover) {
+    background: var(--color-accent-soft);
+  }
 </style>

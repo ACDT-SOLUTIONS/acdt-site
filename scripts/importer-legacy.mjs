@@ -2,8 +2,8 @@
 // Importe dans legacy/ les anciennes pages conservées, depuis la version en production de l'ancien site.
 // Usage : node scripts/importer-legacy.mjs [commit]   (par défaut : ceeb27c, version actuellement en ligne)
 //
-// Les pages sont nettoyées pour la version publique : GTM et GA4 retirés, chatbot et webhooks retirés,
-// Plausible remplacé par le marqueur <!-- ACDT:ANALYTICS --> (injecté au build selon la configuration),
+// Les pages sont nettoyées pour la version publique : GTM, GA4 et Plausible retirés et remplacés par le marqueur
+// <!-- ACDT:ANALYTICS --> (gestion du consentement GA4 injectée au build), chatbot et webhooks retirés,
 // liens normalisés (« / » final, /rdv → /rendez-vous/), liens hreflang et images Open Graph inexistantes retirés.
 // Chaque correction ciblée doit trouver son texte exact, sinon le script s'arrête.
 
@@ -79,7 +79,7 @@ function nettoyer(html, page) {
   h = h.replace(/<script>\s*window\.dataLayer[\s\S]*?<\/script>/g, '');
   // Plausible : remplacé par le marqueur commun.
   h = h.replace(/<script defer data-domain="[^"]*" src="https:\/\/plausible\.io[^"]*"><\/script>/g, '');
-  h = h.replace(/<script>window\.plausible = [\s\S]*?<\/script>/g, '');
+  h = h.replace(/[ \t]*<script>\s*window\.plausible\s*=[\s\S]*?<\/script>\n?/g, '');
   h = remplacer(h, '</head>', '    <!-- ACDT:ANALYTICS -->\n</head>', page);
   // Chatbot (bouton + panneau) et ancien script (webhooks n8n).
   h = remplacer(h, /<button id="chat-toggle"[\s\S]*?(?=<script src="\/assets\/app\.js")/, '', page);
@@ -98,7 +98,7 @@ function nettoyer(html, page) {
   for (const [motif, remplacement] of CORRECTIONS[page] ?? []) h = remplacer(h, motif, remplacement, page);
 
   // Garde-fous : rien de tout cela ne doit subsister.
-  for (const interdit of [/googletagmanager/i, /gtag\(/, /n8n\.acdt-solutions/i, /webhook/i, /chat-panel/, /og-default/, /hreflang/]) {
+  for (const interdit of [/googletagmanager/i, /gtag\(/, /plausible/i, /n8n\.acdt-solutions/i, /webhook/i, /chat-panel/, /og-default/, /hreflang/]) {
     if (interdit.test(h)) throw new Error(`${page} : élément non retiré → ${interdit}`);
   }
   return h;

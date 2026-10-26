@@ -3,8 +3,29 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/layout/PageHero.astro';
 import Section from '@/components/layout/Section.astro';
 import Button from '@/components/ui/Button.astro';
-import { site } from '@/config/site';
-import { lienVisible } from '@/lib/publication';
+import { rendezVous, reservationGoogle, site } from '@/config/site';
+import { lienVisible, VERSION_PUBLIQUE } from '@/lib/publication';
+
+// Google Agenda dès que les deux pages de réservation sont renseignées (src/config/site.ts), Cal.com d'ici là.
+// En développement, un aperçu du choix Google est affiché, boutons inactifs, pour valider la présentation.
+const apercu = !reservationGoogle && !VERSION_PUBLIQUE;
+
+const modes = [
+  {
+    label: 'Visioconférence',
+    titre: 'Google Meet',
+    texte: "Le lien de connexion figure dans l'invitation envoyée après la réservation.",
+    action: 'Réserver en visioconférence',
+    url: rendezVous.google.visio,
+  },
+  {
+    label: 'Téléphone',
+    titre: 'Appel téléphonique',
+    texte: 'Nous vous appelons au numéro que vous indiquez lors de la réservation.',
+    action: 'Réserver un appel',
+    url: rendezVous.google.telephone,
+  },
+];
 ---
 
 <BaseLayout title="Prendre rendez-vous" description="Réserver un premier échange avec ACDT Solutions.">
@@ -15,15 +36,72 @@ import { lienVisible } from '@/lib/publication';
 
   <Section labelledby="reserver-titre">
     <div class="rdv">
-      <div class="rdv__carte">
-        <p class="rdv__label mono">Réservation en ligne</p>
-        <h2 id="reserver-titre">Choisissez un créneau.</h2>
-        <p>
-          La réservation s'effectue sur Cal.com, un service de prise de rendez-vous en ligne. Vous y choisissez la date
-          et l'heure qui vous conviennent.
-        </p>
-        <Button href={site.reservation} size="l" arrow>Réserver un créneau</Button>
-        <p class="rdv__note">Le lien ouvre le site Cal.com.</p>
+      <div class="rdv__principal">
+        {
+          !reservationGoogle && (
+            <div class="rdv__carte">
+              <p class="rdv__label mono">Réservation en ligne</p>
+              <h2 id="reserver-titre">Choisissez un créneau.</h2>
+              <p>
+                La réservation s'effectue sur Cal.com, un service de prise de rendez-vous en ligne. Vous y choisissez
+                la date et l'heure qui vous conviennent.
+              </p>
+              <Button href={rendezVous.calcom} size="l" arrow>
+                Réserver un créneau
+              </Button>
+              <p class="rdv__note">Le lien ouvre le site Cal.com.</p>
+            </div>
+          )
+        }
+
+        {
+          (reservationGoogle || apercu) && (
+            <div class:list={['rdv__carte', { 'rdv__carte--apercu': apercu }]}>
+              {apercu && (
+                <p class="rdv__apercu mono">
+                  Aperçu — pages Google Agenda non renseignées (src/config/site.ts) — visible uniquement en
+                  développement
+                </p>
+              )}
+              <p class="rdv__label mono">{rendezVous.intitule}</p>
+              <h2 id={apercu ? 'reserver-google-titre' : 'reserver-titre'}>Choisissez votre modalité.</h2>
+              <dl class="rdv__infos">
+                <div>
+                  <dt class="mono">Durée</dt>
+                  <dd>{rendezVous.duree}</dd>
+                </div>
+                <div>
+                  <dt class="mono">Disponibilités</dt>
+                  <dd>
+                    {rendezVous.jours}, {rendezVous.plages.join(' et ')} ({rendezVous.fuseau})
+                  </dd>
+                </div>
+              </dl>
+              <ul class="rdv__modes">
+                {modes.map((m) => (
+                  <li class="rdv__mode">
+                    <p class="rdv__label mono">{m.label}</p>
+                    <h3>{m.titre}</h3>
+                    <p>{m.texte}</p>
+                    {m.url ? (
+                      <Button href={m.url} arrow>
+                        {m.action}
+                      </Button>
+                    ) : (
+                      <span class="rdv__inactif" aria-disabled="true">
+                        {m.action}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <p class="rdv__note">
+                La réservation s'effectue sur Google Agenda : les liens ouvrent une page de réservation Google. Les
+                deux modalités partagent les mêmes créneaux.
+              </p>
+            </div>
+          )
+        }
       </div>
 
       <aside class="rdv__alternative">
@@ -41,6 +119,11 @@ import { lienVisible } from '@/lib/publication';
     gap: var(--space-6);
   }
 
+  .rdv__principal {
+    display: grid;
+    gap: var(--space-6);
+  }
+
   .rdv__carte {
     display: grid;
     gap: var(--space-4);
@@ -50,6 +133,16 @@ import { lienVisible } from '@/lib/publication';
     border-radius: var(--radius-l);
     background: var(--color-surface);
     box-shadow: var(--shadow-card);
+  }
+
+  .rdv__carte--apercu {
+    border: 1px dashed var(--signal-500);
+    box-shadow: none;
+  }
+
+  .rdv__apercu {
+    font-size: var(--step--2);
+    color: var(--signal-600);
   }
 
   .rdv__label {
@@ -63,13 +156,66 @@ import { lienVisible } from '@/lib/publication';
     font-size: var(--step-3);
   }
 
-  .rdv__carte p:not(.rdv__label) {
+  h3 {
+    font-size: var(--step-1);
+  }
+
+  .rdv__carte p:not(.rdv__label):not(.rdv__apercu) {
     max-width: 34rem;
     color: var(--color-text-muted);
   }
 
   .rdv__note {
     font-size: var(--step--2);
+  }
+
+  .rdv__infos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+  }
+
+  .rdv__infos dt {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .rdv__modes {
+    display: grid;
+    gap: var(--space-4);
+    width: 100%;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 40rem) {
+    .rdv__modes {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .rdv__mode {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    justify-items: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--color-bg);
+  }
+
+  .rdv__inactif {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.7rem 1.15rem;
+    border: 1px dashed var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+    color: var(--color-text-subtle);
   }
 
   .rdv__alternative {
