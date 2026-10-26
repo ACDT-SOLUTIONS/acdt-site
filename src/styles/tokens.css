@@ -1,0 +1,100 @@
+/*
+ * Système de design — maquette v0.1
+ * Trois niveaux : primitives → sémantiques → composants.
+ * Couleurs et polices non figées : les modifier ici suffit à faire évoluer tout le site.
+ */
+
+:root {
+  /* --- Primitives : couleurs --- */
+  --paper-0: #fdfcf9;
+  --paper-50: #f7f5f0;
+  --paper-100: #efebe2;
+  --paper-200: #e2dcd0;
+  --paper-300: #cdc5b5;
+
+  --ink-950: #0d0f12;
+  --ink-900: #14171b;
+  --ink-800: #1d2126;
+  --ink-700: #2b3037;
+  --ink-500: #59606a;
+  --ink-400: #7f858e;
+  --ink-300: #a9aeb5;
+
+  --pine-800: #0b3d36;
+  --pine-700: #0f5249;
+  --pine-600: #146a5e;
+  --pine-300: #8fc2b6;
+  --pine-100: #dcebe5;
+
+  --signal-600: #c9461f;
+  --signal-500: #e5592c;
+  --signal-300: #f4a07f;
+  --signal-100: #fbe4d9;
+
+  /* --- Primitives : typographie --- */
+  --font-sans: 'Instrument Sans Variable', 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Échelle fluide (≈ 360 px → 1440 px) */
+  --step--2: clamp(0.72rem, 0.7rem + 0.08vw, 0.78rem);
+  --step--1: clamp(0.83rem, 0.8rem + 0.13vw, 0.92rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
+  --step-1: clamp(1.2rem, 1.12rem + 0.38vw, 1.45rem);
+  --step-2: clamp(1.44rem, 1.3rem + 0.7vw, 1.95rem);
+  --step-3: clamp(1.73rem, 1.48rem + 1.2vw, 2.6rem);
+  --step-4: clamp(2.07rem, 1.66rem + 2vw, 3.5rem);
+  --step-5: clamp(2.5rem, 1.8rem + 3.4vw, 5.1rem);
+
+  /* --- Primitives : espace, rayons, mouvement --- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-section: clamp(4rem, 3rem + 5vw, 8rem);
+
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-l: 20px;
+  --radius-pill: 999px;
+
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-fast: 160ms;
+  --duration-base: 320ms;
+
+  --container: 78rem;
+  --container-narrow: 46rem;
+  --gutter: clamp(1rem, 0.6rem + 2.4vw, 2.5rem);
+  --header-height: 4.25rem;
+
+  /* --- Sémantiques --- */
+  --color-bg: var(--paper-50);
+  --color-surface: var(--paper-0);
+  --color-surface-sunken: var(--paper-100);
+  --color-text: var(--ink-900);
+  --color-text-muted: var(--ink-500);
+  --color-text-subtle: var(--ink-400);
+  --color-line: var(--paper-200);
+  --color-line-strong: var(--paper-300);
+  --color-accent: var(--pine-700);
+  --color-accent-hover: var(--pine-800);
+  --color-accent-soft: var(--pine-100);
+  --color-on-accent: var(--paper-0);
+  --color-signal: var(--signal-500);
+  --color-signal-soft: var(--signal-100);
+  --color-focus: var(--signal-500);
+
+  --color-inverse-bg: var(--ink-900);
+  --color-inverse-surface: var(--ink-800);
+  --color-inverse-text: var(--paper-50);
+  --color-inverse-muted: var(--ink-300);
+  --color-inverse-line: var(--ink-700);
+
+  --shadow-card: 0 1px 0 rgb(20 23 27 / 0.04), 0 12px 32px -18px rgb(20 23 27 / 0.22);
+  --shadow-float: 0 1px 0 rgb(20 23 27 / 0.05), 0 30px 60px -30px rgb(20 23 27 / 0.45);
+}

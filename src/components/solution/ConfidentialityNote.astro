@@ -1,0 +1,71 @@
+---
+interface Props {
+  confidentialite: { titre: string; sousTitre: string; points: { label: string; texte: string }[] };
+}
+
+const { titre, sousTitre, points } = Astro.props.confidentialite;
+---
+
+<aside class="confidentialite" aria-labelledby="confidentialite-titre">
+  <p class="confidentialite__titre mono" id="confidentialite-titre">{titre}</p>
+  <p class="confidentialite__sous-titre">{sousTitre}</p>
+  <dl>
+    {
+      points.map((p) => (
+        <div>
+          <dt>{p.label}</dt>
+          <dd>{p.texte}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</aside>
+
+<style>
+  .confidentialite {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    border-left: 2px solid var(--color-accent);
+    border-radius: 0 var(--radius-l) var(--radius-l) 0;
+    background: var(--color-surface);
+  }
+
+  .confidentialite__titre {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  .confidentialite__sous-titre {
+    font-size: var(--step-1);
+    font-weight: 560;
+    line-height: 1.3;
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  dl div {
+    display: grid;
+    gap: var(--space-1);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+
+  dt {
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--step--1);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+</style>

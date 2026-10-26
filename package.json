@@ -1,0 +1,32 @@
+{
+  "name": "acdt-site-v2",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "build:release": "astro check && PUBLIC_RELEASE=true PUBLIC_INDEXABLE=true astro build && node scripts/verifier-publication.mjs",
+    "verifier:production": "node scripts/verifier-publication.mjs --strict",
+    "legacy:importer": "node scripts/importer-legacy.mjs",
+    "formulaire:test": "node scripts/formulaire-test.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource-variable/instrument-sans": "5.3.0",
+    "@fontsource/instrument-serif": "5.3.0",
+    "astro": "7.3.8"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@types/node": "22.19.1",
+    "typescript": "6.0.3",
+    "vitest": "4.1.12"
+  }
+}

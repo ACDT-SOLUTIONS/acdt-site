@@ -1,0 +1,108 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+
+interface Props {
+  /** Ne garder que les problèmes d'une famille. */
+  famille?: string;
+  /** Afficher la famille rattachée (utile sur le hub, inutile sur la page de la famille). */
+  afficherFamille?: boolean;
+}
+
+const { famille, afficherFamille = true } = Astro.props;
+
+const problemes = (await getCollection('problemes', (p) => !famille || p.data.famille.id === famille)).sort(
+  (a, b) => a.data.ordre - b.data.ordre,
+);
+const items = await Promise.all(problemes.map(async (p) => ({ ...p, famille: await getEntry(p.data.famille) })));
+---
+
+<ul class="problems">
+  {
+    items.map((p, i) => (
+      <li class="problem">
+        <span class="problem__index mono">{String(i + 1).padStart(2, '0')}</span>
+        <h3>
+          {afficherFamille ? <a href={`/solutions/${p.data.famille.id}/`}>{p.data.titre}</a> : p.data.titre}
+        </h3>
+        <p>{p.data.description}</p>
+        {afficherFamille && (
+          <p class="problem__family mono">
+            <span aria-hidden="true">→</span> {p.famille?.data.numero} · {p.famille?.data.titre}
+          </p>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .problems {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    padding: 0;
+    border-top: 1px solid var(--color-line-strong);
+    list-style: none;
+  }
+
+  .problem {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-5) var(--space-5) 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .problem__index {
+    font-size: var(--step--2);
+    color: var(--signal-600);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  /* Toute la carte est cliquable, le lien reste porté par le titre. */
+  h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .problem p {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .problem .problem__family {
+    padding-top: var(--space-3);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-accent);
+  }
+
+  .problem:hover h3 a {
+    text-decoration: underline;
+  }
+
+  .problem:has(a):focus-within {
+    outline: 2px solid var(--color-focus);
+    outline-offset: -2px;
+  }
+
+  .problem :focus-visible {
+    outline: none;
+  }
+
+  @media (min-width: 42rem) {
+    .problem {
+      padding-left: var(--space-5);
+      border-left: 1px solid var(--color-line);
+    }
+  }
+</style>

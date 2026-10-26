@@ -1,0 +1,90 @@
+# `pages` : chemins des pages où la question est affichée (une même question peut figurer sur plusieurs pages).
+
+- id: prix
+  ordre: 1
+  pages: [/methode/, /tarifs/]
+  question: Combien coûte une prestation ?
+  reponse: >-
+    Toutes nos prestations sont sur devis. Le coût dépend de vos outils, de vos volumes et du niveau
+    de confidentialité requis : nous l'établissons après avoir analysé le problème, pas avant.
+
+- id: chiffres
+  ordre: 2
+  pages: [/cas-pratiques/, /evaluer-le-potentiel/]
+  question: D'où viennent les chiffres de vos cas pratiques ?
+  reponse: >-
+    Ce sont des scénarios construits à partir d'hypothèses explicites, de formules publiées et,
+    lorsque c'est possible, de sources externes vérifiables. Ils ne présentent pas les résultats
+    d'un client. Lors de l'analyse, nous les recalculons avec vos propres données.
+
+- id: logiciels
+  ordre: 3
+  pages: [/solutions/]
+  question: Faut-il changer de logiciels ?
+  reponse: >-
+    En priorité, nous partons des outils que vous utilisez déjà. Si l'un d'eux bloque la solution,
+    nous vous le disons et nous vous présentons les options avant tout développement.
+
+- id: donnees
+  ordre: 4
+  pages: [/methode/, /solutions/infrastructure-privee/]
+  question: Que deviennent nos données ?
+  reponse: >-
+    Le périmètre des données traitées est défini avec vous avant le démarrage. Pour les informations
+    les plus sensibles, une infrastructure privée peut être étudiée, sous réserve de validation
+    technique et réglementaire.
+
+- id: permanence-numero
+  ordre: 10
+  pages: [/solutions/accueil-telephonique-ia/]
+  question: Faut-il changer notre numéro de téléphone ?
+  reponse: >-
+    Pas nécessairement. Selon votre opérateur et votre installation, un transfert d'appel peut permettre de
+    conserver votre numéro habituel. La compatibilité est vérifiée pendant l'étude.
+
+- id: permanence-indisponibilite
+  ordre: 11
+  pages: [/solutions/accueil-telephonique-ia/]
+  question: La permanence peut-elle fonctionner uniquement lorsque nous sommes indisponibles ?
+  reponse: >-
+    Oui, lorsque la configuration téléphonique le permet. Nous pouvons envisager différents scénarios de
+    débordement, d'absence et de fermeture.
+
+- id: permanence-rendez-vous
+  ordre: 12
+  pages: [/solutions/accueil-telephonique-ia/]
+  question: L'assistant peut-il prendre des rendez-vous ?
+  reponse: >-
+    La solution peut être configurée pour recueillir des demandes de rendez-vous. Une réservation directement
+    dans votre agenda dépend des possibilités d'intégration et des règles de validation retenues.
+
+- id: permanence-donnees
+  ordre: 13
+  pages: [/solutions/accueil-telephonique-ia/]
+  question: Comment sont traitées les données des appelants ?
+  reponse: >-
+    Le traitement des données est défini selon les fonctionnalités activées, les informations nécessaires, les
+    prestataires utilisés et les obligations applicables. Ces points font partie du cadrage préalable.
+
+# Réponse reprise de la section 06 de la rédaction (la section 09 ne contient pas cette question).
+- id: permanence-conseils-juridiques
+  ordre: 14
+  pages: [/solutions/accueil-telephonique-ia/]
+  question: L'assistant peut-il fournir des conseils juridiques ?
+  reponse: L'assistant n'émet aucun avis juridique et ne remplace pas l'analyse d'un professionnel du droit.
+
+- id: permanence-cout
+  ordre: 15
+  pages: [/solutions/accueil-telephonique-ia/]
+  question: Combien coûte l'installation ?
+  reponse: >-
+    Chaque prestation fait l'objet d'un devis adapté à la configuration et aux besoins de l'entreprise. Les
+    coûts de fonctionnement et les éventuelles limites d'utilisation sont également précisés.
+
+- id: sante
+  ordre: 5
+  pages: [/secteurs/]
+  question: Travaillez-vous avec les professionnels de santé ?
+  reponse: >-
+    Une offre dédiée est à l'étude. Les données de santé imposent des exigences spécifiques :
+    nous ne proposerons ces solutions qu'une fois leur conformité validée.

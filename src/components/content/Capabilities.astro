@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+
+const capacites = await getCollection('capacites');
+---
+
+<aside class="capabilities" aria-labelledby="capacites-titre">
+  <div class="capabilities__head">
+    <h3 id="capacites-titre">Des capacités transverses</h3>
+    <p>Mobilisées selon le besoin, dans chacune des quatre familles.</p>
+  </div>
+  <ul class="capabilities__list">
+    {
+      capacites.map((c) => (
+        <li>
+          <span class="capabilities__titre mono">{c.data.titre}</span>
+          <span class="capabilities__desc">{c.data.description}</span>
+        </li>
+      ))
+    }
+  </ul>
+</aside>
+
+<style>
+  .capabilities {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    border-radius: var(--radius-l);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+  }
+
+  .capabilities__head h3 {
+    font-size: var(--step-1);
+  }
+
+  .capabilities__head p {
+    color: var(--color-inverse-muted);
+  }
+
+  .capabilities__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-5) var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .capabilities__list li {
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-inverse-line);
+  }
+
+  .capabilities__titre {
+    font-size: var(--step--1);
+    color: var(--pine-300);
+  }
+
+  .capabilities__desc {
+    font-size: var(--step--1);
+    color: var(--color-inverse-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .capabilities {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
+      align-items: start;
+      gap: var(--space-8);
+    }
+
+    .capabilities__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

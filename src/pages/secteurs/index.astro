@@ -1,0 +1,26 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import SectorCards from '@/components/content/SectorCards.astro';
+import FaqSection from '@/components/content/FaqSection.astro';
+---
+
+<BaseLayout title="Secteurs d'activité" description="Les secteurs accompagnés par ACDT Solutions.">
+  <PageHero eyebrow="Secteurs d'activité" breadcrumbs={[{ label: 'Secteurs', href: '/secteurs/' }]}>
+    <Fragment slot="title">Des solutions pensées <em class="accent">pour votre métier.</em></Fragment>
+    Les mêmes familles de solutions, appliquées aux contraintes concrètes de chaque profession.
+  </PageHero>
+
+  <Section labelledby="secteurs-titre">
+    <SectionHeader eyebrow="Secteurs accompagnés" index="01" id="secteurs-titre">
+      <Fragment slot="title">Choisissez votre secteur.</Fragment>
+    </SectionHeader>
+    <SectorCards avecPreparation />
+  </Section>
+
+  <FaqSection index="02" />
+  <CtaBand />
+</BaseLayout>

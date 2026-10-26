@@ -1,0 +1,6 @@
+[Unit]
+Description=Purge des journaux du site acdt-solutions.com (7 jours au maximum)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/acdt-site-purge-journaux

@@ -1,0 +1,50 @@
+---
+// Encadré explicatif court : un titre facultatif, un ou plusieurs paragraphes, une phrase forte facultative.
+interface Props {
+  titre?: string;
+  texte?: string[];
+  fort?: string;
+  tone?: 'accent' | 'neutre';
+}
+
+const { titre, texte = [], fort, tone = 'accent' } = Astro.props;
+---
+
+<aside class:list={['callout', `callout--${tone}`]}>
+  {titre && <p class="callout__titre">{titre}</p>}
+  {texte.map((t) => <p>{t}</p>)}
+  <slot />
+  {fort && <p class="callout__fort">{fort}</p>}
+</aside>
+
+<style>
+  .callout {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 52rem;
+    padding: var(--space-5) var(--space-6);
+    border-left: 2px solid var(--color-accent);
+    border-radius: 0 var(--radius-m) var(--radius-m) 0;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+  }
+
+  .callout--neutre {
+    border-left-color: var(--color-line-strong);
+  }
+
+  .callout__titre {
+    font-size: var(--step-1);
+    font-weight: 560;
+    line-height: 1.25;
+    color: var(--color-text);
+  }
+
+  .callout__fort {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-style: italic;
+    line-height: 1.35;
+    color: var(--color-accent);
+  }
+</style>

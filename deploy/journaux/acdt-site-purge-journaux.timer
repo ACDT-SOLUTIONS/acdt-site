@@ -1,0 +1,10 @@
+[Unit]
+Description=Purge horaire des journaux du site acdt-solutions.com
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+OnBootSec=5min
+
+[Install]
+WantedBy=timers.target

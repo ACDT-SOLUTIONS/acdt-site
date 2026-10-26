@@ -1,0 +1,274 @@
+# Rédaction validée de la page « Accueil et permanence téléphonique IA ».
+# Les textes sont repris de la source éditoriale ; seule leur répartition entre composants est propre au site.
+
+hero:
+  accroche: Votre entreprise reste joignable, même lorsque vous ne pouvez pas répondre.
+  contexte: >-
+    Vous êtes en rendez-vous, en déplacement, en audience ou simplement occupé avec un client.
+    Pendant ce temps, votre téléphone sonne.
+  promesse: >-
+    ACDT Solutions conçoit des permanences téléphoniques intelligentes qui prennent le relais
+    lorsque vous êtes indisponible.
+  cta: { label: Tester notre permanence IA, href: "#demonstration" }
+
+problemes:
+  titre: Vos appels ne devraient pas dépendre de votre disponibilité immédiate.
+  lead: >-
+    Chaque appel auquel personne ne répond peut représenter une demande importante, un rendez-vous
+    manqué ou une opportunité commerciale qui n'aboutira jamais.
+  items:
+    - titre: Les appels manqués
+      texte: >-
+        Un prospect appelle alors que vous êtes déjà en ligne. Il tombe sur une messagerie, raccroche
+        et peut chercher un autre prestataire.
+    - titre: Les interruptions répétées
+      texte: >-
+        Vous devez interrompre un rendez-vous, une intervention ou un travail demandant de la concentration
+        pour répondre à une demande qui aurait pu être recueillie autrement.
+    - titre: Les absences et les imprévus
+      texte: >-
+        Congés, maladie, grèves, déplacements, audiences ou fermeture exceptionnelle : votre activité continue
+        de recevoir des demandes même lorsque votre équipe n'est pas disponible.
+    - titre: La gestion manuelle des messages
+      texte: >-
+        Les demandes arrivent par téléphone, sont notées sur papier ou transmises oralement. Certaines
+        informations se perdent et les rappels deviennent difficiles à organiser.
+  complement:
+    titre: Une solution complémentaire à votre accueil existant
+    texte:
+      - >-
+        L'objectif n'est pas de remplacer systématiquement les échanges humains, mais de réserver leur
+        intervention aux situations où elle apporte réellement de la valeur.
+
+# Les titres des cartes reprennent les cinq fonctionnalités de la famille ; les textes viennent de la rédaction.
+prestations:
+  titre: Une permanence adaptée au fonctionnement de votre entreprise.
+  lead: >-
+    Notre assistant vocal accueille vos interlocuteurs, identifie la raison de leur appel, recueille les
+    informations utiles et les transmet à la bonne personne, selon les règles définies avec votre entreprise.
+  items:
+    - titre: Permanence téléphonique intelligente
+      resume: >-
+        Un assistant vocal peut prendre en charge les appels transférés vers la permanence, se présenter
+        clairement comme un système automatisé et accueillir vos interlocuteurs.
+    - titre: Qualification des appels
+      resume: >-
+        Selon vos consignes, il recueille le motif de l'appel, identifie les informations nécessaires et
+        distingue différents types de demandes :
+      # Liste courte, affichée directement : un dépliant n'apporterait rien ici.
+      liste:
+        - Nouveau prospect
+        - Client existant
+        - Demande administrative
+        - Rendez-vous
+        - Situation nécessitant une attention particulière
+    - titre: Prise de messages et rendez-vous
+      resume: >-
+        Les informations recueillies sont organisées dans un compte rendu structuré, transmissible à la
+        personne concernée par email, SMS ou un autre canal convenu.
+      details:
+        - titre: Gestion des rendez-vous
+          texte: >-
+            Lorsque les intégrations le permettent, la permanence peut proposer des créneaux, recueillir une
+            demande de rendez-vous ou interagir avec votre agenda selon les règles établies.
+    - titre: Transferts et notifications
+      resume: >-
+        Certaines demandes peuvent nécessiter un transfert vers un collaborateur ou une notification prioritaire.
+      note: >-
+        Ces mécanismes sont définis pendant le cadrage et validés techniquement avant leur mise en service.
+    - titre: Continuité d'accueil
+      resume: >-
+        En débordement, en dehors des horaires, en cas d'absence ou en permanence : plusieurs modes de
+        fonctionnement selon votre organisation.
+      lien: { label: Voir les modes de fonctionnement, href: "#modes" }
+
+modes:
+  titre: Plusieurs modes de fonctionnement.
+  items:
+    - id: debordement
+      label: Débordement
+      declencheur: Personne ne répond
+      texte: Lorsque personne ne répond après un certain nombre de sonneries.
+    - id: hors-horaires
+      label: Hors horaires
+      declencheur: Période de fermeture
+      texte: Pour recueillir les demandes pendant les périodes de fermeture.
+    - id: absence
+      label: Absence exceptionnelle
+      declencheur: Congés, déplacements, imprévus
+      texte: Pour assurer un relais pendant les congés, déplacements et imprévus.
+    - id: permanence
+      label: Permanence complète
+      declencheur: Accueil confié à l'assistant
+      texte: >-
+        Pour les petites structures souhaitant confier une partie plus importante de leur accueil à un
+        assistant automatisé.
+  note: Chaque mode dépend de votre installation téléphonique et des possibilités de transfert disponibles.
+
+fonctionnement:
+  titre: De l'appel entrant au compte rendu, sans ressaisie inutile.
+  lead: Vous restez informé sans devoir interrompre systématiquement votre activité.
+  etapes:
+    - titre: L'appel arrive
+      texte: >-
+        Un client appelle votre numéro habituel. Si les conditions que vous avez définies sont réunies, son
+        appel est dirigé vers la permanence IA.
+    - titre: La demande est comprise
+      texte: >-
+        L'assistant se présente, échange avec l'appelant et recueille les informations nécessaires à son
+        traitement.
+    - titre: La demande est qualifiée
+      texte: >-
+        Le système applique les règles de votre entreprise pour déterminer le type de demande et la suite
+        appropriée.
+    - titre: Votre équipe reçoit l'information
+      texte: >-
+        Un récapitulatif peut être transmis par email, SMS ou à un logiciel connecté, afin que vous puissiez
+        reprendre le dossier sans repartir de zéro.
+  conclusion: >-
+    L'automatisation prend en charge l'accueil initial. Votre équipe conserve la maîtrise des décisions
+    importantes.
+
+demo:
+  titre: Testez notre permanence téléphonique IA
+  accroche: La meilleure façon de comprendre ? L'essayer.
+  intro: >-
+    Nous avons préparé une démonstration permettant de découvrir concrètement comment un assistant vocal
+    peut accueillir un appel professionnel.
+  numero: 09 72 19 98 15
+  tel: tel:+33972199815
+  scenario:
+    titre: Mettez-vous dans la peau d'un client.
+    texte:
+      - La démonstration utilise le scénario d'un cabinet d'avocats.
+      - >-
+        Imaginez que vous souhaitez contacter un avocat pour une affaire commerciale, mais que celui-ci se
+        trouve en audience et ne peut pas répondre.
+  duree: Environ deux minutes
+  avertissement: >-
+    Il s'agit d'un environnement de démonstration. N'y communiquez aucune information personnelle sensible
+    ni aucun élément confidentiel relatif à une véritable affaire.
+  etapes:
+    - Appelez le numéro de démonstration.
+    - Présentez-vous comme un client souhaitant contacter un cabinet d'avocats.
+    - Expliquez brièvement le motif fictif de votre demande.
+    - Observez comment l'assistant recueille et organise les informations.
+    - Découvrez le récapitulatif prévu à l'issue de la conversation.
+  remarque: Selon le fonctionnement du scénario actif, un SMS récapitulatif peut vous être envoyé.
+  suite:
+    texte: Vous souhaitez découvrir comment un tel système pourrait fonctionner dans votre entreprise ?
+    cta: { label: Adapter cette solution à mon activité, href: /rendez-vous/ }
+
+benefices:
+  titre: Moins d'interruptions. Des demandes mieux organisées.
+  items:
+    - label: Prise en charge des appels
+      titre: Améliorer la prise en charge des appels
+      texte: >-
+        Une permanence correctement configurée peut recueillir des demandes qui auraient autrement abouti à
+        une messagerie ou seraient restées sans réponse.
+    - label: Réduction des interruptions
+      titre: Réduire le temps consacré à l'accueil répétitif
+      texte: >-
+        Votre équipe n'a plus nécessairement besoin de poser plusieurs fois les mêmes questions pour recueillir
+        des informations élémentaires.
+    - label: Organisation des demandes
+      titre: Faciliter le suivi
+      texte: >-
+        Des informations structurées permettent de retrouver plus facilement le motif d'un appel et les actions
+        à effectuer.
+    - label: Temps de travail préservé
+      titre: Préserver la concentration de vos collaborateurs
+      texte: >-
+        Les personnes occupées peuvent consacrer davantage d'attention à leurs rendez-vous, dossiers ou
+        interventions, tout en disposant d'un relais pour les demandes entrantes.
+  evaluation:
+    titre: Comment évaluer l'intérêt économique ?
+    texte:
+      - >-
+        Les résultats dépendent notamment du volume d'appels, de leur durée, du nombre d'appels actuellement
+        manqués, de la part des demandes pouvant être automatisées et des coûts d'exploitation.
+      - >-
+        ACDT Solutions peut étudier ces paramètres avec vous afin d'évaluer le temps potentiellement libéré et
+        le coût prévisionnel du service.
+    fort: Nous préférons établir des estimations explicites plutôt que promettre des économies impossibles à garantir.
+
+secteurs:
+  titre: À quels professionnels s'adresse cette permanence ?
+  items:
+    - secteur: cabinets-avocats
+      texte: >-
+        Un avocat peut être en audience, en rendez-vous ou occupé à préparer un dossier. La permanence peut
+        recueillir les demandes, distinguer les clients existants des nouvelles sollicitations et transmettre
+        les informations pertinentes.
+    - secteur: artisans-services
+      texte: >-
+        Un professionnel en intervention ne peut pas toujours décrocher. La permanence peut recueillir la nature
+        de la demande, les coordonnées utiles et les besoins de rappel ou de rendez-vous.
+    - secteur: tpe-pme
+      texte: >-
+        Une petite équipe peut recevoir simultanément des appels, des emails et des visiteurs. Un accueil
+        automatisé peut contribuer à organiser les demandes et à limiter les interruptions.
+  conclusion: >-
+    Chaque activité nécessite ses propres scénarios. Nous adaptons le fonctionnement à vos règles métier
+    plutôt que d'imposer un standard unique.
+
+accompagnement:
+  titre: Une solution conçue autour de votre fonctionnement existant.
+  etapes:
+    - titre: Comprendre votre accueil actuel
+      texte: >-
+        Nous étudions vos horaires, vos volumes d'appels, les demandes récurrentes et les situations où votre
+        équipe ne peut pas répondre.
+    - titre: Définir les scénarios
+      texte: >-
+        Nous déterminons ensemble les questions à poser, les demandes à prioriser, les informations à transmettre
+        et les situations nécessitant une intervention humaine.
+    - titre: Configurer et tester
+      texte: >-
+        Nous préparons la permanence et ses connexions éventuelles avec vos outils. Les scénarios sont testés
+        avant la mise en service.
+    - titre: Ajuster et accompagner
+      texte: >-
+        Une fois le système opérationnel, nous pouvons suivre les indicateurs convenus, corriger les difficultés
+        et adapter les scénarios à l'évolution de votre activité.
+  devis:
+    titre: Une prestation sur devis
+    facteurs:
+      - Périmètre fonctionnel
+      - Volume d'appels
+      - Intégrations nécessaires
+      - Coûts récurrents de téléphonie, d'intelligence artificielle et de maintenance
+    texte: Nous établissons une proposition adaptée après analyse de vos besoins.
+
+# Version condensée de la section 08 : chaque point de la rédaction est conservé, formulé plus brièvement.
+confidentialite:
+  titre: Confidentialité et limites
+  sousTitre: Une automatisation encadrée, pas une autonomie sans contrôle.
+  points:
+    - label: Données sensibles
+      texte: Les appels peuvent contenir des données personnelles et, selon le secteur, des informations confidentielles.
+    - label: Cadrage préalable
+      texte: >-
+        Données nécessaires, destinataires, accès autorisés, prestataires techniques et durées de conservation
+        sont précisés dans le projet.
+    - label: Transparence
+      texte: >-
+        Les appelants sont informés qu'ils échangent avec un système automatisé et du traitement de leurs données,
+        selon les obligations applicables.
+    - label: Décisions sensibles
+      texte: >-
+        L'assistant ne remplace pas un professionnel qualifié pour des décisions juridiques, médicales ou d'autres
+        décisions sensibles.
+    - label: Validation spécifique
+      texte: >-
+        Transferts avancés, intégration à des logiciels métier et secteurs réglementés nécessitent une validation
+        technique, et éventuellement réglementaire.
+
+cta:
+  titre: Et si vos appels restaient pris en charge même lorsque vous êtes occupé ?
+  texte: >-
+    Découvrez comment une permanence téléphonique automatisée peut compléter votre accueil existant, faciliter
+    le suivi des demandes et préserver le temps de votre équipe.
+  principal: { label: Étudier ma permanence téléphonique, href: /rendez-vous/ }
+  secondaire: { label: Tester la permanence IA, href: "#demonstration" }

@@ -1,0 +1,195 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './Logo.astro';
+import { ctaPrincipal, lienEvaluation, liensLegaux, site, type LienNav } from '@/config/site';
+import { lienEffectif } from '@/lib/publication';
+
+const solutions = (await getCollection('solutions')).sort((a, b) => a.data.numero.localeCompare(b.data.numero));
+const secteurs = (await getCollection('secteurs', (s) => s.data.publie)).sort((a, b) => a.data.ordre - b.data.ordre);
+const annee = new Date().getFullYear();
+
+// Lien vers la page publiée, ou vers l'ancienne page équivalente encore en ligne ; sinon retiré.
+const visibles = (liens: LienNav[]) =>
+  liens.flatMap((l) => {
+    const href = lienEffectif(l.href);
+    return href ? [{ ...l, href }] : [];
+  });
+
+// Colonnes construites à partir des seuls liens affichables ; une colonne vide disparaît.
+const colonnes = [
+  {
+    titre: { label: 'Solutions', href: '/solutions/' },
+    liens: visibles(solutions.map((s) => ({ label: s.data.titre, href: `/solutions/${s.id}/` }))),
+  },
+  {
+    titre: { label: 'Secteurs', href: '/secteurs/' },
+    liens: visibles(secteurs.map((s) => ({ label: s.data.nom, href: `/secteurs/${s.id}/` }))),
+  },
+  {
+    titre: { label: 'ACDT', href: '' },
+    liens: visibles([
+      { label: 'Cas pratiques', href: '/cas-pratiques/' },
+      lienEvaluation,
+      { label: 'Méthode', href: '/methode/' },
+      { label: 'Tarifs', href: '/tarifs/' },
+      { label: 'Ressources', href: '/ressources/' },
+      { label: 'À propos', href: '/a-propos/' },
+      { label: 'Contact', href: '/contact/' },
+      ctaPrincipal,
+    ]),
+  },
+].filter((c) => c.liens.length > 0);
+
+const legaux = visibles(liensLegaux);
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <Logo tone="inverse" />
+        <p>Analyse des problèmes métier, conception de solutions adaptées, mesure des résultats.</p>
+        <a class="site-footer__email mono" href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+
+      <nav class="site-footer__cols" aria-label="Plan du site">
+        {
+          colonnes.map((c) => (
+            <div>
+              <h2 class="mono">
+                {c.titre.href && lienEffectif(c.titre.href) ? (
+                  <a href={lienEffectif(c.titre.href)}>{c.titre.label}</a>
+                ) : (
+                  c.titre.label
+                )}
+              </h2>
+              <ul>
+                {c.liens.map((l) => (
+                  <li>
+                    <a href={l.href}>{l.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="mono">© {annee} {site.nom}</p>
+      <ul>
+        {
+          legaux.map((l) => (
+            <li>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))
+        }
+        <li>
+          {/* Affiché par /consentement.js uniquement lorsque la mesure d'audience est active. */}
+          <button type="button" class="site-footer__cookies" data-consentement-ouvrir hidden>
+            Gérer les cookies
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--space-8) var(--space-6);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-muted);
+    font-size: var(--step--1);
+  }
+
+  .site-footer a {
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .site-footer a:hover {
+    color: var(--color-inverse-text);
+  }
+
+  .site-footer__top {
+    display: grid;
+    gap: var(--space-7);
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--color-inverse-line);
+  }
+
+  .site-footer__brand {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 22rem;
+    align-content: start;
+  }
+
+  .site-footer__email {
+    color: var(--color-inverse-text);
+  }
+
+  .site-footer__cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-6);
+  }
+
+  .site-footer h2 {
+    margin-bottom: var(--space-4);
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-400);
+  }
+
+  .site-footer ul {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-5);
+    font-size: var(--step--2);
+  }
+
+  .site-footer__bottom ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+  }
+
+  .site-footer__bottom li:has(> [hidden]) {
+    display: none;
+  }
+
+  .site-footer__cookies {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .site-footer__cookies:hover {
+    color: var(--color-inverse-text);
+  }
+
+  @media (min-width: 60rem) {
+    .site-footer__top {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+  }
+</style>

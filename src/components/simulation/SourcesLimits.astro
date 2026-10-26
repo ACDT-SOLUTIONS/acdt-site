@@ -1,0 +1,137 @@
+---
+import type { ScenarioCharge } from '@/lib/simulations';
+
+interface Props {
+  data: ScenarioCharge;
+  /** Niveau des intertitres, selon la page qui accueille le bloc. */
+  niveau?: 'h3' | 'h4';
+}
+
+const { data, niveau: Titre = 'h3' } = Astro.props;
+const { scenario, sources } = data;
+const sourcesNonVerifiees = sources.some((s) => s.data.statut !== 'verifiee');
+---
+
+<div class="notes">
+  <div id="limites">
+    <Titre class="notes__titre mono">Limites de l'estimation</Titre>
+    <ul class="notes__limites">
+      {scenario.data.limites.map((l) => <li>{l}</li>)}
+    </ul>
+  </div>
+  <div id="sources">
+    <Titre class="notes__titre mono">Études et sources</Titre>
+    {
+      sourcesNonVerifiees && (
+        <p class="notes__alerte">
+          Maquette : certaines sources sont en cours de vérification. Les valeurs concernées sont des hypothèses de
+          travail.
+        </p>
+      )
+    }
+    <ul class="notes__sources">
+      {
+        sources.map((s) => (
+          <li>
+            <span class:list={['statut mono', `statut--${s.data.statut}`]}>
+              {s.data.statut === 'verifiee' ? 'Vérifiée' : 'À vérifier'}
+            </span>
+            <span class="notes__source-titre">
+              {s.data.url ? (
+                <a href={s.data.url} rel="noopener" target="_blank">
+                  {s.data.titre}
+                </a>
+              ) : (
+                s.data.titre
+              )}
+            </span>
+            <span class="notes__meta">{s.data.editeur}</span>
+            <span class="notes__meta">{s.data.note}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .notes {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .notes__titre {
+    margin-bottom: var(--space-4);
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-400);
+  }
+
+  .notes__limites,
+  .notes__sources {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+    color: var(--color-inverse-muted);
+  }
+
+  .notes__limites li {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, 1fr);
+  }
+
+  .notes__limites li::before {
+    content: '·';
+    color: var(--signal-300);
+  }
+
+  .notes__sources li {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .notes__source-titre {
+    color: var(--color-inverse-text);
+  }
+
+  .notes__meta {
+    font-size: var(--step--2);
+  }
+
+  .notes__alerte {
+    margin-bottom: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-left: 2px solid var(--signal-500);
+    font-size: var(--step--2);
+    color: var(--signal-100);
+  }
+
+  .statut {
+    justify-self: start;
+    padding: 0.05rem 0.4rem;
+    border-radius: var(--radius-s);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .statut--verifiee {
+    background: color-mix(in srgb, var(--pine-600) 40%, transparent);
+    color: var(--pine-100);
+  }
+
+  .statut--a-verifier {
+    background: color-mix(in srgb, var(--signal-500) 25%, transparent);
+    color: var(--signal-100);
+  }
+
+  @media (min-width: 64rem) {
+    .notes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

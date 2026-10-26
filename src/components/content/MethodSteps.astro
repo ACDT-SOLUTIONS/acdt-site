@@ -1,0 +1,139 @@
+---
+interface Props {
+  /** Afficher les engagements sous les étapes. */
+  engagements?: boolean;
+}
+
+const { engagements: avecEngagements = true } = Astro.props;
+
+const etapes = [
+  {
+    titre: 'Analyser',
+    texte:
+      "Nous observons comment la tâche est réalisée aujourd'hui : avec quels outils, à quelle fréquence, par qui, et ce qu'elle coûte réellement.",
+    livrable: 'Diagnostic chiffré et périmètre du projet',
+  },
+  {
+    titre: 'Concevoir',
+    texte:
+      'Nous construisons la solution en priorité sur vos outils existants, puis nous la testons avec vous avant sa mise en service.',
+    livrable: 'Devis, puis solution documentée',
+  },
+  {
+    titre: 'Mesurer',
+    texte:
+      'Nous comparons les indicateurs avant et après la mise en service, avec les mêmes formules que nos cas pratiques.',
+    livrable: 'Bilan des résultats mesurés',
+  },
+];
+
+const engagements = [
+  'Prestations exclusivement sur devis, établi après analyse.',
+  'Aucun chiffre annoncé sans hypothèse, formule ni limite.',
+  'Périmètre des données défini avec vous avant tout développement.',
+];
+---
+
+<ol class="steps">
+  {
+    etapes.map((e, i) => (
+      <li class="step">
+        <p class="step__n mono">{String(i + 1).padStart(2, '0')}</p>
+        <h3>{e.titre}</h3>
+        <p class="step__texte">{e.texte}</p>
+        <p class="step__livrable">
+          <span class="mono">Livrable</span>
+          {e.livrable}
+        </p>
+      </li>
+    ))
+  }
+</ol>
+
+{
+  avecEngagements && (
+    <ul class="engagements" aria-label="Nos engagements">
+      {engagements.map((e) => (
+        <li>
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M3 8.5 6.5 12 13 4.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+          </svg>
+          {e}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: 2px solid var(--color-text);
+  }
+
+  .step__n {
+    font-size: var(--step--2);
+    color: var(--signal-600);
+  }
+
+  h3 {
+    font-size: var(--step-3);
+    font-weight: 500;
+  }
+
+  .step__texte {
+    color: var(--color-text-muted);
+  }
+
+  .step__livrable {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border-radius: var(--radius-m);
+    background: var(--color-surface-sunken);
+    font-size: var(--step--1);
+  }
+
+  .step__livrable .mono {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .engagements {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+    padding: var(--space-5) 0 0;
+    border-top: 1px solid var(--color-line);
+    list-style: none;
+    font-size: var(--step--1);
+  }
+
+  .engagements li {
+    display: grid;
+    grid-template-columns: 1.1rem minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .engagements svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.15rem;
+    color: var(--color-accent);
+  }
+</style>

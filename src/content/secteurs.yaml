@@ -1,0 +1,47 @@
+- id: cabinets-avocats
+  ordre: 1
+  nom: Cabinets d'avocats
+  accroche: Moins de relances, plus de temps pour le dossier.
+  problemes:
+    - Appels reçus pendant les audiences et rendez-vous
+    - Pièces clients à réclamer, dossier par dossier
+    - Échéances et suivi d'honoraires tenus à la main
+  familles: [accueil-telephonique-ia, automatisation-administrative, infrastructure-privee]
+  statut: lancement
+
+- id: tpe-pme
+  ordre: 2
+  nom: TPE et PME
+  accroche: Des outils qui se parlent, des équipes qui ne ressaisissent plus.
+  problemes:
+    - Mêmes informations saisies dans plusieurs logiciels
+    - Demandes commerciales suivies dans les boîtes mail
+    - Reporting reconstruit chaque semaine
+  familles: [accueil-telephonique-ia, automatisation-administrative, crm-automatisation-commerciale]
+  statut: lancement
+
+- id: artisans-services
+  ordre: 3
+  nom: Artisans et entreprises de services
+  accroche: Le téléphone, les devis et les factures ne vous suivent plus sur le chantier.
+  problemes:
+    - Appels manqués pendant les interventions
+    - Devis envoyés tard, ou jamais relancés
+    - Factures impayées suivies de mémoire
+  familles: [accueil-telephonique-ia, automatisation-administrative, crm-automatisation-commerciale]
+  statut: lancement
+
+- id: sante
+  ordre: 4
+  nom: Professionnels de santé
+  accroche: Une offre dédiée est à l'étude.
+  problemes:
+    - Hébergement des données de santé
+    - Secret professionnel et confidentialité
+    - Exigences propres aux logiciels métier
+  familles: [accueil-telephonique-ia, infrastructure-privee]
+  statut: en-preparation
+  publie: false
+  mention: >-
+    Ces solutions nécessitent une validation technique et réglementaire préalable.
+    Elles ne sont pas encore proposées à la commercialisation.

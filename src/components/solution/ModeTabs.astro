@@ -1,0 +1,234 @@
+---
+interface Mode {
+  id: string;
+  label: string;
+  declencheur: string;
+  texte: string;
+}
+
+interface Props {
+  items: Mode[];
+  note?: string;
+}
+
+// Onglets ARIA : sans JavaScript, tous les panneaux restent visibles les uns sous les autres.
+const { items, note } = Astro.props;
+---
+
+<mode-tabs class="modes">
+  <div class="modes__list" role="tablist" aria-label="Modes de fonctionnement" hidden>
+    {
+      items.map((m, i) => (
+        <button
+          class="modes__tab"
+          type="button"
+          role="tab"
+          id={`tab-${m.id}`}
+          aria-controls={`panel-${m.id}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+        >
+          <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+          {m.label}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    items.map((m) => (
+      <div class="modes__panel" id={`panel-${m.id}`} role="tabpanel" aria-labelledby={`tab-${m.id}`} tabindex="0">
+        <div class="modes__schema" aria-hidden="true">
+          <span class="modes__node">Appel entrant</span>
+          <span class="modes__fleche">→</span>
+          <span class="modes__node modes__node--condition">{m.declencheur}</span>
+          <span class="modes__fleche">→</span>
+          <span class="modes__node modes__node--final">Permanence IA</span>
+        </div>
+        <div class="modes__texte">
+          <h3>{m.label}</h3>
+          <p>{m.texte}</p>
+        </div>
+      </div>
+    ))
+  }
+
+  {note && <p class="modes__note">{note}</p>}
+</mode-tabs>
+
+<script>
+  class ModeTabs extends HTMLElement {
+    connectedCallback() {
+      const liste = this.querySelector<HTMLElement>('[role="tablist"]');
+      const onglets = [...this.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+      const panneaux = [...this.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+      if (!liste || onglets.length === 0) return;
+
+      const choisir = (index: number, focus = false) => {
+        onglets.forEach((o, i) => {
+          const actif = i === index;
+          o.setAttribute('aria-selected', String(actif));
+          o.tabIndex = actif ? 0 : -1;
+          panneaux[i].hidden = !actif;
+        });
+        if (focus) onglets[index].focus();
+      };
+
+      liste.hidden = false;
+      this.classList.add('is-enhanced');
+      choisir(0);
+
+      onglets.forEach((o, i) => {
+        o.addEventListener('click', () => choisir(i));
+        o.addEventListener('keydown', (e) => {
+          const dernier = onglets.length - 1;
+          const cible =
+            e.key === 'ArrowRight' ? (i === dernier ? 0 : i + 1)
+            : e.key === 'ArrowLeft' ? (i === 0 ? dernier : i - 1)
+            : e.key === 'Home' ? 0
+            : e.key === 'End' ? dernier
+            : null;
+          if (cible === null) return;
+          e.preventDefault();
+          choisir(cible, true);
+        });
+      });
+    }
+  }
+
+  customElements.define('mode-tabs', ModeTabs);
+</script>
+
+<style>
+  .modes {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .modes__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    justify-self: start;
+  }
+
+  .modes__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: none;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  .modes__tab .mono {
+    font-size: var(--step--2);
+    opacity: 0.7;
+  }
+
+  .modes__tab:hover {
+    color: var(--color-text);
+  }
+
+  .modes__tab[aria-selected='true'] {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .modes__panel {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+
+  .modes__panel:focus-visible {
+    outline-offset: 4px;
+  }
+
+  .modes__schema {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .modes__node {
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-m);
+    background: var(--color-bg);
+    font-size: var(--step--1);
+  }
+
+  .modes__node--condition {
+    border-style: dashed;
+    border-color: var(--signal-500);
+    color: var(--signal-600);
+  }
+
+  .modes__node--final {
+    border-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-weight: 560;
+  }
+
+  .modes__fleche {
+    color: var(--color-text-subtle);
+  }
+
+  .modes__texte {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .modes__texte h3 {
+    font-size: var(--step-2);
+  }
+
+  .modes__texte p {
+    font-size: var(--step-1);
+    line-height: 1.45;
+    color: var(--color-text-muted);
+  }
+
+  .modes__note {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 40rem) {
+    .modes__list {
+      border-radius: var(--radius-l);
+      justify-self: stretch;
+    }
+
+    .modes__tab {
+      flex: 1 1 calc(50% - var(--space-2));
+      justify-content: center;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .modes__panel {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-8);
+      min-height: 13rem;
+    }
+  }
+</style>

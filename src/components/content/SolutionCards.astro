@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+
+interface Props {
+  ids: string[];
+}
+
+// Version compacte des familles, pour les pages qui renvoient vers les solutions sans les détailler.
+const solutions = (await getCollection('solutions', (s) => Astro.props.ids.includes(s.id))).sort((a, b) =>
+  a.data.numero.localeCompare(b.data.numero),
+);
+---
+
+<ul class="solution-cards">
+  {
+    solutions.map((s) => (
+      <li class="solution-card">
+        <span class="solution-card__numero mono">{s.data.numero}</span>
+        <h3>
+          <a href={`/solutions/${s.id}/`}>{s.data.titre}</a>
+        </h3>
+        <p>{s.data.accroche}</p>
+        <span class="solution-card__fleche mono" aria-hidden="true">→</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .solution-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .solution-card {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .solution-card:hover {
+    border-color: var(--color-accent);
+  }
+
+  .solution-card:focus-within {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .solution-card :focus-visible {
+    outline: none;
+  }
+
+  .solution-card__numero {
+    font-size: var(--step--1);
+    color: var(--color-text-subtle);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .solution-card p {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-accent);
+  }
+
+  .solution-card__fleche {
+    color: var(--color-accent);
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .solution-card:hover .solution-card__fleche {
+    transform: translateX(4px);
+  }
+</style>

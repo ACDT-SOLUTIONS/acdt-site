@@ -1,0 +1,10 @@
+# Une source ne passe en « verifiee » qu'après relecture humaine : URL exacte, date de consultation
+# et chiffre retrouvé dans le document. Le schéma refuse une source vérifiée sans URL ni date.
+
+- id: cout-horaire-main-oeuvre
+  titre: Coût horaire de la main-d'œuvre en France
+  editeur: INSEE / Eurostat (référence à confirmer)
+  statut: a-verifier
+  note: >-
+    Référence à identifier et à relire avant publication. En attendant, la simulation utilise
+    une hypothèse de travail de 38 € de l'heure, charges comprises.

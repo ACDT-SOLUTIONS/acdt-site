@@ -1,0 +1,192 @@
+---
+interface Prestation {
+  titre: string;
+  resume: string;
+  liste?: string[];
+  details?: { titre: string; texte: string }[];
+  note?: string;
+  lien?: { label: string; href: string };
+}
+
+interface Props {
+  items: Prestation[];
+}
+
+// Résumé toujours visible ; les compléments se déplient (details/summary natif, accessible au clavier).
+const { items } = Astro.props;
+---
+
+<ul class:list={['services', { 'services--cinq': items.length === 5 }]}>
+  {
+    items.map((p, i) => (
+      <li class="service">
+        <span class="service__n mono">{String(i + 1).padStart(2, '0')}</span>
+        <h3>{p.titre}</h3>
+        <p class="service__resume">{p.resume}</p>
+        {p.liste && (
+          <ul class="service__liste">
+            {p.liste.map((x) => (
+              <li>{x}</li>
+            ))}
+          </ul>
+        )}
+        {p.note && <p class="service__note">{p.note}</p>}
+        {p.details && (
+          <details class="service__details">
+            <summary class="mono">
+              En savoir plus <span aria-hidden="true">+</span>
+            </summary>
+            {p.details.map((d) => (
+              <div class="service__detail">
+                <p class="service__detail-titre">{d.titre}</p>
+                <p>{d.texte}</p>
+              </div>
+            ))}
+          </details>
+        )}
+        {p.lien && (
+          <a class="service__lien mono" href={p.lien.href}>
+            {p.lien.label} <span aria-hidden="true">↓</span>
+          </a>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Cinq cartes : 2 + 2 + 1 sur tablette, 3 + 2 sur grand écran, sans case vide. */
+  @media (min-width: 40rem) {
+    .services--cinq {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .services--cinq > :last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .services--cinq {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .services--cinq > * {
+      grid-column: span 2;
+    }
+
+    .services--cinq > :nth-child(n + 4) {
+      grid-column: span 3;
+    }
+  }
+
+  .service {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+
+  .service__n {
+    font-size: var(--step--1);
+    color: var(--color-text-subtle);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  .service__resume {
+    color: var(--color-text-muted);
+  }
+
+  .service__liste {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .service__liste li {
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+  }
+
+  /* Pied de carte commun (note, dépliant, lien) : toujours aligné en bas, même séparation. */
+  .service__note {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .service__details {
+    margin-top: auto;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .service__details summary {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--space-3);
+    font-size: var(--step--2);
+    letter-spacing: 0.04em;
+    color: var(--color-accent);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .service__details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .service__details summary span {
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .service__details[open] summary span {
+    transform: rotate(45deg);
+  }
+
+  .service__detail {
+    display: grid;
+    gap: var(--space-1);
+    padding-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .service__detail-titre {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .service__lien {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--step--2);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .service__lien:hover {
+    text-decoration: underline;
+  }
+</style>

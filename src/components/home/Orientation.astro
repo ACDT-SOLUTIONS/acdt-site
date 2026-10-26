@@ -1,0 +1,286 @@
+---
+import { getCollection } from 'astro:content';
+import { lienEvaluation } from '@/config/site';
+import { lienEffectif, lienVisible } from '@/lib/publication';
+
+// Porte d'entrée vers les rubriques : uniquement des repères de navigation, pas le détail des offres.
+// En version publique, chaque repère mène à la nouvelle page publiée ou, à défaut, à l'ancienne page
+// équivalente encore en ligne ; sans l'une ni l'autre, il est annoncé « à venir ».
+const solutions = (await getCollection('solutions')).sort((a, b) => a.data.numero.localeCompare(b.data.numero));
+const secteurs = (await getCollection('secteurs', (s) => s.data.publie)).sort((a, b) => a.data.ordre - b.data.ordre);
+const cas = await getCollection('simulations');
+
+interface Repere {
+  label: string;
+  prefixe?: string;
+  href?: string;
+}
+
+const repere = (label: string, href: string, prefixe?: string): Repere => ({
+  label,
+  prefixe,
+  href: lienEffectif(href),
+});
+
+const rubriques = [
+  {
+    href: '/solutions/',
+    titre: 'Solutions',
+    texte: 'Quatre familles de solutions, construites à partir de vos problèmes métier.',
+    reperes: solutions.map((s) => repere(s.data.titre, `/solutions/${s.id}/`, s.data.numero)),
+    compteur: `${solutions.length} familles`,
+    secondaire: undefined,
+  },
+  {
+    href: '/secteurs/',
+    titre: "Secteurs d'activité",
+    texte: 'Les solutions appliquées aux contraintes de votre profession.',
+    reperes: secteurs.map((s) => repere(s.data.nom, `/secteurs/${s.id}/`)),
+    compteur: `${secteurs.length} secteurs`,
+    secondaire: undefined,
+  },
+  {
+    href: '/cas-pratiques/',
+    titre: 'Cas pratiques',
+    texte: 'Des scénarios chiffrés, avec leurs hypothèses, leurs sources et leurs limites.',
+    reperes: [] as Repere[],
+    compteur: `${cas.length} ${cas.length > 1 ? 'scénarios' : 'scénario'}`,
+    secondaire: lienVisible(lienEvaluation.href) ? lienEvaluation : undefined,
+  },
+]
+  .map((r) => {
+    // Page d'ensemble publiée : toute la carte est cliquable. Sinon, l'ancienne page équivalente
+    // (relais) est proposée en lien secondaire, et les repères restent cliquables un par un.
+    const relais = lienVisible(r.href) ? undefined : lienEffectif(r.href);
+    return {
+      ...r,
+      lien: lienVisible(r.href),
+      secondaire: r.secondaire ?? (relais ? { label: 'Voir la présentation de nos services', href: relais } : undefined),
+    };
+  })
+  // Une rubrique sans page d'ensemble ni repère consultable n'est pas affichée.
+  .filter((r) => r.lien || r.secondaire || r.reperes.some((x) => x.href));
+
+const seule = rubriques.length === 1;
+---
+
+<ul class:list={['orientation', { 'orientation--seule': seule }]}>
+  {
+    rubriques.map((r, i) => (
+      <li class:list={['rubrique', { 'rubrique--lien': r.lien }]}>
+        <div class="rubrique__top">
+          <span class="rubrique__index mono">{String(i + 1).padStart(2, '0')}</span>
+          <span class="rubrique__compteur mono">{r.compteur}</span>
+        </div>
+        <h3>{r.lien ? <a href={r.href}>{r.titre}</a> : r.titre}</h3>
+        <p class="rubrique__texte">{r.texte}</p>
+        {r.reperes.length > 0 && (
+          <ul class="rubrique__reperes" aria-hidden={r.lien ? 'true' : undefined}>
+            {r.reperes.map((x) =>
+              x.href && !r.lien ? (
+                <li>
+                  <a class="repere repere--lien" href={x.href}>
+                    {x.prefixe && <span class="mono">{x.prefixe}</span>}
+                    {x.label}
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </li>
+              ) : (
+                <li class:list={['repere', { 'repere--a-venir': !x.href }]}>
+                  {x.prefixe && <span class="mono">{x.prefixe}</span>}
+                  {x.label}
+                  {!x.href && <span class="repere__statut mono">à venir</span>}
+                </li>
+              ),
+            )}
+          </ul>
+        )}
+        {r.secondaire && (
+          <a class="rubrique__secondaire" href={r.secondaire.href}>
+            {r.secondaire.label}
+          </a>
+        )}
+        {r.lien && (
+          <span class="rubrique__fleche" aria-hidden="true">
+            →
+          </span>
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .orientation {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .rubrique {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-height: 19rem;
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out);
+  }
+
+  .rubrique--lien:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-accent);
+  }
+
+  .rubrique--lien:focus-within {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .rubrique--lien :focus-visible {
+    outline: none;
+  }
+
+  .rubrique__top {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--step--2);
+  }
+
+  .rubrique__index {
+    color: var(--signal-600);
+  }
+
+  .rubrique__compteur {
+    color: var(--color-text-muted);
+  }
+
+  h3 {
+    font-size: var(--step-3);
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  h3 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .rubrique__texte {
+    color: var(--color-text-muted);
+  }
+
+  .rubrique__reperes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .repere {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-s);
+    background: var(--color-accent-soft);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--color-accent);
+  }
+
+  .repere--a-venir {
+    background: var(--color-surface-sunken);
+    color: var(--color-text-muted);
+  }
+
+  .repere__statut {
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .repere--lien {
+    text-decoration: none;
+  }
+
+  .repere--lien:hover {
+    text-decoration: underline;
+  }
+
+  /* Lien secondaire placé au-dessus du lien étendu de la carte */
+  .rubrique__secondaire {
+    position: relative;
+    z-index: 1;
+    align-self: flex-start;
+    font-size: var(--step--1);
+    color: var(--color-accent);
+  }
+
+  .rubrique__secondaire:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .rubrique__fleche {
+    margin-top: auto;
+    font-size: var(--step-2);
+    color: var(--color-accent);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .rubrique--lien:hover .rubrique__fleche {
+    transform: translateX(6px);
+  }
+
+  /* Une seule rubrique (version publique actuelle) : carte large, repères en liste lisible. */
+  .orientation--seule .rubrique {
+    min-height: 0;
+  }
+
+  .orientation--seule .rubrique__reperes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .orientation--seule .repere {
+    display: flex;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    min-height: 3.5rem;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-m);
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: 520;
+  }
+
+  .orientation--seule .repere .mono {
+    font-size: var(--step--2);
+    opacity: 0.7;
+  }
+
+  .orientation--seule .repere--lien span[aria-hidden] {
+    margin-left: auto;
+  }
+
+  .orientation--seule .repere__statut {
+    margin-left: auto;
+  }
+</style>

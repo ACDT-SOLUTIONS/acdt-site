@@ -1,0 +1,73 @@
+---
+import JsonLd from './JsonLd.astro';
+import type { LienNav } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
+
+interface Props {
+  /** Chemin depuis l'accueil (exclu), la dernière entrée étant la page courante. */
+  items: LienNav[];
+}
+
+const chemin: LienNav[] = [{ label: 'Accueil', href: '/' }, ...Astro.props.items];
+
+// Un niveau intermédiaire non publié reste affiché comme simple libellé, sans lien,
+// et n'est pas déclaré dans les données structurées (qui exigent une URL par niveau).
+const cheminDeclare = chemin.filter((l, i) => i === chemin.length - 1 || lienVisible(l.href));
+const data = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: cheminDeclare.map((l, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: l.label,
+    item: new URL(l.href, Astro.site).href,
+  })),
+};
+---
+
+<nav class="breadcrumbs mono" aria-label="Fil d'Ariane">
+  <ol>
+    {
+      chemin.map((l, i) =>
+        i === chemin.length - 1 ? (
+          <li aria-current="page">{l.label}</li>
+        ) : (
+          <li>{lienVisible(l.href) ? <a href={l.href}>{l.label}</a> : l.label}</li>
+        ),
+      )
+    }
+  </ol>
+</nav>
+<JsonLd data={data} />
+
+<style>
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-text-muted);
+  }
+
+  .breadcrumbs li:not(:last-child)::after {
+    content: '/';
+    margin-left: var(--space-2);
+    color: var(--color-text-subtle);
+  }
+
+  .breadcrumbs a {
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
+
+  .breadcrumbs [aria-current] {
+    color: var(--color-text);
+  }
+</style>

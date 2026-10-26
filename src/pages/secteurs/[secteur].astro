@@ -1,0 +1,116 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Button from '@/components/ui/Button.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import SolutionCards from '@/components/content/SolutionCards.astro';
+import CaseCards from '@/components/content/CaseCards.astro';
+import FaqSection from '@/components/content/FaqSection.astro';
+import { ctaPrincipal } from '@/config/site';
+
+// Seuls les secteurs publiés ont une page (la santé attend sa validation).
+export async function getStaticPaths() {
+  const secteurs = await getCollection('secteurs', (s) => s.data.publie);
+  return secteurs.map((secteur) => ({ params: { secteur: secteur.id }, props: { secteur } }));
+}
+
+interface Props {
+  secteur: CollectionEntry<'secteurs'>;
+}
+
+const { secteur } = Astro.props;
+const s = secteur.data;
+---
+
+<BaseLayout title={s.nom} description={s.accroche}>
+  <PageHero
+    eyebrow="Secteur d'activité"
+    breadcrumbs={[
+      { label: 'Secteurs', href: '/secteurs/' },
+      { label: s.nom, href: `/secteurs/${secteur.id}/` },
+    ]}
+  >
+    <Fragment slot="title">{s.nom}</Fragment>
+    {s.accroche}
+    <Fragment slot="actions">
+      <Button href={ctaPrincipal.href} arrow>{ctaPrincipal.label}</Button>
+    </Fragment>
+  </PageHero>
+
+  <Section labelledby="problemes-titre">
+    <SectionHeader eyebrow="Problèmes du métier" index="01" id="problemes-titre">
+      <Fragment slot="title">Ce que nous rencontrons souvent.</Fragment>
+    </SectionHeader>
+    <ol class="problemes">
+      {
+        s.problemes.map((p, i) => (
+          <li>
+            <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+            {p}
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section tone="sunken" labelledby="solutions-titre">
+    <SectionHeader eyebrow="Solutions correspondantes" index="02" id="solutions-titre">
+      <Fragment slot="title">Les solutions adaptées.</Fragment>
+    </SectionHeader>
+    <SolutionCards ids={s.familles.map((f) => f.id)} />
+  </Section>
+
+  <Section labelledby="cas-titre">
+    <SectionHeader eyebrow="Cas pratiques" index="03" id="cas-titre">
+      <Fragment slot="title">Exemples chiffrés.</Fragment>
+    </SectionHeader>
+    <CaseCards secteur={secteur.id} />
+  </Section>
+
+  <Section labelledby="contraintes-titre">
+    <SectionHeader eyebrow="Spécificités" index="04" id="contraintes-titre">
+      <Fragment slot="title">Contraintes propres au métier.</Fragment>
+    </SectionHeader>
+    <Placeholder>Confidentialité, organisation, outils métier : ce qui conditionne les solutions dans ce secteur.</Placeholder>
+  </Section>
+
+  <FaqSection index="05" />
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .problemes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    padding: 0;
+    border-top: 1px solid var(--color-line-strong);
+    list-style: none;
+  }
+
+  .problemes li {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-5) var(--space-5) 0;
+    border-bottom: 1px solid var(--color-line);
+    font-size: var(--step-1);
+    font-weight: 520;
+    line-height: 1.25;
+  }
+
+  .problemes .mono {
+    font-size: var(--step--2);
+    font-weight: 400;
+    color: var(--signal-600);
+  }
+
+  @media (min-width: 42rem) {
+    .problemes li {
+      padding-left: var(--space-5);
+      border-left: 1px solid var(--color-line);
+    }
+  }
+</style>

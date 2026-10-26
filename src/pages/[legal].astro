@@ -1,0 +1,128 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import { VERSION_PUBLIQUE } from '@/lib/publication';
+
+// Une page par fichier de src/content/legal/ ; l'URL reprend le nom du fichier.
+export async function getStaticPaths() {
+  const pages = await getCollection('legal');
+  return pages.map((page) => ({ params: { legal: page.id }, props: { page } }));
+}
+
+interface Props {
+  page: CollectionEntry<'legal'>;
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+const chemin = `/${page.id}/`;
+---
+
+<BaseLayout title={page.data.titre} description={`${page.data.titre} — ACDT Solutions.`}>
+  <PageHero eyebrow="Informations légales" breadcrumbs={[{ label: page.data.titre, href: chemin }]}>
+    <Fragment slot="title">{page.data.titre}</Fragment>
+  </PageHero>
+
+  <Section>
+    <div class="legal">
+      {
+        !VERSION_PUBLIQUE && page.data.aVerifier.length > 0 && (
+          <aside class="legal__verifier">
+            <p class="mono">À vérifier avant publication — visible uniquement en développement</p>
+            <ul>
+              {page.data.aVerifier.map((point) => (
+                <li>{point}</li>
+              ))}
+            </ul>
+            {page.data.source && <p class="legal__source">{page.data.source}</p>}
+          </aside>
+        )
+      }
+      <div class="legal__texte">
+        <Content />
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .legal {
+    display: grid;
+    gap: var(--space-6);
+    max-width: var(--container-narrow);
+  }
+
+  .legal__verifier {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px dashed var(--signal-500);
+    border-radius: var(--radius-m);
+    font-size: var(--step--1);
+  }
+
+  .legal__verifier .mono {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  .legal__verifier ul {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.1rem;
+  }
+
+  .legal__source {
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .legal__texte {
+    display: grid;
+    gap: var(--space-4);
+    color: var(--color-text-muted);
+  }
+
+  .legal__texte :global(h2) {
+    margin-top: var(--space-5);
+    font-size: var(--step-2);
+    color: var(--color-text);
+  }
+
+  .legal__texte :global(h3) {
+    margin-top: var(--space-3);
+    font-size: var(--step-1);
+    color: var(--color-text);
+  }
+
+  .legal__texte :global(ul) {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: 1.2rem;
+  }
+
+  .legal__texte :global(strong) {
+    color: var(--color-text);
+  }
+
+  /* Bouton « Modifier mes choix » de la politique de cookies, affiché par /consentement.js. */
+  .legal__texte :global(.legal__bouton) {
+    min-height: 2.75rem;
+    padding: 0.7rem 1.4rem;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font-size: var(--step--1);
+    font-weight: 560;
+    color: var(--color-accent);
+    cursor: pointer;
+  }
+
+  .legal__texte :global(.legal__bouton:hover) {
+    background: var(--color-accent-soft);
+  }
+</style>

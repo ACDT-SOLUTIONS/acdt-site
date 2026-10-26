@@ -1,0 +1,10 @@
+---
+import { PUBLIC_GA4_ID } from 'astro:env/server';
+
+// Google Analytics 4, soumis au consentement : seule la bannière (/consentement.js, script local) est chargée.
+// gtag.js n'est ajouté qu'après acceptation. Uniquement en build de production et si l'identifiant est défini :
+// rien n'est envoyé pendant le développement local.
+const actif = import.meta.env.PROD && PUBLIC_GA4_ID;
+---
+
+{actif && <script is:inline defer src="/consentement.js" data-ga4={PUBLIC_GA4_ID} />}

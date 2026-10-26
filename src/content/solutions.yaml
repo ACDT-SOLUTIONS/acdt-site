@@ -1,0 +1,80 @@
+- id: accueil-telephonique-ia
+  numero: "01"
+  titre: Accueil et permanence téléphonique IA
+  accroche: Chaque appel reçoit une réponse, même quand personne n'est disponible pour décrocher.
+  description: >-
+    Un assistant vocal prend le relais lorsque vous êtes occupé, absent ou hors horaires :
+    il identifie le motif de l'appel, prend un message ou un rendez-vous, et prévient la bonne personne.
+  capacites:
+    - Permanence téléphonique intelligente
+    - Qualification des appels
+    - Prise de messages et rendez-vous
+    - Transferts et notifications
+    - Continuité d'accueil
+  flux:
+    - { etape: Appel entrant, detail: "hors horaires ou ligne occupée" }
+    - { etape: Qualification, detail: "motif, urgence, coordonnées" }
+    - { etape: Suite donnée, detail: "rendez-vous, message ou transfert" }
+  statut: disponible
+
+- id: automatisation-administrative
+  numero: "02"
+  titre: Automatisation des processus administratifs
+  accroche: Les relances, la saisie et les documents avancent sans que quelqu'un ait à y penser.
+  description: >-
+    Nous automatisons les tâches répétitives qui ralentissent vos dossiers : collecte de pièces,
+    formulaires, génération de documents, devis, facturation et suivi des échéances.
+  capacites:
+    - Emails et relances
+    - Gestion documentaire
+    - Collecte de données
+    - Formulaires
+    - Devis et facturation
+    - Dossiers et échéances
+    - Agents IA appliqués aux tâches métier
+  flux:
+    - { etape: Pièce manquante, detail: "détectée dans le dossier" }
+    - { etape: Relance programmée, detail: "jusqu'à réception" }
+    - { etape: Dossier à jour, detail: "classement et suivi automatiques" }
+  statut: disponible
+
+- id: crm-automatisation-commerciale
+  numero: "03"
+  titre: CRM et automatisation commerciale
+  accroche: Aucune demande ne reste sans réponse, et vous savez où en est chaque opportunité.
+  description: >-
+    Vos demandes entrantes sont centralisées, qualifiées et suivies jusqu'à la signature,
+    avec des relances au bon moment et des tableaux de bord qui se mettent à jour seuls.
+  capacites:
+    - Gestion des prospects
+    - Qualification des demandes
+    - Synchronisation CRM
+    - Relances commerciales
+    - Reporting et tableaux de bord
+  flux:
+    - { etape: Nouvelle demande, detail: "site, email ou téléphone" }
+    - { etape: Fiche CRM, detail: "qualifiée et attribuée" }
+    - { etape: Relance et suivi, detail: "jusqu'à la décision" }
+  statut: disponible
+
+- id: infrastructure-privee
+  numero: "04"
+  titre: Infrastructure privée et automatisations sécurisées
+  accroche: Pour les données qui ne doivent pas quitter votre environnement.
+  description: >-
+    Lorsque la confidentialité l'exige, les automatisations peuvent être hébergées sur une
+    infrastructure maîtrisée — serveur local ou hébergement dédié — avec, si c'est pertinent,
+    une IA exécutée localement.
+  capacites:
+    - Serveurs locaux
+    - Automatisations hébergées sur infrastructure adaptée
+    - IA locale lorsque pertinente
+    - Sauvegardes et contrôle des accès
+  flux:
+    - { etape: Données sensibles, detail: "périmètre défini avec vous" }
+    - { etape: Traitement maîtrisé, detail: "infrastructure dédiée" }
+    - { etape: Accès contrôlés, detail: "sauvegardes et journalisation" }
+  statut: sous-reserve
+  mention: >-
+    Solutions adaptées aux exigences de confidentialité, proposées sous réserve de validation
+    technique et réglementaire de chaque projet.

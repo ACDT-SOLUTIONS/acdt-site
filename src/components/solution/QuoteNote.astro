@@ -1,0 +1,97 @@
+---
+import Button from '@/components/ui/Button.astro';
+import { ctaPrincipal } from '@/config/site';
+
+interface Props {
+  devis: { titre: string; facteurs: string[]; texte: string };
+}
+
+// Mention « sur devis » : facteurs de tarification, sans aucun prix.
+const { devis } = Astro.props;
+---
+
+<aside class="quote" aria-labelledby="devis-titre">
+  <div class="quote__head">
+    <p class="quote__badge mono">Sur devis</p>
+    <h3 id="devis-titre">{devis.titre}</h3>
+  </div>
+  <div class="quote__body">
+    <p class="quote__label mono">Le tarif dépend</p>
+    <ul class="quote__facteurs">
+      {devis.facteurs.map((f) => <li>{f}</li>)}
+    </ul>
+    <p class="quote__texte">{devis.texte}</p>
+    <Button href={ctaPrincipal.href} variant="secondary" arrow>{ctaPrincipal.label}</Button>
+  </div>
+</aside>
+
+<style>
+  .quote {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+
+  .quote__head {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+
+  .quote__badge {
+    justify-self: start;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent-soft);
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  h3 {
+    font-size: var(--step-2);
+  }
+
+  .quote__body {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .quote__label {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .quote__facteurs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .quote__facteurs li {
+    padding: 0.35rem 0.8rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+  }
+
+  .quote__texte {
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .quote {
+      grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+      gap: var(--space-8);
+    }
+  }
+</style>

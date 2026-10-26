@@ -1,0 +1,57 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+
+// Rubriques prévues ; chacune deviendra une collection et ses propres pages.
+const rubriques = [
+  { titre: 'Blog', texte: 'Articles sectoriels et analyses documentées.' },
+  { titre: 'Guides', texte: 'Guides pratiques pour préparer un projet d’automatisation.' },
+  { titre: 'Sources', texte: 'Bibliographie des études citées dans les cas pratiques.' },
+];
+---
+
+<BaseLayout title="Ressources" description="Guides, articles et sources documentées.">
+  <PageHero eyebrow="Ressources" breadcrumbs={[{ label: 'Ressources', href: '/ressources/' }]}>
+    <Fragment slot="title">Ressources, <em class="accent">en préparation.</em></Fragment>
+    Cette rubrique accueillera nos publications, reliées aux solutions et aux cas pratiques.
+  </PageHero>
+
+  <Section labelledby="rubriques-titre">
+    <h2 id="rubriques-titre" class="visually-hidden">Rubriques prévues</h2>
+    <ul class="rubriques">
+      {
+        rubriques.map((r) => (
+          <li>
+            <h3>{r.titre}</h3>
+            <Placeholder label="Prévu">{r.texte}</Placeholder>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .rubriques {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .rubriques li {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .rubriques h3 {
+    font-size: var(--step-2);
+  }
+</style>

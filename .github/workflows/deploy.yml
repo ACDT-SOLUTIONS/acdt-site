@@ -1,26 +1,213 @@
-name: Deploy ACDT site to VPS
+# Déploiement de la version publique sur le VPS.
+#
+# Se déclenche uniquement sur `main` (push) ou à la main (workflow_dispatch).
+# Les pushes sur refonte-v2 ne déclenchent rien.
+#
+# Étapes : build de la version publique → contrôles stricts (bloquants) → vérification des prérequis serveur
+# → sauvegarde de la production → publication de dist/ seul → test et rechargement nginx → vérification du site
+# en ligne → restauration automatique en cas d'échec.
+# Restauration manuelle : Actions › Déploiement production › Run workflow › « restaurer » = nom de la sauvegarde.
+# Procédure complète : DEPLOIEMENT.md.
+
+name: Déploiement production
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      restaurer:
+        description: "Nom d'une sauvegarde à restaurer (ex. 20261026-101500). Laisser vide pour déployer main."
+        required: false
+        default: ''
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+env:
+  SITE_DIR: /var/www/acdt_site
+  URL_PUBLIQUE: https://acdt-solutions.com
 
 jobs:
-  deploy:
+  construire:
+    if: ${{ !inputs.restaurer }}
     runs-on: ubuntu-latest
-
+    # Lues par le build (HTML généré) et par les contrôles stricts.
+    env:
+      PUBLIC_GA4_ID: G-V9NGFLJYFW
+      # Workflow n8n de production existant (notification, accusé de réception, Google Sheets).
+      PUBLIC_FORMULAIRE_URL: https://n8n.acdt-solutions.com/webhook/dd6d8a34-f999-4fa7-8088-0d654fe535fe
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Deploy over SSH
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+
+      - name: Construire la version publique
+        run: npm run build:release
+        env:
+          ASTRO_TELEMETRY_DISABLED: 1
+
+      - name: Contrôles stricts avant production (bloquants)
+        run: npm run verifier:production
+
+      - name: Archiver dist/
+        run: tar -czf site.tar.gz -C dist .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: site.tar.gz
+          include-hidden-files: true
+          retention-days: 30
+
+  deployer:
+    needs: construire
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+
+      - name: Envoyer l'archive sur le VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: site.tar.gz
+          target: /tmp/acdt-release-${{ github.sha }}
+
+      - name: Vérifier, sauvegarder puis publier
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          envs: SITE_DIR
           script: |
-            cd /var/www/acdt_site
-            git pull origin main
-            # Redémarrer le conteneur du site si nécessaire :
-            docker restart n8n-compose_siteweb_1 || true
+            set -euo pipefail
+            SAUVEGARDES_DIR="$HOME/acdt_site_sauvegardes"  # /var/www n'est pas accessible en écriture
+            ARCHIVE=/tmp/acdt-release-${{ github.sha }}/site.tar.gz
+            # Conteneur nginx du site, retrouvé par ses étiquettes Compose (son nom change à chaque recréation).
+            C=$(docker ps -q --filter label=com.docker.compose.project=n8n-compose --filter label=com.docker.compose.service=siteweb)
+            [ "$(echo "$C" | wc -w)" = 1 ] || { echo "Conteneur du site introuvable ou ambigu : déploiement annulé."; exit 1; }
+
+            # 0. Prérequis : rsync, droits, configuration nginx du site installée (étape A de DEPLOIEMENT.md).
+            command -v rsync >/dev/null || { echo "rsync absent : déploiement annulé."; exit 1; }
+            test -w "$SITE_DIR" || { echo "$SITE_DIR non accessible en écriture : déploiement annulé."; exit 1; }
+            docker exec "$C" nginx -T 2>/dev/null | grep -q acdt-site-conf-v2 \
+              || { echo "Configuration nginx du site non installée : déploiement annulé."; exit 1; }
+
+            # 1. Sauvegarde complète de la production actuelle (y compris l'ancien .git).
+            HORODATAGE=$(date +%Y%m%d-%H%M%S)
+            mkdir -p "$SAUVEGARDES_DIR"
+            cp -a "$SITE_DIR" "$SAUVEGARDES_DIR/$HORODATAGE"
+            echo "$HORODATAGE" > "$SAUVEGARDES_DIR/DERNIERE"
+            echo "Sauvegarde : $SAUVEGARDES_DIR/$HORODATAGE"
+
+            # 2. Préparation hors du dossier servi, puis synchronisation en place (même dossier monté).
+            PREPARATION=$(mktemp -d)
+            tar -xzf "$ARCHIVE" -C "$PREPARATION"
+            test -f "$PREPARATION/index.html" || { echo "Archive invalide : déploiement annulé."; exit 1; }
+            rsync -a --delete "$PREPARATION"/ "$SITE_DIR"/
+            rm -rf "$PREPARATION" "$(dirname "$ARCHIVE")"
+
+            # 3. Nouvelles règles de redirection : test puis rechargement ; restauration si la configuration est invalide.
+            if docker exec "$C" nginx -t; then
+              docker exec "$C" nginx -s reload
+            else
+              echo "Configuration nginx invalide : restauration de la sauvegarde."
+              rsync -a --delete "$SAUVEGARDES_DIR/$HORODATAGE"/ "$SITE_DIR"/
+              docker exec "$C" nginx -t && docker exec "$C" nginx -s reload
+              exit 1
+            fi
+
+            # 4. On conserve les 5 dernières sauvegardes.
+            ls -1dt "$SAUVEGARDES_DIR"/2* | tail -n +6 | xargs -r rm -rf
+            echo "Publication terminée."
+
+      - name: Vérifier le site en ligne
+        run: |
+          set -euo pipefail
+          sleep 5
+          verifier() { # chemin code_attendu [texte_attendu]
+            code=$(curl -s -o page.html -D entetes.txt -w '%{http_code}' "$URL_PUBLIQUE$1")
+            [ "$code" = "$2" ] || { echo "✗ $1 : HTTP $code (attendu $2)"; return 1; }
+            if [ -n "${3:-}" ]; then grep -qi -- "$3" page.html entetes.txt || { echo "✗ $1 : « $3 » introuvable"; return 1; }; fi
+            echo "✓ $1 : HTTP $code"
+          }
+          verifier / 200 'Automatiser ce qui vous coûte'
+          verifier /solutions/accueil-telephonique-ia/ 200 'tel:+33972199815'
+          verifier /tarifs/ 200 'sur devis'
+          verifier /contact/ 200 '<contact-form'
+          verifier /contact/ 200 'tel:+33757830279'
+          verifier /contact/ 200 'src="/consentement.js" data-ga4="G-'
+          verifier /consentement.js 200 'acdt-consentement'
+          verifier /rendez-vous/ 200 'cal\.com/\|calendar\.app\.google/\|calendar\.google\.com/'
+          verifier /services/ 200 'src="/consentement.js"'
+          verifier /mentions-legales/ 200 'tel:+33757830279'
+          verifier /politique-de-confidentialite/ 200 'Google Analytics'
+          verifier /politique-cookies/ 200 'data-consentement-ouvrir'
+          verifier /conditions-generales-utilisation/ 200
+          verifier /conditions-generales-vente/ 200 '293 B'
+          for p in / /contact/ /mentions-legales/ /politique-de-confidentialite/ /politique-cookies/ \
+                   /conditions-generales-utilisation/ /conditions-generales-vente/; do
+            curl -s "$URL_PUBLIQUE$p" | grep -q 'À COMPLÉTER\|À CONFIRMER\|googletagmanager\.com/gtm\|noindex' \
+              && { echo "✗ $p : marqueur provisoire, GTM ou noindex présent"; exit 1; } || echo "✓ $p : aucun marqueur provisoire"
+          done
+          verifier /sitemap.xml 200 '<urlset'
+          verifier /rdv/ 301 'location: /rendez-vous/'
+          verifier /test/ 410
+          verifier /.git/HEAD 404
+          verifier /.nginx/redirections.conf 404
+          verifier /.DS_Store 404
+
+      - name: Restaurer automatiquement en cas d'échec
+        if: failure()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: SITE_DIR
+          script: |
+            set -euo pipefail
+            SAUVEGARDES_DIR="$HOME/acdt_site_sauvegardes"  # /var/www n'est pas accessible en écriture
+            test -f "$SAUVEGARDES_DIR/DERNIERE" || { echo "Aucune sauvegarde de ce déploiement : rien à restaurer."; exit 0; }
+            NOM=$(cat "$SAUVEGARDES_DIR/DERNIERE")
+            rsync -a --delete "$SAUVEGARDES_DIR/$NOM"/ "$SITE_DIR"/
+            C=$(docker ps -q --filter label=com.docker.compose.project=n8n-compose --filter label=com.docker.compose.service=siteweb)
+            docker exec "$C" nginx -t && docker exec "$C" nginx -s reload
+            echo "Production restaurée depuis la sauvegarde $NOM."
+
+  restaurer:
+    if: ${{ inputs.restaurer }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Restaurer une sauvegarde
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          NOM: ${{ inputs.restaurer }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: SITE_DIR,NOM
+          script: |
+            set -euo pipefail
+            SAUVEGARDES_DIR="$HOME/acdt_site_sauvegardes"  # /var/www n'est pas accessible en écriture
+            case "$NOM" in *[!0-9-]*|'') echo "Nom de sauvegarde invalide."; exit 1;; esac
+            test -d "$SAUVEGARDES_DIR/$NOM" || { echo "Sauvegarde $NOM introuvable."; ls -1 "$SAUVEGARDES_DIR"; exit 1; }
+            rsync -a --delete "$SAUVEGARDES_DIR/$NOM"/ "$SITE_DIR"/
+            C=$(docker ps -q --filter label=com.docker.compose.project=n8n-compose --filter label=com.docker.compose.service=siteweb)
+            docker exec "$C" nginx -t && docker exec "$C" nginx -s reload
+            echo "Production restaurée depuis la sauvegarde $NOM."

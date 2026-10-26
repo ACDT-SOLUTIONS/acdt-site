@@ -1,0 +1,32 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import Placeholder from '@/components/ui/Placeholder.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import Orientation from '@/components/home/Orientation.astro';
+---
+
+<BaseLayout title="À propos" description="ACDT Solutions : analyse des problèmes métier, conception de solutions adaptées, mesure des résultats.">
+  <PageHero eyebrow="À propos" breadcrumbs={[{ label: 'À propos', href: '/a-propos/' }]}>
+    <Fragment slot="title">ACDT <em class="accent">Solutions.</em></Fragment>
+    Analyse des problèmes métier, conception de solutions adaptées, mesure des résultats.
+  </PageHero>
+
+  <Section labelledby="approche-titre">
+    <SectionHeader eyebrow="Notre approche" index="01" id="approche-titre">
+      <Fragment slot="title">Pourquoi nous travaillons ainsi.</Fragment>
+    </SectionHeader>
+    <Placeholder>Présentation de la structure et de son positionnement, sans exagération de taille.</Placeholder>
+  </Section>
+
+  <Section tone="sunken" labelledby="activite-titre">
+    <SectionHeader eyebrow="Notre activité" index="02" id="activite-titre">
+      <Fragment slot="title">Ce que nous faisons.</Fragment>
+    </SectionHeader>
+    <Orientation />
+  </Section>
+
+  <CtaBand />
+</BaseLayout>

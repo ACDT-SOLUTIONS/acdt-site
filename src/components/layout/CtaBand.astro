@@ -1,0 +1,119 @@
+---
+import Button from '@/components/ui/Button.astro';
+import { ctaPrincipal, type LienNav } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
+
+interface Props {
+  eyebrow?: string;
+  principal?: LienNav;
+  secondaire?: LienNav;
+}
+
+// Bandeau de contact commun à toutes les pages ; titre et texte adaptables par slots.
+const {
+  eyebrow = 'Premier échange',
+  principal = ctaPrincipal,
+  secondaire = { label: 'Ou écrivez-nous', href: '/contact/' },
+} = Astro.props;
+---
+
+<section class="cta-band" aria-labelledby="cta-titre">
+  <div class="container">
+    <div class="cta-band__panel">
+      <p class="cta-band__eyebrow mono">{eyebrow}</p>
+      <h2 id="cta-titre">
+        {
+          Astro.slots.has('title') ? (
+            <slot name="title" />
+          ) : (
+            <Fragment>
+              Commençons par mesurer ce que vos tâches répétitives <em class="accent">vous coûtent.</em>
+            </Fragment>
+          )
+        }
+      </h2>
+      <p class="cta-band__lead">
+        <slot>
+          Un rendez-vous pour comprendre votre situation et identifier ce qui mérite d'être automatisé. Le devis vient
+          ensuite, si le projet a du sens.
+        </slot>
+      </p>
+      <div class="cta-band__actions">
+        <Button href={principal.href} variant="inverse" size="l" arrow>{principal.label}</Button>
+        {lienVisible(secondaire.href) && <a class="cta-band__link" href={secondaire.href}>{secondaire.label}</a>}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    padding-block: var(--space-section);
+  }
+
+  /* Collé à une section sombre ou grisée, le bandeau garde son propre espacement. */
+  :global(.section--default) + .cta-band {
+    padding-top: 0;
+  }
+
+  .cta-band__panel {
+    position: relative;
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(var(--space-6), 6vw, var(--space-9));
+    border-radius: var(--radius-l);
+    background: var(--pine-800);
+    color: var(--paper-50);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Trame reprise du hero, en négatif */
+  .cta-band__panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+    background-size: 3.5rem 3.5rem;
+    mask-image: radial-gradient(ellipse 60% 80% at 100% 0%, #000, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 80% at 100% 0%, #000, transparent 70%);
+  }
+
+  .cta-band__eyebrow {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pine-300);
+  }
+
+  h2 {
+    max-width: 22ch;
+    font-size: var(--step-4);
+  }
+
+  h2 :global(.accent) {
+    color: var(--pine-300);
+  }
+
+  .cta-band__lead {
+    max-width: 38rem;
+    font-size: var(--step-1);
+    color: var(--pine-100);
+  }
+
+  .cta-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    padding-top: var(--space-3);
+  }
+
+  .cta-band__link {
+    color: var(--paper-50);
+    font-size: var(--step--1);
+  }
+</style>

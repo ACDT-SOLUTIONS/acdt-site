@@ -1,0 +1,146 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import Button from '@/components/ui/Button.astro';
+import ContactForm from '@/components/integrations/ContactForm.astro';
+import { ctaPrincipal, rendezVous, reservationGoogle, site } from '@/config/site';
+import { VERSION_PUBLIQUE } from '@/lib/publication';
+import { PUBLIC_FORMULAIRE_URL } from 'astro:env/server';
+---
+
+<BaseLayout
+  title="Contact"
+  description="Contacter ACDT Solutions : formulaire de contact, email ou prise de rendez-vous pour un premier échange."
+>
+  <PageHero eyebrow="Contact" breadcrumbs={[{ label: 'Contact', href: '/contact/' }]}>
+    <Fragment slot="title">Contacter <em class="accent">ACDT Solutions.</em></Fragment>
+    Décrivez-nous votre situation, écrivez-nous directement ou réservez un créneau d'échange.
+  </PageHero>
+
+  <Section labelledby="formulaire-titre">
+    <div class="contact">
+      {
+        PUBLIC_FORMULAIRE_URL ? (
+          <div class="carte carte--formulaire">
+            <p class="carte__label mono">Formulaire</p>
+            <h2 id="formulaire-titre" class="carte__titre">
+              Décrivez votre demande.
+            </h2>
+            <ContactForm />
+          </div>
+        ) : (
+          <h2 id="formulaire-titre" class="visually-hidden">
+            Moyens de contact
+          </h2>
+        )
+      }
+      {
+        !PUBLIC_FORMULAIRE_URL && !VERSION_PUBLIQUE && (
+          <p class="brouillon-note mono">
+            Formulaire masqué : PUBLIC_FORMULAIRE_URL non défini (voir DEPLOIEMENT.md, section 7) — visible uniquement
+            en développement
+          </p>
+        )
+      }
+
+      <ul class="moyens" aria-label="Autres moyens de contact">
+        <li class="carte">
+          <p class="carte__label mono">Email</p>
+          <a class="carte__valeur" href={`mailto:${site.email}`}>{site.email}</a>
+          <p>Précisez votre activité, vos outils actuels et ce qui vous fait perdre du temps.</p>
+        </li>
+        <li class="carte">
+          <p class="carte__label mono">Téléphone</p>
+          <a class="carte__valeur" href={site.telephoneLien}>{site.telephone}</a>
+          <p>Pour échanger de vive voix sur votre demande.</p>
+        </li>
+        <li class="carte">
+          <p class="carte__label mono">Rendez-vous</p>
+          <p class="carte__valeur">Un premier échange</p>
+          <p>
+            {
+              reservationGoogle
+                ? `${rendezVous.duree}, en visioconférence ou par téléphone, pour comprendre votre situation.`
+                : 'Choisissez en ligne un créneau pour un premier échange sur votre situation.'
+            }
+          </p>
+          <Button href={ctaPrincipal.href} variant="secondary" arrow>{ctaPrincipal.label}</Button>
+        </li>
+      </ul>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .moyens {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .moyens {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .moyens {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .carte {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    justify-items: start;
+    padding: var(--space-6);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+
+  .carte--formulaire {
+    justify-items: stretch;
+    gap: var(--space-4);
+    padding: clamp(var(--space-5), 4vw, var(--space-7));
+    box-shadow: var(--shadow-card);
+  }
+
+  .carte__label {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  .carte__titre {
+    font-size: var(--step-3);
+  }
+
+  .carte__valeur {
+    font-size: var(--step-2);
+    font-weight: 560;
+    overflow-wrap: anywhere;
+  }
+
+  .carte p:not(.carte__label):not(.carte__valeur) {
+    color: var(--color-text-muted);
+  }
+
+  .brouillon-note {
+    padding: var(--space-4);
+    border: 1px dashed var(--signal-500);
+    border-radius: var(--radius-m);
+    font-size: var(--step--2);
+    color: var(--signal-600);
+  }
+</style>

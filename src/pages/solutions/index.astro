@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/layout/PageHero.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import ProblemList from '@/components/content/ProblemList.astro';
+import FamilyList from '@/components/content/FamilyList.astro';
+import Capabilities from '@/components/content/Capabilities.astro';
+import FaqSection from '@/components/content/FaqSection.astro';
+---
+
+<BaseLayout title="Solutions" description="Les quatre familles de solutions d'ACDT Solutions.">
+  <PageHero eyebrow="Solutions" breadcrumbs={[{ label: 'Solutions', href: '/solutions/' }]}>
+    <Fragment slot="title">Quatre familles de solutions, <em class="accent">un seul point de départ.</em></Fragment>
+    Chaque projet part d'un problème précis. Les solutions sont ensuite construites à partir des briques adaptées.
+  </PageHero>
+
+  <Section labelledby="problemes-titre">
+    <SectionHeader eyebrow="Diagnostic" index="01" align="split" id="problemes-titre">
+      <Fragment slot="title">Quel est <em class="accent">votre problème ?</em></Fragment>
+      Choisissez la situation qui vous ressemble le plus.
+    </SectionHeader>
+    <ProblemList />
+  </Section>
+
+  <Section tone="sunken" labelledby="familles-titre">
+    <SectionHeader eyebrow="Familles de solutions" index="02" id="familles-titre">
+      <Fragment slot="title">Les quatre familles.</Fragment>
+    </SectionHeader>
+    <FamilyList />
+    <div class="capacites">
+      <Capabilities />
+    </div>
+  </Section>
+
+  <FaqSection index="03" />
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .capacites {
+    margin-top: var(--space-7);
+  }
+</style>

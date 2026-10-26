@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import JsonLd from '@/components/seo/JsonLd.astro';
+import Section from '@/components/layout/Section.astro';
+import SectionHeader from '@/components/ui/SectionHeader.astro';
+import CtaBand from '@/components/layout/CtaBand.astro';
+import Hero from '@/components/home/Hero.astro';
+import Orientation from '@/components/home/Orientation.astro';
+import { site } from '@/config/site';
+import { lienVisible } from '@/lib/publication';
+
+const solutions = await getCollection('solutions');
+// Tant que seules des offres sont publiées, l'introduction ne promet pas de rubriques absentes.
+const toutesRubriques = lienVisible('/secteurs/') || lienVisible('/cas-pratiques/');
+const url = Astro.site!.href;
+
+const organisation = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  '@id': `${url}#organisation`,
+  name: site.nom,
+  url,
+  email: site.email,
+  description: site.description,
+  knowsAbout: solutions.map((s) => s.data.titre),
+};
+---
+
+<BaseLayout title={site.nom} description={site.description}>
+  <JsonLd data={organisation} slot="head" />
+
+  <!-- A. Présentation -->
+  <Hero />
+
+  <!-- B. Orientation -->
+  <Section tone="sunken" labelledby="orientation-titre">
+    <SectionHeader eyebrow="Par où commencer" align="split" id="orientation-titre">
+      <Fragment slot="title">Trouvez ce qui <em class="accent">vous concerne.</em></Fragment>
+      {
+        toutesRubriques
+          ? "Partez de votre besoin, de votre métier ou d'un exemple chiffré."
+          : 'Nos solutions sont publiées progressivement : chacune devient accessible dès qu’elle est prête.'
+      }
+    </SectionHeader>
+    <Orientation />
+  </Section>
+
+  <!-- C. Prise de contact -->
+  <CtaBand />
+</BaseLayout>
