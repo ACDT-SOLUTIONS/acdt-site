@@ -166,6 +166,9 @@ jobs:
           verifier /sitemap.xml 200 '<urlset'
           verifier /rdv/ 301 'location: /rendez-vous/'
           verifier /test/ 410
+          verifier /solutions/ 404
+          code=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' https://www.acdt-solutions.com/contact/)
+          [ "$code" = "301 $URL_PUBLIQUE/contact/" ] && echo "✓ www → domaine principal" || { echo "✗ www : $code"; exit 1; }
           verifier /.git/HEAD 404
           verifier /.nginx/redirections.conf 404
           verifier /.DS_Store 404
