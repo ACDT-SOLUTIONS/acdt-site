@@ -103,7 +103,8 @@ jobs:
             # 0. Prérequis : rsync, droits, configuration nginx du site installée (étape A de DEPLOIEMENT.md).
             command -v rsync >/dev/null || { echo "rsync absent : déploiement annulé."; exit 1; }
             test -w "$SITE_DIR" || { echo "$SITE_DIR non accessible en écriture : déploiement annulé."; exit 1; }
-            docker exec "$C" nginx -T 2>/dev/null | grep -q acdt-site-conf-v2 \
+            NGINX_CONFIG=$(docker exec "$C" nginx -T 2>/dev/null)
+            grep -q acdt-site-conf-v2 <<< "$NGINX_CONFIG" \
               || { echo "Configuration nginx du site non installée : déploiement annulé."; exit 1; }
 
             # 1. Sauvegarde complète de la production actuelle (y compris l'ancien .git).
@@ -111,6 +112,7 @@ jobs:
             mkdir -p "$SAUVEGARDES_DIR"
             cp -a "$SITE_DIR" "$SAUVEGARDES_DIR/$HORODATAGE"
             echo "$HORODATAGE" > "$SAUVEGARDES_DIR/DERNIERE"
+            echo "$HORODATAGE" > "$SAUVEGARDES_DIR/deploiement-${{ github.sha }}"
             echo "Sauvegarde : $SAUVEGARDES_DIR/$HORODATAGE"
 
             # 2. Préparation hors du dossier servi, puis synchronisation en place (même dossier monté).
@@ -187,8 +189,8 @@ jobs:
           script: |
             set -euo pipefail
             SAUVEGARDES_DIR="$HOME/acdt_site_sauvegardes"  # /var/www n'est pas accessible en écriture
-            test -f "$SAUVEGARDES_DIR/DERNIERE" || { echo "Aucune sauvegarde de ce déploiement : rien à restaurer."; exit 0; }
-            NOM=$(cat "$SAUVEGARDES_DIR/DERNIERE")
+            test -f "$SAUVEGARDES_DIR/deploiement-${{ github.sha }}" || { echo "Aucune sauvegarde de ce déploiement : rien à restaurer."; exit 0; }
+            NOM=$(cat "$SAUVEGARDES_DIR/deploiement-${{ github.sha }}")
             rsync -a --delete "$SAUVEGARDES_DIR/$NOM"/ "$SITE_DIR"/
             C=$(docker ps -q --filter label=com.docker.compose.project=n8n-compose --filter label=com.docker.compose.service=siteweb)
             docker exec "$C" nginx -t && docker exec "$C" nginx -s reload
