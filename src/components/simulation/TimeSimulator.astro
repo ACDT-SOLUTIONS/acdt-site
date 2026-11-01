@@ -1,0 +1,734 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SimulatorField from './SimulatorField.astro';
+import { formatHeures, formatNombre } from '@/lib/roi/format';
+import { CLES_ECONOMIE, estimer } from '@/lib/roi/saisie';
+
+type Valeur = NonNullable<CollectionEntry<'pagesSecteurs'>['data']['valeur']>;
+
+interface Props {
+  simulateur: Valeur['simulateur'];
+  resultats: Valeur['resultats'];
+  economie: Valeur['economie'];
+}
+
+// Simulateur de temps libéré, scénario par scénario. Tout est calculé dans le navigateur par `simuler()` :
+// aucune valeur saisie n'est envoyée, enregistrée ni mesurée. Sans JavaScript, seul un message s'affiche.
+const { simulateur, resultats, economie } = Astro.props;
+
+// En français, « heure » reste au singulier en dessous de 2.
+const parSemaine = (heures: number) =>
+  (heures < 2 ? resultats.parSemaineSingulier : resultats.parSemaine).replace('{valeur}', formatNombre(heures));
+
+const scenarios = simulateur.scenarios.map((s) => {
+  const r = estimer({
+    occurrencesParMois: s.volume.valeur,
+    minutesParOccurrence: s.minutes.valeur,
+    tauxAutomatisation: s.part.valeur / 100,
+  }).temps!;
+  return {
+    ...s,
+    champs: [
+      { cle: 'occurrencesParMois', ...s.volume },
+      { cle: 'minutesParOccurrence', ...s.minutes },
+      { cle: 'tauxAutomatisation', ...s.part },
+    ] as const,
+    r,
+  };
+});
+
+const textes = {
+  parSemaine: resultats.parSemaine,
+  parSemaineSingulier: resultats.parSemaineSingulier,
+  libere: resultats.libere,
+  eco: economie.resultats,
+};
+---
+
+<simulateur-temps class="sim" data-textes={JSON.stringify(textes)}>
+  <p class="sim__sans-js" data-sans-js>{simulateur.sansJs}</p>
+
+  <div class="sim__app" data-interactif hidden>
+    <div class="sim__onglets" role="tablist" aria-label={simulateur.libelleOnglets}>
+      {
+        scenarios.map((s, i) => (
+          <button
+            class="sim__onglet"
+            type="button"
+            role="tab"
+            id={`sim-onglet-${s.id}`}
+            aria-controls={`sim-panneau-${s.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+          >
+            <span class="mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            {s.label}
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      scenarios.map((s, i) => (
+        <form
+          class="sim__panneau"
+          id={`sim-panneau-${s.id}`}
+          role="tabpanel"
+          aria-labelledby={`sim-onglet-${s.id}`}
+          data-label={s.label}
+          hidden={i > 0}
+          novalidate
+        >
+          <div class="sim__grille">
+            <fieldset class="sim__params">
+              <legend class="sim__soustitre mono">{simulateur.hypotheses}</legend>
+              {s.champs.map((c) => (
+                <SimulatorField
+                  id={`sim-${s.id}-${c.cle}`}
+                  cle={c.cle}
+                  label={c.label}
+                  unite={c.unite}
+                  valeur={c.valeur}
+                  aide={c.aide}
+                />
+              ))}
+              <p class="sim__avertissement">{simulateur.avertissement}</p>
+              <button type="button" class="sim__reset mono" data-reset>
+                <span aria-hidden="true">↺</span> {simulateur.reinitialiser}
+              </button>
+            </fieldset>
+
+            <div class="sim__resultats">
+              <h3 class="sim__soustitre mono">{resultats.titre}</h3>
+              <div class="sim__temps" data-temps>
+                <p class="sim__cle-label">{resultats.libere}</p>
+                <p class="sim__cle-valeur mono" data-out="libere">
+                  {formatHeures(s.r.libere)}
+                </p>
+                <p class="sim__semaine" data-out="parSemaine">
+                  {parSemaine(s.r.libereParSemaine)}
+                </p>
+                <p class="sim__base">{resultats.baseSemaine}</p>
+
+                <div class="sim__barre" aria-hidden="true">
+                  <span data-barre style={`width: ${(s.r.libere / s.r.actuel) * 100}%`} />
+                </div>
+                <dl class="sim__detail">
+                  <div>
+                    <dt>{resultats.actuel}</dt>
+                    <dd class="mono">
+                      <span data-out="actuel">{formatHeures(s.r.actuel)}</span> / mois
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{resultats.restant}</dt>
+                    <dd class="mono">
+                      <span data-out="restant">{formatHeures(s.r.restant)}</span> / mois
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <p class="sim__etat" data-etat data-incomplet={resultats.incomplet} data-invalide={resultats.invalide} hidden />
+              <p class="sim__separe">{resultats.separe}</p>
+            </div>
+          </div>
+
+          <details class="sim__eco">
+            <summary>
+              <span>{economie.titre}</span>
+              <span class="sim__eco-icone" aria-hidden="true" />
+            </summary>
+            <div class="sim__eco-corps">
+              <p class="sim__eco-intro">{economie.intro}</p>
+              <div class="sim__grille">
+                <fieldset class="sim__params">
+                  <legend class="visually-hidden">{economie.titre}</legend>
+                  {CLES_ECONOMIE.map((cle) => (
+                    <SimulatorField id={`sim-${s.id}-${cle}`} cle={cle} {...economie.champs[cle]} />
+                  ))}
+                </fieldset>
+                <div class="sim__eco-resultats">
+                  <p class="sim__eco-avertissement">{economie.avertissement}</p>
+                  <dl class="sim__eco-liste">
+                    <div data-ligne="valorisation" hidden>
+                      <dt>{economie.resultats.valorisation}</dt>
+                      <dd class="mono" data-eco="valorisation" />
+                    </div>
+                    <div data-ligne="soldeMensuel" hidden>
+                      <dt>{economie.resultats.soldeMensuel}</dt>
+                      <dd class="mono" data-eco="soldeMensuel" />
+                    </div>
+                    <div data-ligne="soldeCumule" hidden>
+                      <dt>
+                        {economie.resultats.soldeCumule} <span data-eco="horizon" />
+                      </dt>
+                      <dd class="mono" data-eco="soldeCumule" />
+                    </div>
+                    <div data-ligne="ratio" hidden>
+                      <dt>{economie.resultats.ratio}</dt>
+                      <dd class="mono" data-eco="ratio" />
+                    </div>
+                    <div data-ligne="delai" hidden>
+                      <dt>{economie.resultats.delai}</dt>
+                      <dd class="mono" data-eco="delai" />
+                    </div>
+                  </dl>
+                  <p class="sim__eco-attente" data-eco-attente data-textes={JSON.stringify(economie.attente)}>
+                    {economie.attente.valorisation}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </details>
+        </form>
+      ))
+    }
+
+    <p class="visually-hidden" aria-live="polite" data-annonce></p>
+  </div>
+</simulateur-temps>
+
+<script>
+  import { formatEuros, formatHeures, formatMois, formatNombre, formatPourcent } from '@/lib/roi/format';
+  import { CLES_TEMPS, estimer, lireChamp, type Cle, type Estimation } from '@/lib/roi/saisie';
+
+  interface Textes {
+    parSemaine: string;
+    parSemaineSingulier: string;
+    libere: string;
+    eco: Record<'valorisation' | 'soldeMensuel' | 'soldeCumule' | 'ratio' | 'delai' | 'aucunRetour' | 'sansInvestissement', string>;
+  }
+
+  // Évite d'afficher « -0 € » pour un solde qui n'est négatif qu'à l'arrondi près.
+  const euros = (v: number) => formatEuros(Math.abs(v) < 0.005 ? 0 : v);
+
+  class SimulateurTemps extends HTMLElement {
+    private textes!: Textes;
+    private annonce: HTMLElement | null = null;
+    private minuteur?: number;
+
+    connectedCallback() {
+      this.textes = JSON.parse(this.dataset.textes ?? '{}');
+      this.annonce = this.querySelector('[data-annonce]');
+      this.querySelector<HTMLElement>('[data-sans-js]')!.hidden = true;
+      this.querySelector<HTMLElement>('[data-interactif]')!.hidden = false;
+
+      const onglets = [...this.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+      const panneaux = [...this.querySelectorAll<HTMLFormElement>('[role="tabpanel"]')];
+
+      // Chaque scénario a son propre formulaire : ses valeurs restent en place d'un onglet à l'autre.
+      const choisir = (index: number, focus = false) => {
+        onglets.forEach((o, i) => {
+          const actif = i === index;
+          o.setAttribute('aria-selected', String(actif));
+          o.tabIndex = actif ? 0 : -1;
+          panneaux[i].hidden = !actif;
+        });
+        if (focus) onglets[index].focus();
+      };
+
+      onglets.forEach((o, i) => {
+        o.addEventListener('click', () => choisir(i));
+        o.addEventListener('keydown', (e) => {
+          const dernier = onglets.length - 1;
+          const cible =
+            e.key === 'ArrowRight' ? (i === dernier ? 0 : i + 1)
+            : e.key === 'ArrowLeft' ? (i === 0 ? dernier : i - 1)
+            : e.key === 'Home' ? 0
+            : e.key === 'End' ? dernier
+            : null;
+          if (cible === null) return;
+          e.preventDefault();
+          choisir(cible, true);
+        });
+      });
+
+      panneaux.forEach((panneau) => {
+        panneau.addEventListener('submit', (e) => e.preventDefault());
+        panneau.addEventListener('input', () => this.calculer(panneau, true));
+        panneau.querySelector('[data-reset]')?.addEventListener('click', () => {
+          panneau.querySelectorAll<HTMLInputElement>('input[data-cle]').forEach((input) => {
+            input.value = input.dataset.initial ?? '';
+          });
+          this.calculer(panneau, true);
+        });
+        this.calculer(panneau, false);
+      });
+    }
+
+    private calculer(panneau: HTMLFormElement, annoncer: boolean) {
+      const valeurs: Partial<Record<Cle, number | null>> = {};
+      let tempsInvalide = false;
+      let ecoInvalide = false;
+
+      panneau.querySelectorAll<HTMLInputElement>('input[data-cle]').forEach((input) => {
+        const cle = input.dataset.cle as Cle;
+        const { valeur, erreur } = lireChamp(cle, input.value);
+        valeurs[cle] = valeur;
+        const message = input.closest('.champ')?.querySelector('[data-erreur]');
+        if (message) message.textContent = erreur ?? '';
+        if (erreur) input.setAttribute('aria-invalid', 'true');
+        else input.removeAttribute('aria-invalid');
+        if (erreur && (CLES_TEMPS as readonly string[]).includes(cle)) tempsInvalide = true;
+        else if (erreur) ecoInvalide = true;
+      });
+
+      const e = estimer(valeurs);
+      this.afficherTemps(panneau, e, tempsInvalide);
+      this.afficherEconomie(panneau, e, ecoInvalide, valeurs.horizonMois ?? null);
+
+      if (annoncer) this.annoncer(panneau, e);
+    }
+
+    private afficherTemps(panneau: HTMLElement, e: Estimation, invalide: boolean) {
+      const bloc = panneau.querySelector<HTMLElement>('[data-temps]')!;
+      const etat = panneau.querySelector<HTMLElement>('[data-etat]')!;
+      bloc.hidden = !e.temps;
+      etat.hidden = Boolean(e.temps);
+      etat.textContent = (invalide ? etat.dataset.invalide : etat.dataset.incomplet) ?? '';
+      if (!e.temps) return;
+
+      const t = e.temps;
+      this.ecrire(panneau, '[data-out="libere"]', formatHeures(t.libere));
+      this.ecrire(panneau, '[data-out="parSemaine"]', this.parSemaine(t.libereParSemaine));
+      this.ecrire(panneau, '[data-out="actuel"]', formatHeures(t.actuel));
+      this.ecrire(panneau, '[data-out="restant"]', formatHeures(t.restant));
+      const barre = panneau.querySelector<HTMLElement>('[data-barre]');
+      if (barre) barre.style.width = `${t.actuel > 0 ? (t.libere / t.actuel) * 100 : 0}%`;
+    }
+
+    private afficherEconomie(panneau: HTMLElement, e: Estimation, invalide: boolean, horizon: number | null) {
+      const eco = this.textes.eco;
+      const attente = panneau.querySelector<HTMLElement>('[data-eco-attente]')!;
+      const messages = JSON.parse(attente.dataset.textes ?? '{}');
+      // Une saisie invalide masque tous les résultats économiques plutôt que d'en afficher une partie trompeuse.
+      const ok = Boolean(e.temps) && !invalide;
+
+      const ligne = (nom: string, valeur: string | null, negatif = false) => {
+        const el = panneau.querySelector<HTMLElement>(`[data-ligne="${nom}"]`)!;
+        el.hidden = !ok || valeur === null;
+        el.toggleAttribute('data-negatif', negatif);
+        if (valeur !== null) this.ecrire(panneau, `[data-eco="${nom}"]`, valeur);
+      };
+
+      ligne('valorisation', e.valorisation === null ? null : `${euros(e.valorisation)} / mois`);
+      ligne('soldeMensuel', e.soldeMensuel === null ? null : `${euros(e.soldeMensuel)} / mois`, (e.soldeMensuel ?? 0) < -0.005);
+      ligne('soldeCumule', e.soldeCumule === null ? null : euros(e.soldeCumule), (e.soldeCumule ?? 0) < -0.005);
+      ligne('ratio', e.ratio === null ? null : formatPourcent(e.ratio), (e.ratio ?? 0) < 0);
+      ligne(
+        'delai',
+        e.soldeCumule === null ? null
+        : e.delaiRetour === null ? eco.aucunRetour
+        : e.delaiRetour === 0 ? eco.sansInvestissement
+        : formatMois(e.delaiRetour),
+        e.soldeCumule !== null && e.delaiRetour === null,
+      );
+      this.ecrire(panneau, '[data-eco="horizon"]', horizon === null ? '' : `sur ${formatNombre(horizon)} mois`);
+
+      const message =
+        !e.temps ? ''
+        : invalide ? (panneau.querySelector<HTMLElement>('[data-etat]')?.dataset.invalide ?? '')
+        : e.valorisation === null ? messages.valorisation
+        : e.soldeMensuel === null ? messages.soldeMensuel
+        : e.soldeCumule === null ? messages.soldeCumule
+        : '';
+      attente.textContent = message;
+      attente.hidden = message === '';
+    }
+
+    // Annonce discrète, après une courte pause de saisie, pour ne pas lire chaque frappe.
+    private annoncer(panneau: HTMLElement, e: Estimation) {
+      window.clearTimeout(this.minuteur);
+      this.minuteur = window.setTimeout(() => {
+        if (!this.annonce) return;
+        const etat = panneau.querySelector<HTMLElement>('[data-etat]');
+        if (!e.temps) {
+          this.annonce.textContent = etat?.textContent ?? '';
+          return;
+        }
+        const phrases = [
+          `${panneau.dataset.label} : ${this.textes.libere.toLowerCase()}, ${formatHeures(e.temps.libere)}.`,
+          `${this.parSemaine(e.temps.libereParSemaine)}.`,
+        ];
+        if (e.soldeMensuel !== null) phrases.push(`${this.textes.eco.soldeMensuel} : ${euros(e.soldeMensuel)} par mois.`);
+        this.annonce.textContent = phrases.join(' ');
+      }, 800);
+    }
+
+    private parSemaine(heures: number) {
+      const modele = heures < 2 ? this.textes.parSemaineSingulier : this.textes.parSemaine;
+      return modele.replace('{valeur}', formatNombre(heures));
+    }
+
+    private ecrire(racine: HTMLElement, selecteur: string, texte: string) {
+      racine.querySelectorAll(selecteur).forEach((el) => (el.textContent = texte));
+    }
+  }
+
+  customElements.define('simulateur-temps', SimulateurTemps);
+</script>
+
+<style>
+  .sim__sans-js {
+    padding: var(--space-5) var(--space-6);
+    border: 1px dashed var(--color-line-strong);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+  }
+
+  .sim__app {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .sim__onglets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-self: start;
+    padding: var(--space-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+  }
+
+  .sim__onglet {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: none;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  .sim__onglet .mono {
+    font-size: var(--step--2);
+    opacity: 0.7;
+  }
+
+  .sim__onglet:hover {
+    color: var(--color-text);
+  }
+
+  .sim__onglet[aria-selected='true'] {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .sim__panneau {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  .sim__grille {
+    display: grid;
+  }
+
+  .sim__params {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+    min-width: 0;
+    margin: 0;
+    padding: var(--space-6);
+    border: 0;
+  }
+
+  .sim__soustitre {
+    margin-bottom: var(--space-4);
+    padding: 0;
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  /* Une légende ne prend pas part à la grille : on recrée l'espacement. */
+  legend.sim__soustitre {
+    float: left;
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .sim__avertissement {
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--color-line-strong);
+    font-size: var(--step--2);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+  }
+
+  .sim__reset {
+    justify-self: start;
+    min-height: 2.75rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .sim__reset:hover {
+    border-color: var(--color-text);
+    color: var(--color-text);
+  }
+
+  .sim__resultats {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    min-width: 0;
+    padding: var(--space-6);
+    border-top: 1px solid var(--color-line);
+    background: var(--color-accent-soft);
+  }
+
+  .sim__resultats .sim__soustitre {
+    margin-bottom: 0;
+    color: var(--color-accent);
+  }
+
+  .sim__temps {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .sim__cle-label {
+    font-size: var(--step-0);
+    font-weight: 520;
+  }
+
+  .sim__cle-valeur {
+    font-size: var(--step-5);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--color-accent);
+  }
+
+  .sim__semaine {
+    font-size: var(--step-1);
+    font-weight: 520;
+    line-height: 1.3;
+  }
+
+  .sim__base {
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .sim__barre {
+    height: 0.6rem;
+    margin-top: var(--space-4);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+    overflow: hidden;
+  }
+
+  .sim__barre span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-accent);
+    transition: width var(--duration-base) var(--ease-out);
+  }
+
+  .sim__detail {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  .sim__detail dt {
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .sim__detail dd {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+
+  .sim__etat {
+    padding: var(--space-4);
+    border-left: 2px solid var(--signal-500);
+    background: var(--color-surface);
+    font-size: var(--step--1);
+  }
+
+  .sim__separe {
+    padding-top: var(--space-4);
+    border-top: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+    font-size: var(--step--2);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+  }
+
+  .sim__eco {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .sim__eco summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    min-height: 2.75rem;
+    padding: var(--space-5) var(--space-6);
+    font-size: var(--step-1);
+    font-weight: 520;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .sim__eco summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .sim__eco summary:hover {
+    color: var(--color-accent);
+  }
+
+  .sim__eco-icone {
+    position: relative;
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .sim__eco-icone::before,
+  .sim__eco-icone::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .sim__eco-icone::after {
+    transform: rotate(90deg);
+  }
+
+  .sim__eco[open] .sim__eco-icone::after {
+    transform: rotate(0deg);
+  }
+
+  .sim__eco-intro {
+    max-width: 44rem;
+    padding-inline: var(--space-6);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .sim__eco-resultats {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    min-width: 0;
+    padding: var(--space-6);
+  }
+
+  .sim__eco-avertissement {
+    padding: var(--space-4);
+    border-left: 2px solid var(--signal-500);
+    border-radius: 0 var(--radius-m) var(--radius-m) 0;
+    background: var(--color-surface-sunken);
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+
+  .sim__eco-liste {
+    display: grid;
+    border-top: 1px solid var(--color-line-strong);
+  }
+
+  .sim__eco-liste div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-2) var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--color-line);
+    font-size: var(--step--1);
+  }
+
+  .sim__eco-liste dt {
+    color: var(--color-text-muted);
+  }
+
+  .sim__eco-liste dd {
+    margin: 0;
+    text-align: right;
+    font-size: var(--step-0);
+  }
+
+  .sim__eco-liste [data-negatif] dd {
+    color: var(--signal-600);
+  }
+
+  .sim__eco-attente {
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 40rem) {
+    .sim__onglets {
+      justify-self: stretch;
+      border-radius: var(--radius-l);
+    }
+
+    .sim__onglet {
+      flex: 1 1 100%;
+      justify-content: flex-start;
+    }
+
+    .sim__params,
+    .sim__resultats,
+    .sim__eco-resultats {
+      padding: var(--space-5);
+    }
+
+    .sim__eco summary {
+      padding-inline: var(--space-5);
+    }
+
+    .sim__eco-intro {
+      padding-inline: var(--space-5);
+    }
+
+    .sim__eco-liste div {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sim__eco-liste dd {
+      text-align: left;
+    }
+  }
+
+  @media (min-width: 56rem) {
+    .sim__grille {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sim__resultats {
+      border-top: 0;
+      border-left: 1px solid var(--color-line);
+    }
+  }
+</style>

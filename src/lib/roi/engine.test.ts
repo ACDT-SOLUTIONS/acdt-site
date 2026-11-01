@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { simuler, type ScenarioInputs } from './engine';
+import { parSemaine, simuler, type ScenarioInputs } from './engine';
 
 const base: ScenarioInputs = {
   occurrencesParMois: 120,
@@ -23,6 +23,12 @@ describe('simuler', () => {
     expect(r.delaiRetourMois).toBeCloseTo(13.1, 1);
   });
 
+  it('distingue temps actuel, temps libéré et temps restant', () => {
+    const r = simuler(base);
+    expect(r.heuresActuellesParMois).toBeCloseTo(12);
+    expect(r.heuresRestantesParMois).toBeCloseTo(2.4);
+  });
+
   it("ne compte aucune économie si le temps libéré n'est pas réaffecté", () => {
     const r = simuler({ ...base, tauxReaffectation: 0 });
     expect(r.tempsValoriseParMois).toBeGreaterThan(0);
@@ -40,5 +46,11 @@ describe('simuler', () => {
     expect(() => simuler({ ...base, tauxAutomatisation: 1.5 })).toThrow(RangeError);
     expect(() => simuler({ ...base, occurrencesParMois: -1 })).toThrow(RangeError);
     expect(() => simuler({ ...base, horizonMois: Number.NaN })).toThrow(RangeError);
+  });
+});
+
+describe('parSemaine', () => {
+  it('ramène un volume mensuel à la semaine sur la base de 52 semaines pour 12 mois', () => {
+    expect(parSemaine(52)).toBeCloseTo(12);
   });
 });

@@ -157,6 +157,8 @@ jobs:
           verifier /services/ 301 'location: /solutions/'
           verifier /services/automatisations-sur-mesure/ 301 'location: /solutions/automatisation-administrative/'
           verifier /solutions/automatisation-administrative/ 200 'Plus de temps pour votre activité'
+          verifier /secteurs/cabinets-avocats/ 200 '<simulateur-temps'
+          verifier /secteurs/tpe-pme/ 200 '<simulateur-temps'
           verifier /a-propos/ 200
           verifier /mentions-legales/ 200 'tel:+33757830279'
           verifier /politique-de-confidentialite/ 200 'Google Analytics'
