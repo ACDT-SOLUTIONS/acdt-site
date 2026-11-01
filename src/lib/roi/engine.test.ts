@@ -17,6 +17,7 @@ describe('simuler', () => {
     const r = simuler(base);
     expect(r.heuresLibereesParMois).toBeCloseTo(9.6);
     expect(r.tempsValoriseParMois).toBeCloseTo(364.8);
+    expect(r.valeurReaffecteeParMois).toBeCloseTo(182.4);
     expect(r.economiesEffectivesParMois).toBeCloseTo(137.4);
     expect(r.gainNetSurHorizon).toBeCloseTo(1497.6);
     expect(r.roiNet).toBeCloseTo(0.832);

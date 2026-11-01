@@ -64,6 +64,8 @@ export interface Estimation {
   temps: { actuel: number; libere: number; restant: number; libereParSemaine: number } | null;
   /** Chaque résultat économique reste `null` tant que les paramètres dont il dépend ne sont pas saisis. */
   valorisation: number | null;
+  /** Part de la valorisation supposée éviter une dépense, avant coûts récurrents. */
+  valeurEvitee: number | null;
   soldeMensuel: number | null;
   soldeCumule: number | null;
   /** Solde cumulé rapporté à l'investissement ; `null` si l'investissement est nul. */
@@ -76,6 +78,7 @@ export function estimer(valeurs: Partial<Record<Cle, number | null>>): Estimatio
   const vide: Estimation = {
     temps: null,
     valorisation: null,
+    valeurEvitee: null,
     soldeMensuel: null,
     soldeCumule: null,
     ratio: null,
@@ -100,6 +103,7 @@ export function estimer(valeurs: Partial<Record<Cle, number | null>>): Estimatio
   estimation.valorisation = r.tempsValoriseParMois;
 
   if (!present(['tauxReaffectation', 'coutsRecurrentsMensuels'])) return estimation;
+  estimation.valeurEvitee = r.valeurReaffecteeParMois;
   estimation.soldeMensuel = r.economiesEffectivesParMois;
 
   if (!present(['investissementInitial', 'horizonMois'])) return estimation;
