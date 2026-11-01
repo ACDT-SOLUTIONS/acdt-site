@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { lienVisible } from '@/lib/publication';
 
 interface Props {
   ids: string[];
@@ -14,13 +15,13 @@ const solutions = (await getCollection('solutions', (s) => Astro.props.ids.inclu
 <ul class="solution-cards">
   {
     solutions.map((s) => (
-      <li class="solution-card">
+      <li class:list={['solution-card', { 'solution-card--statique': !lienVisible(`/solutions/${s.id}/`) }]}>
         <span class="solution-card__numero mono">{s.data.numero}</span>
         <h3>
-          <a href={`/solutions/${s.id}/`}>{s.data.titre}</a>
+          {lienVisible(`/solutions/${s.id}/`) ? <a href={`/solutions/${s.id}/`}>{s.data.titre}</a> : s.data.titre}
         </h3>
         <p>{s.data.accroche}</p>
-        <span class="solution-card__fleche mono" aria-hidden="true">→</span>
+        {lienVisible(`/solutions/${s.id}/`) && <span class="solution-card__fleche mono" aria-hidden="true">→</span>}
       </li>
     ))
   }
@@ -49,6 +50,11 @@ const solutions = (await getCollection('solutions', (s) => Astro.props.ids.inclu
 
   .solution-card:hover {
     border-color: var(--color-accent);
+  }
+
+  /* Solution non publiée : carte informative, sans effet de lien. */
+  .solution-card--statique:hover {
+    border-color: var(--color-line);
   }
 
   .solution-card:focus-within {

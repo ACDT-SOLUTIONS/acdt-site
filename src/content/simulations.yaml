@@ -46,3 +46,68 @@
     - Le temps libéré ne devient une économie que s'il est réaffecté à une activité utile ou évite un coût.
     - L'investissement initial est fictif ; le coût réel n'est connu qu'après analyse et devis.
     - La conduite du changement et les évolutions futures ne sont pas chiffrées ici.
+
+
+- id: tpe-pme-reporting
+  titre: Préparation automatisée d'un reporting d'activité
+  secteur: tpe-pme
+  famille: automatisation-administrative
+  miseEnAvant: false
+  contexte: Scénario fictif pour une petite équipe qui rassemble chaque semaine des données déjà présentes dans
+    ses outils afin de préparer un rapport d'activité. Les données, durées et coûts ci-dessous sont des
+    hypothèses, pas des résultats clients.
+  processusActuel:
+    - etape: Collecter
+      detail: Rassembler les informations depuis les outils de l'équipe.
+    - etape: Consolider
+      detail: Recopier les données et rapprocher les formats.
+    - etape: Vérifier et partager
+      detail: Contrôler le rapport puis le transmettre.
+  processusAutomatise:
+    - etape: Récupérer les données
+      detail: Connexions définies avec l'équipe, selon les possibilités des outils.
+    - etape: Préparer le rapport
+      detail: Consolidation et mise en forme selon les règles retenues.
+    - etape: Valider et partager
+      detail: Une personne vérifie les anomalies et valide le rapport avant diffusion.
+  parametres:
+    occurrencesParMois: 4
+    minutesParOccurrence: 90
+    tauxAutomatisation: 0.7
+    coutHoraireCharge: 35
+    tauxReaffectation: 0.5
+    coutsRecurrentsMensuels: 30
+    investissementInitial: 900
+    horizonMois: 24
+  justifications:
+    occurrencesParMois:
+      origine: hypothese
+      note: Quatre rapports dans le mois, fréquence illustrative à remplacer par le volume réel.
+    minutesParOccurrence:
+      origine: hypothese
+      note: 90 minutes de collecte, consolidation et mise en forme, hors analyse et décisions.
+    tauxAutomatisation:
+      origine: hypothese
+      note: 70 % du travail préparatoire pris en charge, avec vérification humaine du résultat.
+    coutHoraireCharge:
+      origine: hypothese
+      note: "35 € par heure : hypothèse fictive, pas une moyenne professionnelle."
+    tauxReaffectation:
+      origine: hypothese
+      note: 50 % du temps valorisé supposé éviter une dépense ; cette traduction économique reste à vérifier.
+    coutsRecurrentsMensuels:
+      origine: hypothese
+      note: "30 € par mois : montant fictif, ni tarif ACDT ni devis."
+    investissementInitial:
+      origine: hypothese
+      note: "900 € : montant fictif, ni tarif ACDT ni devis."
+    horizonMois:
+      origine: hypothese
+      note: "24 mois : durée conventionnelle de la simulation."
+  limites:
+    - Ce scénario ne décrit aucune réalisation client ni gain constaté.
+    - Les données sources doivent être disponibles, correctement renseignées et accessibles aux connexions
+      retenues.
+    - Le temps d'analyse, les décisions et la validation finale restent à l'équipe.
+    - Le temps libéré ne réduit une dépense que si une dépense est effectivement évitée.
+    - Les montants sont fictifs ; une proposition de mise en place nécessite une étude et un devis.

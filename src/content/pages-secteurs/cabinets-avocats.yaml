@@ -1,0 +1,149 @@
+# Sections propres à la page /secteurs/cabinets-avocats/.
+# Les secteurs sans fichier ici gardent les sections génériques (cas pratiques, spécificités).
+
+valeur:
+  eyebrow: Démontrer la valeur
+  titre: Et dans votre cabinet, combien de temps pourriez-vous récupérer ?
+  lead: >-
+    Relancer des pièces ou prendre les premiers messages mobilise du temps chaque semaine. Ajustez les
+    hypothèses ci-dessous pour estimer ce qu'une automatisation pourrait libérer dans votre cabinet.
+
+  simulateur:
+    libelleOnglets: Scénario simulé
+    sansJs: >-
+      Le simulateur interactif nécessite JavaScript. L'exemple chiffré ci-dessous reste consultable.
+    hypotheses: Vos hypothèses
+    avertissement: >-
+      Ces valeurs sont des hypothèses modifiables, pas des moyennes professionnelles ni des résultats clients.
+      La part prise en charge doit tenir compte des vérifications et du suivi qui restent à votre équipe.
+    reinitialiser: Réinitialiser les hypothèses
+    # Les pourcentages sont saisis et affichés de 0 à 100 ; le simulateur les transmet au moteur entre 0 et 1.
+    scenarios:
+      - id: relances
+        label: Relances des pièces clients
+        volume:
+          label: Relances envoyées par mois
+          unite: relances / mois
+          valeur: 120
+          aide: 'Exemple : 30 dossiers × 4 relances par mois.'
+        minutes:
+          label: Temps moyen actuellement consacré à une relance
+          unite: min / relance
+          valeur: 6
+        part:
+          label: Part de ce travail prise en charge
+          unite: '%'
+          valeur: 80
+      - id: permanence
+        label: Permanence téléphonique
+        volume:
+          label: Appels concernés par mois
+          unite: appels / mois
+          valeur: 100
+          aide: >-
+            Comptez uniquement les appels que vous envisagez de confier à la permanence. Le temps renseigné
+            correspond au travail humain de réception, de qualification et de prise de message, pas
+            nécessairement à la durée totale de l'appel.
+        minutes:
+          label: Temps moyen de travail humain par appel
+          unite: min / appel
+          valeur: 3
+        part:
+          label: Part de ce travail prise en charge
+          unite: '%'
+          valeur: 60
+
+  resultats:
+    titre: Résultats estimés
+    libere: Temps potentiellement libéré par mois
+    # « {valeur} » est remplacé par le nombre d'heures hebdomadaires.
+    parSemaine: Soit environ {valeur} heures par semaine
+    # Variante employée en dessous de 2 heures (« 0,7 heure »).
+    parSemaineSingulier: Soit environ {valeur} heure par semaine
+    baseSemaine: Sur la base de 52 semaines pour 12 mois.
+    actuel: Temps actuellement consacré
+    restant: Temps restant à votre équipe
+    incomplet: Renseignez les trois hypothèses pour afficher une estimation.
+    invalide: Corrigez les valeurs signalées pour afficher une estimation.
+    separe: >-
+      Chaque scénario s'explore séparément : leurs résultats ne s'additionnent pas, les deux activités
+      pouvant se recouper.
+
+  economie:
+    titre: Affiner l'estimation économique
+    intro: >-
+      Facultatif. Renseignez vos propres valeurs : aucun champ n'est prérempli, et les résultats n'apparaissent
+      qu'une fois les paramètres nécessaires saisis.
+    champs:
+      coutHoraireCharge:
+        label: Coût horaire chargé
+        unite: € / h
+        aide: Coût complet d'une heure de la personne qui réalise aujourd'hui ce travail.
+      tauxReaffectation:
+        label: Part du temps libéré susceptible d'éviter effectivement une dépense
+        unite: '%'
+        aide: Heures supplémentaires, renfort ou prestation que vous n'auriez plus à payer.
+      coutsRecurrentsMensuels:
+        label: Coûts récurrents
+        unite: € / mois
+        aide: Abonnements, hébergement et maintenance de la solution.
+      investissementInitial:
+        label: Investissement initial
+        unite: €
+      horizonMois:
+        label: Horizon d'analyse
+        unite: mois
+    resultats:
+      valorisation: Valorisation théorique du temps libéré
+      soldeMensuel: Solde mensuel estimé
+      soldeCumule: Solde cumulé estimé
+      ratio: Solde cumulé rapporté à l'investissement
+      delai: Délai de retour estimé
+      aucunRetour: Aucun retour sur investissement estimé avec ces hypothèses
+      sansInvestissement: Aucun investissement initial à couvrir
+    attente:
+      valorisation: Renseignez le coût horaire chargé pour afficher la valorisation théorique.
+      soldeMensuel: Renseignez la part susceptible d'éviter une dépense et les coûts récurrents pour afficher le solde mensuel.
+      soldeCumule: Renseignez l'investissement initial et l'horizon d'analyse pour afficher le solde cumulé et le délai de retour.
+    avertissement: >-
+      Du temps libéré n'est pas automatiquement une dépense en moins. Sa valorisation est théorique ; les
+      économies réellement constatées doivent être vérifiées après mise en service. Cette simulation ne prédit
+      ni de nouveaux dossiers ni une hausse du chiffre d'affaires.
+
+  exemple:
+    simulation: avocats-relances-pieces
+    titre: Exemple chiffré — hypothèses fixes
+    resume: >-
+      {occurrences} relances par mois × {minutes} minutes, dont {taux} prises en charge : {heures} heures
+      potentiellement libérées par mois.
+    detail: Voir les autres hypothèses et résultats
+    mention: >-
+      Exemple indépendant des réglages du simulateur. Les montants sont fictifs : ce ne sont ni un devis ni des
+      résultats clients.
+    lien: Voir le cas pratique documenté
+
+  conclusion:
+    titre: Ces hypothèses ressemblent-elles au fonctionnement de votre cabinet ?
+    cta:
+      label: Étudier mon organisation
+      href: /rendez-vous/
+
+exigences:
+  eyebrow: Les exigences de votre cabinet
+  titre: Votre profession a ses exigences. Nos solutions s'y adaptent.
+  lead: >-
+    Une automatisation utile doit respecter vos dossiers, vos décisions et vos habitudes de travail. Ces points
+    sont cadrés avec vous avant la mise en service.
+  items:
+    - titre: Confidentialité des dossiers
+      texte: >-
+        Nous définissons les données nécessaires, les personnes autorisées et les conditions d'hébergement. Les
+        accès et les échanges sont vérifiés sur le périmètre retenu.
+    - titre: La maîtrise reste à l'avocat
+      texte: >-
+        Vous choisissez ce qui peut être automatisé et ce qui nécessite votre validation. Les réponses engageantes
+        et les décisions concernant un dossier restent sous votre contrôle.
+    - titre: Votre organisation comme point de départ
+      texte: >-
+        Nous partons de vos outils, de vos rôles et de vos circuits de validation. Les automatismes sont testés
+        sur vos situations de travail avant leur mise en service.

@@ -320,6 +320,95 @@ const pagesSolutions = defineCollection({
   }),
 });
 
+// Sections propres à une page Secteur (un fichier par secteur, nommé d'après son identifiant).
+// Sans fichier, la page garde les sections génériques « Cas pratiques » et « Spécificités ».
+const hypothese = z.object({
+  label: z.string(),
+  unite: z.string(),
+  // Valeur initiale, dans l'unité affichée (pourcentages de 0 à 100).
+  valeur: z.number().min(0),
+  aide: z.string().optional(),
+});
+const champEconomique = z.object({ label: z.string(), unite: z.string(), aide: z.string().optional() });
+
+const pagesSecteurs = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/pages-secteurs' }),
+  schema: z.object({
+    valeur: z
+      .object({
+        eyebrow: z.string(),
+        titre: z.string(),
+        lead: z.string(),
+        simulateur: z.object({
+          libelleOnglets: z.string(),
+          sansJs: z.string(),
+          hypotheses: z.string(),
+          avertissement: z.string(),
+          reinitialiser: z.string(),
+          scenarios: z
+            .array(
+              z.object({
+                id: z.string().regex(/^[a-z0-9-]+$/),
+                label: z.string(),
+                volume: hypothese,
+                minutes: hypothese,
+                part: hypothese.extend({ valeur: z.number().min(0).max(100) }),
+              }),
+            )
+            .min(1),
+        }),
+        resultats: z.object({
+          titre: z.string(),
+          libere: z.string(),
+          parSemaine: z.string().includes('{valeur}'),
+          parSemaineSingulier: z.string().includes('{valeur}'),
+          baseSemaine: z.string(),
+          actuel: z.string(),
+          restant: z.string(),
+          incomplet: z.string(),
+          invalide: z.string(),
+          separe: z.string(),
+        }),
+        economie: z.object({
+          titre: z.string(),
+          intro: z.string(),
+          champs: z.object({
+            coutHoraireCharge: champEconomique,
+            tauxReaffectation: champEconomique,
+            coutsRecurrentsMensuels: champEconomique,
+            investissementInitial: champEconomique,
+            horizonMois: champEconomique,
+          }),
+          resultats: z.object({
+            valorisation: z.string(),
+            soldeMensuel: z.string(),
+            soldeCumule: z.string(),
+            ratio: z.string(),
+            delai: z.string(),
+            aucunRetour: z.string(),
+            sansInvestissement: z.string(),
+          }),
+          attente: z.object({ valorisation: z.string(), soldeMensuel: z.string(), soldeCumule: z.string() }),
+          avertissement: z.string(),
+        }),
+        // Exemple chiffré à hypothèses fixes, indépendant du simulateur.
+        exemple: z.object({
+          simulation: reference('simulations'),
+          titre: z.string(),
+          resume: z.string(),
+          detail: z.string(),
+          mention: z.string(),
+          lien: z.string(),
+        }),
+        conclusion: z.object({ titre: z.string(), cta: lien }),
+      })
+      .optional(),
+    exigences: z
+      .object({ eyebrow: z.string(), titre: z.string(), lead: z.string(), items: z.array(titreTexte).min(1) })
+      .optional(),
+  }),
+});
+
 // Pages légales (src/content/legal/<chemin>.md). `aVerifier` liste les points à traiter avant publication.
 const legal = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/legal' }),
@@ -350,6 +439,7 @@ export const collections = {
   sources,
   simulations,
   pagesSolutions,
+  pagesSecteurs,
   legal,
   faq,
 };

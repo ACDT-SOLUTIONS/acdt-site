@@ -1,0 +1,121 @@
+---
+import type { Cle } from '@/lib/roi/saisie';
+
+interface Props {
+  id: string;
+  cle: Cle;
+  label: string;
+  unite: string;
+  /** Valeur initiale dans l'unité affichée ; champ vide si absente. */
+  valeur?: number;
+  aide?: string;
+}
+
+// Champ texte plutôt que `type="number"` : la virgule décimale est acceptée partout et une saisie
+// incomplète n'est pas effacée par le navigateur.
+const { id, cle, label, unite, valeur, aide } = Astro.props;
+const initial = valeur === undefined ? '' : String(valeur).replace('.', ',');
+const decrit = [`${id}-unite`, aide && `${id}-aide`, `${id}-erreur`].filter(Boolean).join(' ');
+---
+
+<div class="champ">
+  <label for={id} class="champ__label">{label}</label>
+  <div class="champ__saisie">
+    <input
+      id={id}
+      name={cle}
+      type="text"
+      inputmode="decimal"
+      autocomplete="off"
+      spellcheck="false"
+      value={initial}
+      data-cle={cle}
+      data-initial={initial}
+      aria-describedby={decrit}
+    />
+    <span class="champ__unite mono" id={`${id}-unite`}>{unite}</span>
+  </div>
+  {aide && <p class="champ__aide" id={`${id}-aide`}>{aide}</p>}
+  <p class="champ__erreur" id={`${id}-erreur`} data-erreur></p>
+</div>
+
+<style>
+  .champ {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .champ__label {
+    font-size: var(--step--1);
+    font-weight: 520;
+    line-height: 1.35;
+  }
+
+  .champ__saisie {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .champ__saisie:focus-within {
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.8rem;
+    border: 0;
+    background: none;
+    font-family: var(--font-mono);
+    font-feature-settings: 'tnum';
+    font-size: var(--step-0);
+  }
+
+  input:focus-visible {
+    outline: none;
+  }
+
+  input[aria-invalid='true'] {
+    background: var(--color-signal-soft);
+  }
+
+  .champ__saisie:has(input[aria-invalid='true']) {
+    border-color: var(--signal-600);
+  }
+
+  .champ__unite {
+    display: flex;
+    align-items: center;
+    padding-inline: 0.8rem;
+    border-left: 1px solid var(--color-line);
+    background: var(--color-surface-sunken);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .champ__aide {
+    font-size: var(--step--2);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  .champ__erreur {
+    font-size: var(--step--2);
+    font-weight: 520;
+    color: var(--signal-600);
+  }
+
+  .champ__erreur:empty {
+    display: none;
+  }
+</style>
