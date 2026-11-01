@@ -322,13 +322,19 @@ const pagesSolutions = defineCollection({
 
 // Sections propres à une page Secteur (un fichier par secteur, nommé d'après son identifiant).
 // Sans fichier, la page garde les sections génériques « Cas pratiques » et « Spécificités ».
-const hypothese = z.object({
-  label: z.string(),
-  unite: z.string(),
-  // Valeur initiale, dans l'unité affichée (pourcentages de 0 à 100).
-  valeur: z.number().min(0),
-  aide: z.string().optional(),
-});
+const hypothese = z
+  .object({
+    label: z.string(),
+    unite: z.string(),
+    // Valeur initiale, dans l'unité affichée (pourcentages de 0 à 100).
+    valeur: z.number().min(0),
+    // Plage du curseur ; la saisie au clavier peut en sortir, dans les limites du moteur.
+    curseur: z.object({ min: z.number().min(0), max: z.number(), pas: z.number().positive() }),
+    aide: z.string().optional(),
+  })
+  .refine((h) => h.curseur.min < h.curseur.max && h.valeur >= h.curseur.min && h.valeur <= h.curseur.max, {
+    message: 'La valeur initiale doit se trouver dans la plage du curseur.',
+  });
 const champEconomique = z.object({ label: z.string(), unite: z.string(), aide: z.string().optional() });
 
 const pagesSecteurs = defineCollection({
@@ -352,7 +358,7 @@ const pagesSecteurs = defineCollection({
                 label: z.string(),
                 volume: hypothese,
                 minutes: hypothese,
-                part: hypothese.extend({ valeur: z.number().min(0).max(100) }),
+                part: hypothese.refine((h) => h.curseur.max <= 100, { message: 'Un pourcentage ne dépasse pas 100.' }),
               }),
             )
             .min(1),
@@ -365,6 +371,8 @@ const pagesSecteurs = defineCollection({
           baseSemaine: z.string(),
           actuel: z.string(),
           restant: z.string(),
+          // Libellés courts des barres comparatives.
+          barres: z.object({ actuel: z.string(), libere: z.string(), restant: z.string() }),
           incomplet: z.string(),
           invalide: z.string(),
           separe: z.string(),
@@ -372,6 +380,10 @@ const pagesSecteurs = defineCollection({
         economie: z.object({
           titre: z.string(),
           intro: z.string(),
+          // Texte affiché dans un champ vide.
+          aSaisir: z.string(),
+          badgeTheorique: z.string(),
+          barres: z.object({ valorisation: z.string(), evitee: z.string(), solde: z.string() }),
           champs: z.object({
             coutHoraireCharge: champEconomique,
             tauxReaffectation: champEconomique,

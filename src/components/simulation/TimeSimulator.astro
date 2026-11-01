@@ -12,13 +12,16 @@ interface Props {
   economie: Valeur['economie'];
 }
 
-// Simulateur de temps libéré, scénario par scénario. Tout est calculé dans le navigateur par `simuler()` :
-// aucune valeur saisie n'est envoyée, enregistrée ni mesurée. Sans JavaScript, seul un message s'affiche.
+// Simulateur de temps libéré, scénario par scénario, dans la présentation du calculateur de
+// /evaluer-le-potentiel/ (curseurs, cartes de résultats, barres comparatives). Tout est calculé dans le
+// navigateur par `simuler()` : aucune valeur saisie n'est envoyée, enregistrée ni mesurée.
+// Sans JavaScript, seul un message s'affiche.
 const { simulateur, resultats, economie } = Astro.props;
 
 // En français, « heure » reste au singulier en dessous de 2.
 const parSemaine = (heures: number) =>
   (heures < 2 ? resultats.parSemaineSingulier : resultats.parSemaine).replace('{valeur}', formatNombre(heures));
+const largeur = (part: number, total: number) => `${total > 0 ? Math.max(0, Math.min(100, (part / total) * 100)) : 0}%`;
 
 const scenarios = simulateur.scenarios.map((s) => {
   const r = estimer({
@@ -43,29 +46,32 @@ const textes = {
   libere: resultats.libere,
   eco: economie.resultats,
 };
+const r = economie.resultats;
 ---
 
 <simulateur-temps class="sim" data-textes={JSON.stringify(textes)}>
   <p class="sim__sans-js" data-sans-js>{simulateur.sansJs}</p>
 
-  <div class="sim__app" data-interactif hidden>
-    <div class="sim__onglets" role="tablist" aria-label={simulateur.libelleOnglets}>
-      {
-        scenarios.map((s, i) => (
-          <button
-            class="sim__onglet"
-            type="button"
-            role="tab"
-            id={`sim-onglet-${s.id}`}
-            aria-controls={`sim-panneau-${s.id}`}
-            aria-selected={i === 0 ? 'true' : 'false'}
-            tabindex={i === 0 ? 0 : -1}
-          >
-            <span class="mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            {s.label}
-          </button>
-        ))
-      }
+  <div class="sim__carte" data-interactif hidden>
+    <div class="sim__tete">
+      <div class="sim__onglets" role="tablist" aria-label={simulateur.libelleOnglets}>
+        {
+          scenarios.map((s, i) => (
+            <button
+              class="sim__onglet"
+              type="button"
+              role="tab"
+              id={`sim-onglet-${s.id}`}
+              aria-controls={`sim-panneau-${s.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              <span class="mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              {s.label}
+            </button>
+          ))
+        }
+      </div>
     </div>
 
     {
@@ -79,8 +85,8 @@ const textes = {
           hidden={i > 0}
           novalidate
         >
-          <div class="sim__grille">
-            <fieldset class="sim__params">
+          <div class="sim__corps">
+            <fieldset class="sim__col sim__col--params">
               <legend class="sim__soustitre mono">{simulateur.hypotheses}</legend>
               {s.champs.map((c) => (
                 <SimulatorField
@@ -89,6 +95,7 @@ const textes = {
                   label={c.label}
                   unite={c.unite}
                   valeur={c.valeur}
+                  curseur={c.curseur}
                   aide={c.aide}
                 />
               ))}
@@ -98,37 +105,83 @@ const textes = {
               </button>
             </fieldset>
 
-            <div class="sim__resultats">
+            <div class="sim__col">
               <h3 class="sim__soustitre mono">{resultats.titre}</h3>
-              <div class="sim__temps" data-temps>
-                <p class="sim__cle-label">{resultats.libere}</p>
-                <p class="sim__cle-valeur mono" data-out="libere">
-                  {formatHeures(s.r.libere)}
-                </p>
-                <p class="sim__semaine" data-out="parSemaine">
-                  {parSemaine(s.r.libereParSemaine)}
-                </p>
-                <p class="sim__base">{resultats.baseSemaine}</p>
+              <div data-temps>
+                <ol class="metrics">
+                  <li class="metric metric--cle metric--large">
+                    <p class="metric__label">
+                      <span class="mono">1</span>
+                      <span class="metric__titre">{resultats.libere}</span>
+                    </p>
+                    <p class="metric__value mono">
+                      <span data-out="libere">{formatHeures(s.r.libere)}</span>
+                      <small> / mois</small>
+                    </p>
+                    <p class="metric__def metric__semaine" data-out="parSemaine">
+                      {parSemaine(s.r.libereParSemaine)}
+                    </p>
+                    <p class="metric__note mono">{resultats.baseSemaine}</p>
+                  </li>
+                  <li class="metric">
+                    <p class="metric__label">
+                      <span class="mono">2</span>
+                      <span class="metric__titre">{resultats.actuel}</span>
+                    </p>
+                    <p class="metric__value mono">
+                      <span data-out="actuel">{formatHeures(s.r.actuel)}</span>
+                      <small> / mois</small>
+                    </p>
+                  </li>
+                  <li class="metric">
+                    <p class="metric__label">
+                      <span class="mono">3</span>
+                      <span class="metric__titre">{resultats.restant}</span>
+                    </p>
+                    <p class="metric__value mono">
+                      <span data-out="restant">{formatHeures(s.r.restant)}</span>
+                      <small> / mois</small>
+                    </p>
+                  </li>
+                </ol>
 
-                <div class="sim__barre" aria-hidden="true">
-                  <span data-barre style={`width: ${(s.r.libere / s.r.actuel) * 100}%`} />
+                <div class="cascade" aria-hidden="true">
+                  <div class="cascade__row">
+                    <span class="cascade__label">{resultats.barres.actuel}</span>
+                    <span class="cascade__bar">
+                      <span style="width: 100%" data-barre="actuel" />
+                    </span>
+                    <span class="cascade__val mono" data-out="actuel">
+                      {formatHeures(s.r.actuel)}
+                    </span>
+                  </div>
+                  <div class="cascade__row cascade__row--cle">
+                    <span class="cascade__label">{resultats.barres.libere}</span>
+                    <span class="cascade__bar">
+                      <span style={`width: ${largeur(s.r.libere, s.r.actuel)}`} data-barre="libere" />
+                    </span>
+                    <span class="cascade__val mono" data-out="libere">
+                      {formatHeures(s.r.libere)}
+                    </span>
+                  </div>
+                  <div class="cascade__row">
+                    <span class="cascade__label">{resultats.barres.restant}</span>
+                    <span class="cascade__bar">
+                      <span style={`width: ${largeur(s.r.restant, s.r.actuel)}`} data-barre="restant" />
+                    </span>
+                    <span class="cascade__val mono" data-out="restant">
+                      {formatHeures(s.r.restant)}
+                    </span>
+                  </div>
                 </div>
-                <dl class="sim__detail">
-                  <div>
-                    <dt>{resultats.actuel}</dt>
-                    <dd class="mono">
-                      <span data-out="actuel">{formatHeures(s.r.actuel)}</span> / mois
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{resultats.restant}</dt>
-                    <dd class="mono">
-                      <span data-out="restant">{formatHeures(s.r.restant)}</span> / mois
-                    </dd>
-                  </div>
-                </dl>
               </div>
-              <p class="sim__etat" data-etat data-incomplet={resultats.incomplet} data-invalide={resultats.invalide} hidden />
+              <p
+                class="sim__etat"
+                data-etat
+                data-incomplet={resultats.incomplet}
+                data-invalide={resultats.invalide}
+                hidden
+              />
               <p class="sim__separe">{resultats.separe}</p>
             </div>
           </div>
@@ -138,45 +191,87 @@ const textes = {
               <span>{economie.titre}</span>
               <span class="sim__eco-icone" aria-hidden="true" />
             </summary>
-            <div class="sim__eco-corps">
-              <p class="sim__eco-intro">{economie.intro}</p>
-              <div class="sim__grille">
-                <fieldset class="sim__params">
-                  <legend class="visually-hidden">{economie.titre}</legend>
-                  {CLES_ECONOMIE.map((cle) => (
-                    <SimulatorField id={`sim-${s.id}-${cle}`} cle={cle} {...economie.champs[cle]} />
-                  ))}
-                </fieldset>
-                <div class="sim__eco-resultats">
-                  <p class="sim__eco-avertissement">{economie.avertissement}</p>
-                  <dl class="sim__eco-liste">
-                    <div data-ligne="valorisation" hidden>
-                      <dt>{economie.resultats.valorisation}</dt>
-                      <dd class="mono" data-eco="valorisation" />
-                    </div>
-                    <div data-ligne="soldeMensuel" hidden>
-                      <dt>{economie.resultats.soldeMensuel}</dt>
-                      <dd class="mono" data-eco="soldeMensuel" />
-                    </div>
-                    <div data-ligne="soldeCumule" hidden>
-                      <dt>
-                        {economie.resultats.soldeCumule} <span data-eco="horizon" />
-                      </dt>
-                      <dd class="mono" data-eco="soldeCumule" />
-                    </div>
-                    <div data-ligne="ratio" hidden>
-                      <dt>{economie.resultats.ratio}</dt>
-                      <dd class="mono" data-eco="ratio" />
-                    </div>
-                    <div data-ligne="delai" hidden>
-                      <dt>{economie.resultats.delai}</dt>
-                      <dd class="mono" data-eco="delai" />
-                    </div>
-                  </dl>
-                  <p class="sim__eco-attente" data-eco-attente data-textes={JSON.stringify(economie.attente)}>
-                    {economie.attente.valorisation}
-                  </p>
+            <p class="sim__eco-intro">{economie.intro}</p>
+            <div class="sim__corps">
+              <fieldset class="sim__col sim__col--params">
+                <legend class="visually-hidden">{economie.titre}</legend>
+                {CLES_ECONOMIE.map((cle) => (
+                  <SimulatorField id={`sim-${s.id}-${cle}`} cle={cle} aSaisir={economie.aSaisir} {...economie.champs[cle]} />
+                ))}
+              </fieldset>
+
+              <div class="sim__col">
+                <p class="sim__eco-avertissement">{economie.avertissement}</p>
+                <ol class="metrics">
+                  <li class="metric" data-carte="valorisation" data-vide>
+                    <p class="metric__label">
+                      <span class="mono">1</span>
+                      <span class="metric__titre">
+                        {r.valorisation} <span class="metric__badge mono">{economie.badgeTheorique}</span>
+                      </span>
+                    </p>
+                    <p class="metric__value mono">
+                      <span data-eco="valorisation">—</span>
+                      <small> / mois</small>
+                    </p>
+                  </li>
+                  <li class="metric metric--cle" data-carte="soldeMensuel" data-vide>
+                    <p class="metric__label">
+                      <span class="mono">2</span>
+                      <span class="metric__titre">{r.soldeMensuel}</span>
+                    </p>
+                    <p class="metric__value mono">
+                      <span data-eco="soldeMensuel">—</span>
+                      <small> / mois</small>
+                    </p>
+                  </li>
+                  <li class="metric metric--cle metric--large" data-carte="soldeCumule" data-vide>
+                    <p class="metric__label">
+                      <span class="mono">3</span>
+                      <span class="metric__titre">{r.soldeCumule}</span>
+                    </p>
+                    <p class="metric__value mono">
+                      <span data-eco="soldeCumule">—</span>
+                      <small class="metric__horizon" data-eco="horizon" />
+                    </p>
+                    <p class="metric__def">
+                      <span data-ligne="ratio" hidden>
+                        {r.ratio} : <strong class="mono" data-eco="ratio" />.
+                      </span>{' '}
+                      <span data-ligne="delai" hidden>
+                        <span data-eco="delai" />
+                      </span>
+                    </p>
+                  </li>
+                </ol>
+
+                <div class="cascade" aria-hidden="true" data-cascade-eco hidden>
+                  <div class="cascade__row">
+                    <span class="cascade__label">{economie.barres.valorisation}</span>
+                    <span class="cascade__bar">
+                      <span style="width: 100%" data-barre="valorisation" />
+                    </span>
+                    <span class="cascade__val mono" data-eco="valorisation" />
+                  </div>
+                  <div class="cascade__row">
+                    <span class="cascade__label">{economie.barres.evitee}</span>
+                    <span class="cascade__bar">
+                      <span data-barre="evitee" />
+                    </span>
+                    <span class="cascade__val mono" data-eco="evitee" />
+                  </div>
+                  <div class="cascade__row cascade__row--cle">
+                    <span class="cascade__label">{economie.barres.solde}</span>
+                    <span class="cascade__bar">
+                      <span data-barre="solde" />
+                    </span>
+                    <span class="cascade__val mono" data-eco="soldeMensuel" />
+                  </div>
                 </div>
+
+                <p class="sim__eco-attente" data-eco-attente data-textes={JSON.stringify(economie.attente)}>
+                  {economie.attente.valorisation}
+                </p>
               </div>
             </div>
           </details>
@@ -190,7 +285,7 @@ const textes = {
 
 <script>
   import { formatEuros, formatHeures, formatMois, formatNombre, formatPourcent } from '@/lib/roi/format';
-  import { CLES_TEMPS, estimer, lireChamp, type Cle, type Estimation } from '@/lib/roi/saisie';
+  import { CLES_TEMPS, estimer, lireChamp, lireNombre, type Cle, type Estimation } from '@/lib/roi/saisie';
 
   interface Textes {
     parSemaine: string;
@@ -201,6 +296,8 @@ const textes = {
 
   // Évite d'afficher « -0 € » pour un solde qui n'est négatif qu'à l'arrondi près.
   const euros = (v: number) => formatEuros(Math.abs(v) < 0.005 ? 0 : v);
+  const largeur = (part: number, total: number) =>
+    `${total > 0 ? Math.max(0, Math.min(100, (part / total) * 100)) : 0}%`;
 
   class SimulateurTemps extends HTMLElement {
     private textes!: Textes;
@@ -245,15 +342,35 @@ const textes = {
 
       panneaux.forEach((panneau) => {
         panneau.addEventListener('submit', (e) => e.preventDefault());
-        panneau.addEventListener('input', () => this.calculer(panneau, true));
+        panneau.addEventListener('input', (e) => {
+          this.synchroniser(e.target as HTMLInputElement);
+          this.calculer(panneau, true);
+        });
         panneau.querySelector('[data-reset]')?.addEventListener('click', () => {
           panneau.querySelectorAll<HTMLInputElement>('input[data-cle]').forEach((input) => {
             input.value = input.dataset.initial ?? '';
+            this.synchroniser(input);
           });
           this.calculer(panneau, true);
         });
         this.calculer(panneau, false);
       });
+    }
+
+    // Le curseur et la valeur affichée à côté se suivent l'un l'autre.
+    private synchroniser(source: HTMLInputElement) {
+      const champ = source.closest('.champ');
+      const texte = champ?.querySelector<HTMLInputElement>('input[data-cle]');
+      const curseur = champ?.querySelector<HTMLInputElement>('[data-curseur]');
+      if (!texte || !curseur) return;
+      if (source === curseur) {
+        texte.value = curseur.value.replace('.', ',');
+      } else {
+        const n = lireNombre(texte.value);
+        if (n !== null && Number.isFinite(n)) curseur.value = String(n);
+      }
+      const unite = champ?.querySelector('.champ__unite')?.textContent ?? '';
+      curseur.setAttribute('aria-valuetext', `${texte.value || '—'} ${unite}`);
     }
 
     private calculer(panneau: HTMLFormElement, annoncer: boolean) {
@@ -293,8 +410,9 @@ const textes = {
       this.ecrire(panneau, '[data-out="parSemaine"]', this.parSemaine(t.libereParSemaine));
       this.ecrire(panneau, '[data-out="actuel"]', formatHeures(t.actuel));
       this.ecrire(panneau, '[data-out="restant"]', formatHeures(t.restant));
-      const barre = panneau.querySelector<HTMLElement>('[data-barre]');
-      if (barre) barre.style.width = `${t.actuel > 0 ? (t.libere / t.actuel) * 100 : 0}%`;
+      this.barre(panneau, 'actuel', t.actuel > 0 ? '100%' : '0%');
+      this.barre(panneau, 'libere', largeur(t.libere, t.actuel));
+      this.barre(panneau, 'restant', largeur(t.restant, t.actuel));
     }
 
     private afficherEconomie(panneau: HTMLElement, e: Estimation, invalide: boolean, horizon: number | null) {
@@ -303,27 +421,50 @@ const textes = {
       const messages = JSON.parse(attente.dataset.textes ?? '{}');
       // Une saisie invalide masque tous les résultats économiques plutôt que d'en afficher une partie trompeuse.
       const ok = Boolean(e.temps) && !invalide;
+      const v = <T,>(x: T | null) => (ok ? x : null);
 
-      const ligne = (nom: string, valeur: string | null, negatif = false) => {
-        const el = panneau.querySelector<HTMLElement>(`[data-ligne="${nom}"]`)!;
-        el.hidden = !ok || valeur === null;
-        el.toggleAttribute('data-negatif', negatif);
-        if (valeur !== null) this.ecrire(panneau, `[data-eco="${nom}"]`, valeur);
+      const carte = (nom: string, valeur: number | null) => {
+        const el = panneau.querySelector<HTMLElement>(`[data-carte="${nom}"]`)!;
+        el.toggleAttribute('data-vide', valeur === null);
+        el.toggleAttribute('data-negatif', valeur !== null && valeur < -0.005);
+        this.ecrire(el, `[data-eco="${nom}"]`, valeur === null ? '—' : euros(valeur));
       };
-
-      ligne('valorisation', e.valorisation === null ? null : `${euros(e.valorisation)} / mois`);
-      ligne('soldeMensuel', e.soldeMensuel === null ? null : `${euros(e.soldeMensuel)} / mois`, (e.soldeMensuel ?? 0) < -0.005);
-      ligne('soldeCumule', e.soldeCumule === null ? null : euros(e.soldeCumule), (e.soldeCumule ?? 0) < -0.005);
-      ligne('ratio', e.ratio === null ? null : formatPourcent(e.ratio), (e.ratio ?? 0) < 0);
-      ligne(
-        'delai',
-        e.soldeCumule === null ? null
-        : e.delaiRetour === null ? eco.aucunRetour
-        : e.delaiRetour === 0 ? eco.sansInvestissement
-        : formatMois(e.delaiRetour),
-        e.soldeCumule !== null && e.delaiRetour === null,
+      carte('valorisation', v(e.valorisation));
+      carte('soldeMensuel', v(e.soldeMensuel));
+      carte('soldeCumule', v(e.soldeCumule));
+      this.ecrire(
+        panneau,
+        '[data-eco="horizon"]',
+        v(e.soldeCumule) === null || horizon === null ? '' : `sur ${formatNombre(horizon)} mois`,
       );
-      this.ecrire(panneau, '[data-eco="horizon"]', horizon === null ? '' : `sur ${formatNombre(horizon)} mois`);
+
+      const ratio = panneau.querySelector<HTMLElement>('[data-ligne="ratio"]')!;
+      ratio.hidden = v(e.ratio) === null || v(e.soldeCumule) === null;
+      if (!ratio.hidden) this.ecrire(ratio, '[data-eco="ratio"]', formatPourcent(e.ratio));
+
+      const delai = panneau.querySelector<HTMLElement>('[data-ligne="delai"]')!;
+      delai.hidden = v(e.soldeCumule) === null;
+      delai.toggleAttribute('data-negatif', e.delaiRetour === null);
+      this.ecrire(
+        delai,
+        '[data-eco="delai"]',
+        e.delaiRetour === null ? `${eco.aucunRetour}.`
+        : e.delaiRetour === 0 ? `${eco.sansInvestissement}.`
+        : `${eco.delai} : ${formatMois(e.delaiRetour)}.`,
+      );
+
+      // Barres : de la valorisation théorique au solde mensuel, à partir du palier « solde mensuel ».
+      const cascade = panneau.querySelector<HTMLElement>('[data-cascade-eco]')!;
+      cascade.hidden = v(e.soldeMensuel) === null;
+      if (!cascade.hidden && e.valorisation !== null && e.valeurEvitee !== null && e.soldeMensuel !== null) {
+        this.ecrire(cascade, '[data-eco="valorisation"]', euros(e.valorisation));
+        this.ecrire(cascade, '[data-eco="evitee"]', euros(e.valeurEvitee));
+        this.ecrire(cascade, '[data-eco="soldeMensuel"]', euros(e.soldeMensuel));
+        this.barre(cascade, 'valorisation', e.valorisation > 0 ? '100%' : '0%');
+        this.barre(cascade, 'evitee', largeur(e.valeurEvitee, e.valorisation));
+        this.barre(cascade, 'solde', largeur(e.soldeMensuel, e.valorisation));
+        cascade.toggleAttribute('data-negatif', e.soldeMensuel < -0.005);
+      }
 
       const message =
         !e.temps ? ''
@@ -360,6 +501,11 @@ const textes = {
       return modele.replace('{valeur}', formatNombre(heures));
     }
 
+    private barre(racine: HTMLElement, nom: string, valeur: string) {
+      const el = racine.querySelector<HTMLElement>(`[data-barre="${nom}"]`);
+      if (el) el.style.width = valeur;
+    }
+
     private ecrire(racine: HTMLElement, selecteur: string, texte: string) {
       racine.querySelectorAll(selecteur).forEach((el) => (el.textContent = texte));
     }
@@ -377,20 +523,27 @@ const textes = {
     color: var(--color-text-muted);
   }
 
-  .sim__app {
-    display: grid;
-    gap: var(--space-4);
+  /* Carte sombre, comme le calculateur de /evaluer-le-potentiel/. */
+  .sim__carte {
+    border: 1px solid var(--color-inverse-line);
+    border-radius: var(--radius-l);
+    background: var(--color-inverse-surface);
+    color: var(--color-inverse-text);
+    overflow: hidden;
+  }
+
+  .sim__tete {
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-inverse-line);
   }
 
   .sim__onglets {
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    justify-self: start;
-    padding: var(--space-2);
-    border: 1px solid var(--color-line);
+    padding: var(--space-1);
+    border: 1px solid var(--color-inverse-line);
     border-radius: var(--radius-pill);
-    background: var(--color-surface);
   }
 
   .sim__onglet {
@@ -403,7 +556,7 @@ const textes = {
     border-radius: var(--radius-pill);
     background: none;
     font-size: var(--step--1);
-    color: var(--color-text-muted);
+    color: var(--color-inverse-muted);
     transition:
       background-color var(--duration-fast) var(--ease-out),
       color var(--duration-fast) var(--ease-out);
@@ -415,27 +568,23 @@ const textes = {
   }
 
   .sim__onglet:hover {
-    color: var(--color-text);
+    color: var(--color-inverse-text);
   }
 
   .sim__onglet[aria-selected='true'] {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
+    background: var(--color-inverse-text);
+    color: var(--ink-950);
   }
 
-  .sim__panneau {
-    border: 1px solid var(--color-line);
-    border-radius: var(--radius-l);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-card);
-    overflow: hidden;
+  .sim__onglet:focus-visible {
+    outline-color: var(--signal-300);
   }
 
-  .sim__grille {
+  .sim__corps {
     display: grid;
   }
 
-  .sim__params {
+  .sim__col {
     display: grid;
     gap: var(--space-5);
     align-content: start;
@@ -445,140 +594,243 @@ const textes = {
     border: 0;
   }
 
+  .sim__col--params {
+    border-bottom: 1px solid var(--color-inverse-line);
+  }
+
   .sim__soustitre {
-    margin-bottom: var(--space-4);
     padding: 0;
     font-size: var(--step--2);
     font-weight: 400;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-text-muted);
+    color: var(--ink-400);
   }
 
   /* Une légende ne prend pas part à la grille : on recrée l'espacement. */
   legend.sim__soustitre {
     float: left;
     width: 100%;
-    margin-bottom: 0;
   }
 
   .sim__avertissement {
-    padding-left: var(--space-4);
-    border-left: 2px solid var(--color-line-strong);
+    padding-top: var(--space-4);
+    border-top: 1px dashed var(--color-inverse-line);
     font-size: var(--step--2);
     line-height: 1.55;
-    color: var(--color-text-muted);
+    color: var(--color-inverse-muted);
   }
 
   .sim__reset {
     justify-self: start;
     min-height: 2.75rem;
     padding: 0.4rem 0.9rem;
-    border: 1px solid var(--color-line-strong);
+    border: 1px solid var(--color-inverse-line);
     border-radius: var(--radius-pill);
-    background: var(--color-surface);
+    background: none;
     font-size: var(--step--2);
-    color: var(--color-text-muted);
+    color: var(--color-inverse-muted);
   }
 
   .sim__reset:hover {
-    border-color: var(--color-text);
-    color: var(--color-text);
+    border-color: var(--color-inverse-muted);
+    color: var(--color-inverse-text);
   }
 
-  .sim__resultats {
+  .sim__reset:focus-visible {
+    outline-color: var(--signal-300);
+  }
+
+  /* Cartes de résultats. */
+  .metrics {
     display: grid;
-    gap: var(--space-4);
-    align-content: start;
-    min-width: 0;
-    padding: var(--space-6);
-    border-top: 1px solid var(--color-line);
-    background: var(--color-accent-soft);
-  }
-
-  .sim__resultats .sim__soustitre {
-    margin-bottom: 0;
-    color: var(--color-accent);
-  }
-
-  .sim__temps {
-    display: grid;
-    gap: var(--space-2);
-  }
-
-  .sim__cle-label {
-    font-size: var(--step-0);
-    font-weight: 520;
-  }
-
-  .sim__cle-valeur {
-    font-size: var(--step-5);
-    line-height: 1;
-    letter-spacing: -0.04em;
-    color: var(--color-accent);
-  }
-
-  .sim__semaine {
-    font-size: var(--step-1);
-    font-weight: 520;
-    line-height: 1.3;
-  }
-
-  .sim__base {
-    font-size: var(--step--2);
-    color: var(--color-text-muted);
-  }
-
-  .sim__barre {
-    height: 0.6rem;
-    margin-top: var(--space-4);
-    border-radius: var(--radius-pill);
-    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1px;
+    padding: 0;
+    border: 1px solid var(--color-inverse-line);
+    border-radius: var(--radius-m);
+    background: var(--color-inverse-line);
+    list-style: none;
     overflow: hidden;
   }
 
-  .sim__barre span {
+  .metric {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--color-inverse-surface);
+  }
+
+  .metric--cle {
+    background: color-mix(in srgb, var(--pine-700) 22%, var(--color-inverse-surface));
+  }
+
+  .metric__label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    font-size: var(--step--1);
+    color: var(--color-inverse-muted);
+  }
+
+  .metric__label > .mono:first-child {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 1.3rem;
+    height: 1.3rem;
+    border: 1px solid var(--color-inverse-line);
+    border-radius: 50%;
+    font-size: 0.68rem;
+  }
+
+  .metric__titre {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.4;
+  }
+
+  .metric__badge {
+    display: inline-block;
+    margin-left: var(--space-1);
+    vertical-align: 0.1em;
+    padding: 0.05rem 0.4rem;
+    border: 1px dashed var(--ink-500);
+    border-radius: var(--radius-s);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .metric__value {
+    font-size: var(--step-3);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-inverse-text);
+  }
+
+  .metric--large .metric__value {
+    font-size: var(--step-4);
+  }
+
+  .metric--cle .metric__value {
+    color: var(--pine-300);
+  }
+
+  .metric[data-negatif] .metric__value {
+    color: var(--signal-300);
+  }
+
+  .metric[data-vide] .metric__value {
+    color: var(--ink-500);
+  }
+
+  .metric[data-vide] .metric__value small {
+    display: none;
+  }
+
+  .metric__value small {
+    font-size: var(--step--1);
+    letter-spacing: 0;
+    color: var(--color-inverse-muted);
+  }
+
+  .metric__value small.metric__horizon {
+    display: block;
+    margin-top: var(--space-1);
+  }
+
+  .metric__def {
+    font-size: var(--step--1);
+    color: var(--color-inverse-muted);
+  }
+
+  .metric__semaine {
+    font-size: var(--step-0);
+    color: var(--color-inverse-text);
+  }
+
+  .metric__def strong {
+    font-weight: 500;
+    color: var(--color-inverse-text);
+  }
+
+  .metric__def [data-negatif] {
+    color: var(--signal-300);
+  }
+
+  .metric__note {
+    font-size: 0.7rem;
+    color: var(--ink-400);
+  }
+
+  /* Barres comparatives. */
+  .cascade {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  .cascade__row {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr) 5.5rem;
+    gap: var(--space-3);
+    align-items: center;
+    font-size: var(--step--2);
+  }
+
+  .cascade__label {
+    color: var(--color-inverse-muted);
+  }
+
+  .cascade__bar {
+    height: 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--ink-700);
+    overflow: hidden;
+  }
+
+  .cascade__bar span {
     display: block;
     height: 100%;
     border-radius: inherit;
-    background: var(--color-accent);
+    background: var(--ink-400);
     transition: width var(--duration-base) var(--ease-out);
   }
 
-  .sim__detail {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-4);
-    margin-top: var(--space-2);
+  .cascade__row--cle .cascade__bar span {
+    background: var(--pine-300);
   }
 
-  .sim__detail dt {
-    font-size: var(--step--2);
-    color: var(--color-text-muted);
+  .cascade__val {
+    text-align: right;
   }
 
-  .sim__detail dd {
-    margin: 0;
-    font-size: var(--step-1);
+  .cascade[data-negatif] .cascade__row--cle .cascade__val {
+    color: var(--signal-300);
   }
 
   .sim__etat {
     padding: var(--space-4);
     border-left: 2px solid var(--signal-500);
-    background: var(--color-surface);
     font-size: var(--step--1);
+    color: var(--signal-100);
   }
 
   .sim__separe {
     padding-top: var(--space-4);
-    border-top: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+    border-top: 1px solid var(--color-inverse-line);
     font-size: var(--step--2);
     line-height: 1.55;
-    color: var(--color-text-muted);
+    color: var(--color-inverse-muted);
   }
 
+  /* Estimation économique, dans la même carte. */
   .sim__eco {
-    border-top: 1px solid var(--color-line);
+    border-top: 1px solid var(--color-inverse-line);
+    background: color-mix(in srgb, var(--ink-950) 40%, var(--color-inverse-surface));
   }
 
   .sim__eco summary {
@@ -599,7 +851,12 @@ const textes = {
   }
 
   .sim__eco summary:hover {
-    color: var(--color-accent);
+    color: var(--pine-300);
+  }
+
+  .sim__eco summary:focus-visible {
+    outline-color: var(--signal-300);
+    outline-offset: -4px;
   }
 
   .sim__eco-icone {
@@ -633,102 +890,70 @@ const textes = {
     max-width: 44rem;
     padding-inline: var(--space-6);
     font-size: var(--step--1);
-    color: var(--color-text-muted);
-  }
-
-  .sim__eco-resultats {
-    display: grid;
-    gap: var(--space-4);
-    align-content: start;
-    min-width: 0;
-    padding: var(--space-6);
+    color: var(--color-inverse-muted);
   }
 
   .sim__eco-avertissement {
-    padding: var(--space-4);
+    padding: var(--space-3) var(--space-4);
     border-left: 2px solid var(--signal-500);
-    border-radius: 0 var(--radius-m) var(--radius-m) 0;
-    background: var(--color-surface-sunken);
     font-size: var(--step--1);
     line-height: 1.5;
-  }
-
-  .sim__eco-liste {
-    display: grid;
-    border-top: 1px solid var(--color-line-strong);
-  }
-
-  .sim__eco-liste div {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-2) var(--space-4);
-    align-items: baseline;
-    padding-block: var(--space-3);
-    border-bottom: 1px solid var(--color-line);
-    font-size: var(--step--1);
-  }
-
-  .sim__eco-liste dt {
-    color: var(--color-text-muted);
-  }
-
-  .sim__eco-liste dd {
-    margin: 0;
-    text-align: right;
-    font-size: var(--step-0);
-  }
-
-  .sim__eco-liste [data-negatif] dd {
-    color: var(--signal-600);
+    color: var(--signal-100);
   }
 
   .sim__eco-attente {
     font-size: var(--step--2);
-    color: var(--color-text-muted);
+    color: var(--color-inverse-muted);
+  }
+
+  @media (min-width: 36rem) {
+    .metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric--large {
+      grid-column: 1 / -1;
+    }
   }
 
   @media (max-width: 40rem) {
+    .sim__tete,
+    .sim__col {
+      padding: var(--space-5);
+    }
+
     .sim__onglets {
-      justify-self: stretch;
+      display: flex;
       border-radius: var(--radius-l);
     }
 
     .sim__onglet {
       flex: 1 1 100%;
-      justify-content: flex-start;
     }
 
-    .sim__params,
-    .sim__resultats,
-    .sim__eco-resultats {
-      padding: var(--space-5);
-    }
-
-    .sim__eco summary {
-      padding-inline: var(--space-5);
-    }
-
+    .sim__eco summary,
     .sim__eco-intro {
       padding-inline: var(--space-5);
     }
 
-    .sim__eco-liste div {
-      grid-template-columns: minmax(0, 1fr);
+    .cascade__row {
+      grid-template-columns: minmax(0, 1fr) auto;
     }
 
-    .sim__eco-liste dd {
-      text-align: left;
+    .cascade__bar {
+      grid-column: 1 / -1;
+      grid-row: 2;
     }
   }
 
-  @media (min-width: 56rem) {
-    .sim__grille {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (min-width: 64rem) {
+    .sim__corps {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
     }
 
-    .sim__resultats {
-      border-top: 0;
-      border-left: 1px solid var(--color-line);
+    .sim__col--params {
+      border-bottom: 0;
+      border-right: 1px solid var(--color-inverse-line);
     }
   }
 </style>

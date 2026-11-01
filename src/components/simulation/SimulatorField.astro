@@ -8,33 +8,56 @@ interface Props {
   unite: string;
   /** Valeur initiale dans l'unité affichée ; champ vide si absente. */
   valeur?: number;
+  /** Plage du curseur ; sans curseur, la valeur se saisit seulement au clavier. */
+  curseur?: { min: number; max: number; pas: number };
   aide?: string;
+  /** Texte affiché tant que le champ est vide. */
+  aSaisir?: string;
 }
 
-// Champ texte plutôt que `type="number"` : la virgule décimale est acceptée partout et une saisie
-// incomplète n'est pas effacée par le navigateur.
-const { id, cle, label, unite, valeur, aide } = Astro.props;
+// La valeur affichée à droite du libellé est un champ texte modifiable : la virgule décimale y est acceptée,
+// et une valeur peut sortir de la plage du curseur dans les limites du moteur. Le curseur la suit.
+const { id, cle, label, unite, valeur, curseur, aide, aSaisir } = Astro.props;
 const initial = valeur === undefined ? '' : String(valeur).replace('.', ',');
 const decrit = [`${id}-unite`, aide && `${id}-aide`, `${id}-erreur`].filter(Boolean).join(' ');
 ---
 
 <div class="champ">
-  <label for={id} class="champ__label">{label}</label>
-  <div class="champ__saisie">
-    <input
-      id={id}
-      name={cle}
-      type="text"
-      inputmode="decimal"
-      autocomplete="off"
-      spellcheck="false"
-      value={initial}
-      data-cle={cle}
-      data-initial={initial}
-      aria-describedby={decrit}
-    />
-    <span class="champ__unite mono" id={`${id}-unite`}>{unite}</span>
+  <div class="champ__ligne">
+    <label for={id} class="champ__label">{label}</label>
+    <span class="champ__valeur">
+      <input
+        id={id}
+        name={cle}
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        spellcheck="false"
+        class="mono"
+        value={initial}
+        placeholder={aSaisir}
+        data-cle={cle}
+        data-initial={initial}
+        aria-describedby={decrit}
+      />
+      <span class="champ__unite mono" id={`${id}-unite`}>{unite}</span>
+    </span>
   </div>
+  {
+    curseur && (
+      <input
+        type="range"
+        class="champ__curseur"
+        min={curseur.min}
+        max={curseur.max}
+        step={curseur.pas}
+        value={valeur}
+        aria-label={`${label} (curseur)`}
+        aria-valuetext={`${initial} ${unite}`}
+        data-curseur
+      />
+    )
+  }
   {aide && <p class="champ__aide" id={`${id}-aide`}>{aide}</p>}
   <p class="champ__erreur" id={`${id}-erreur`} data-erreur></p>
 </div>
@@ -45,74 +68,134 @@ const decrit = [`${id}-unite`, aide && `${id}-aide`, `${id}-erreur`].filter(Bool
     gap: var(--space-2);
   }
 
-  .champ__label {
-    font-size: var(--step--1);
-    font-weight: 520;
-    line-height: 1.35;
-  }
-
-  .champ__saisie {
+  .champ__ligne {
     display: flex;
-    align-items: stretch;
-    border: 1px solid var(--color-line-strong);
-    border-radius: var(--radius-m);
-    background: var(--color-surface);
-    overflow: hidden;
-    transition: border-color var(--duration-fast) var(--ease-out);
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
   }
 
-  .champ__saisie:focus-within {
-    border-color: var(--color-accent);
-    outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
-  }
-
-  input {
+  /* Le libellé passe à la ligne ; la valeur reste à sa droite. */
+  .champ__label {
     flex: 1 1 auto;
-    width: 100%;
     min-width: 0;
-    min-height: 2.75rem;
-    padding: 0.55rem 0.8rem;
+    font-size: var(--step--1);
+    line-height: 1.4;
+    color: var(--color-inverse-text);
+  }
+
+  .champ__valeur {
+    display: inline-flex;
+    flex: none;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  input[type='text'] {
+    width: 6.5ch;
+    padding: 0.15rem 0.3rem;
     border: 0;
-    background: none;
-    font-family: var(--font-mono);
-    font-feature-settings: 'tnum';
+    border-bottom: 1px dashed var(--ink-500);
+    border-radius: var(--radius-s) var(--radius-s) 0 0;
+    background: transparent;
     font-size: var(--step-0);
+    text-align: right;
+    color: var(--color-inverse-text);
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
   }
 
-  input:focus-visible {
-    outline: none;
+  input[type='text']::placeholder {
+    font-size: var(--step--2);
+    color: var(--ink-400);
   }
 
-  input[aria-invalid='true'] {
-    background: var(--color-signal-soft);
+  input[type='text']:hover {
+    border-bottom-color: var(--color-inverse-muted);
   }
 
-  .champ__saisie:has(input[aria-invalid='true']) {
-    border-color: var(--signal-600);
+  input[type='text']:focus-visible {
+    border-bottom: 1px solid var(--signal-300);
+    outline: 2px solid var(--signal-300);
+    outline-offset: 2px;
+    background: color-mix(in srgb, var(--ink-950) 40%, transparent);
+  }
+
+  input[type='text'][aria-invalid='true'] {
+    border-bottom: 1px solid var(--signal-300);
+    background: color-mix(in srgb, var(--signal-500) 18%, transparent);
   }
 
   .champ__unite {
-    display: flex;
-    align-items: center;
-    padding-inline: 0.8rem;
-    border-left: 1px solid var(--color-line);
-    background: var(--color-surface-sunken);
     font-size: var(--step--2);
-    color: var(--color-text-muted);
+    color: var(--color-inverse-muted);
     white-space: nowrap;
+  }
+
+  /* Curseur : même dessin que le calculateur de /evaluer-le-potentiel/. */
+  .champ__curseur {
+    width: 100%;
+    height: 1.5rem;
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .champ__curseur::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--ink-700);
+  }
+
+  .champ__curseur::-moz-range-track {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--ink-700);
+  }
+
+  .champ__curseur::-moz-range-progress {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--signal-500);
+  }
+
+  .champ__curseur::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: calc(-0.55rem + 1.5px);
+    border: 3px solid var(--color-inverse-surface);
+    border-radius: 50%;
+    background: var(--signal-500);
+    box-shadow: 0 0 0 1px var(--signal-500);
+  }
+
+  .champ__curseur::-moz-range-thumb {
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 3px solid var(--color-inverse-surface);
+    border-radius: 50%;
+    background: var(--signal-500);
+    box-shadow: 0 0 0 1px var(--signal-500);
+  }
+
+  .champ__curseur:focus-visible {
+    outline: 2px solid var(--signal-300);
+    outline-offset: 4px;
   }
 
   .champ__aide {
     font-size: var(--step--2);
     line-height: 1.5;
-    color: var(--color-text-muted);
+    color: var(--color-inverse-muted);
   }
 
   .champ__erreur {
     font-size: var(--step--2);
     font-weight: 520;
-    color: var(--signal-600);
+    color: var(--signal-300);
   }
 
   .champ__erreur:empty {

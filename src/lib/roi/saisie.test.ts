@@ -57,6 +57,7 @@ describe('estimer', () => {
   it('calcule par paliers, selon les paramètres renseignés', () => {
     const r = estimer({ ...relances, coutHoraireCharge: 38 });
     expect(r.valorisation).toBeCloseTo(364.8);
+    expect(r.valeurEvitee).toBeNull();
     expect(r.soldeMensuel).toBeNull();
   });
 
@@ -69,6 +70,7 @@ describe('estimer', () => {
       investissementInitial: 1800,
       horizonMois: 24,
     });
+    expect(r.valeurEvitee).toBeCloseTo(182.4);
     expect(r.soldeMensuel).toBeCloseTo(137.4);
     expect(r.soldeCumule).toBeCloseTo(1497.6);
     expect(r.ratio).toBeCloseTo(0.832);

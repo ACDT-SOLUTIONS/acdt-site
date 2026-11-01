@@ -37,6 +37,8 @@ export interface ScenarioResult {
   /** Temps qui reste à l'équipe (vérifications, cas particuliers). */
   heuresRestantesParMois: number;
   tempsValoriseParMois: number;
+  /** Part du temps valorisé supposée éviter une dépense, avant coûts récurrents. */
+  valeurReaffecteeParMois: number;
   economiesEffectivesParMois: number;
   gainNetSurHorizon: number;
   /** Gain net rapporté à l'investissement ; `null` si l'investissement est nul. */
@@ -95,8 +97,8 @@ export function simuler(inputs: ScenarioInputs): ScenarioResult {
   const heuresLibereesParMois =
     (inputs.occurrencesParMois * inputs.minutesParOccurrence * inputs.tauxAutomatisation) / 60;
   const tempsValoriseParMois = heuresLibereesParMois * inputs.coutHoraireCharge;
-  const economiesEffectivesParMois =
-    tempsValoriseParMois * inputs.tauxReaffectation - inputs.coutsRecurrentsMensuels;
+  const valeurReaffecteeParMois = tempsValoriseParMois * inputs.tauxReaffectation;
+  const economiesEffectivesParMois = valeurReaffecteeParMois - inputs.coutsRecurrentsMensuels;
   const gainNetSurHorizon = economiesEffectivesParMois * inputs.horizonMois - inputs.investissementInitial;
 
   return {
@@ -104,6 +106,7 @@ export function simuler(inputs: ScenarioInputs): ScenarioResult {
     heuresLibereesParMois,
     heuresRestantesParMois: heuresActuellesParMois - heuresLibereesParMois,
     tempsValoriseParMois,
+    valeurReaffecteeParMois,
     economiesEffectivesParMois,
     gainNetSurHorizon,
     roiNet: inputs.investissementInitial > 0 ? gainNetSurHorizon / inputs.investissementInitial : null,
