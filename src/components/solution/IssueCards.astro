@@ -1,16 +1,23 @@
 ---
 interface Props {
-  items: { titre: string; texte: string }[];
+  // `reponse` (facultatif) : ce que l'automatisation change, affiché en pied de carte.
+  items: { titre: string; texte: string; reponse?: string }[];
 }
 ---
 
 <ul class="issues">
   {
     Astro.props.items.map((item, i) => (
-      <li class="issue">
+      <li class:list={['issue', { 'issue--reponse': item.reponse }]}>
         <span class="issue__n mono">{String(i + 1).padStart(2, '0')}</span>
         <h3>{item.titre}</h3>
         <p>{item.texte}</p>
+        {item.reponse && (
+          <p class="issue__reponse">
+            <span class="issue__reponse-label mono">Ce qui change</span>
+            {item.reponse}
+          </p>
+        )}
       </li>
     ))
   }
@@ -36,6 +43,12 @@ interface Props {
     background: var(--color-surface);
   }
 
+  .issue--reponse {
+    grid-template-rows: auto auto 1fr auto;
+    padding-bottom: 0;
+    overflow: hidden;
+  }
+
   .issue__n {
     font-size: var(--step--2);
     color: var(--signal-600);
@@ -49,5 +62,30 @@ interface Props {
   p {
     font-size: var(--step--1);
     color: var(--color-text-muted);
+  }
+
+  /* Réponse : bande pleine largeur en bas de carte, dans la couleur d'accent. */
+  .issue__reponse {
+    display: grid;
+    gap: var(--space-1);
+    margin-inline: calc(-1 * var(--space-5));
+    margin-top: var(--space-2);
+    padding: var(--space-4) var(--space-5) var(--space-5);
+    border-top: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-hover);
+    font-weight: 520;
+  }
+
+  .issue__reponse-label {
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .issue__reponse-label::before {
+    content: '→ ';
   }
 </style>

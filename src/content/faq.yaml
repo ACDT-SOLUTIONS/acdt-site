@@ -88,3 +88,58 @@
   reponse: >-
     Une offre dédiée est à l'étude. Les données de santé imposent des exigences spécifiques :
     nous ne proposerons ces solutions qu'une fois leur conformité validée.
+
+# Page « Automatisation des processus administratifs » (famille 02).
+- id: administratif-logiciels
+  ordre: 20
+  pages: [/solutions/automatisation-administrative/]
+  question: Peut-on conserver ses logiciels actuels ?
+  reponse: >-
+    Dans la plupart des cas, oui : nous partons de vos outils et les relions entre eux. Si un logiciel ne
+    permet pas l'échange de données nécessaire, nous vous le signalons pendant l'analyse et présentons les
+    options possibles avant tout développement.
+
+- id: administratif-ia
+  ordre: 21
+  pages: [/solutions/automatisation-administrative/]
+  question: L'intelligence artificielle est-elle indispensable ?
+  reponse: >-
+    Non. Beaucoup de processus s'améliorent avec des règles simples : formulaires, classement, relances,
+    synchronisation. Nous proposons l'IA lorsque les informations sont rédigées librement ou trop variables pour
+    être traitées par des règles.
+
+- id: administratif-erreur
+  ordre: 22
+  pages: [/solutions/automatisation-administrative/]
+  question: Que se passe-t-il en cas d'erreur ?
+  reponse: >-
+    Les cas imprévus sont pris en compte dès la conception : une information manquante ou incohérente, une étape
+    qui échoue ou un résultat de l'IA incertain sont signalés à une personne plutôt que traités en silence. Les
+    opérations sont journalisées pour comprendre ce qui s'est passé et corriger la règle concernée.
+
+- id: administratif-validation
+  ordre: 23
+  pages: [/solutions/automatisation-administrative/]
+  question: Quelles étapes nécessitent une validation humaine ?
+  reponse: >-
+    Elles sont définies avec vous. Il s'agit généralement des messages envoyés à l'extérieur, des décisions qui
+    engagent l'entreprise, des montants et des informations importantes produites par l'IA. Les tâches sans
+    enjeu peuvent s'exécuter seules.
+
+- id: administratif-donnees
+  ordre: 24
+  pages: [/solutions/automatisation-administrative/]
+  question: Comment sont traitées les données ?
+  reponse: >-
+    Les données traitées, les outils et prestataires concernés, les accès et les durées de conservation sont
+    définis pendant le cadrage. Lorsque l'IA est utilisée, nous précisons quel service traite quelles
+    informations. Pour les données les plus sensibles, une infrastructure privée peut être étudiée.
+
+- id: administratif-prix
+  ordre: 25
+  pages: [/solutions/automatisation-administrative/]
+  question: Comment est calculé le prix ?
+  reponse: >-
+    Sur devis, après analyse du processus. Le prix dépend du nombre d'étapes et de règles, des outils à
+    connecter, du recours éventuel à l'IA, des validations nécessaires et des coûts récurrents des services
+    utilisés.

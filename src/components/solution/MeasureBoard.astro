@@ -1,0 +1,779 @@
+---
+import Button from '@/components/ui/Button.astro';
+import BenefitGrid from '@/components/solution/BenefitGrid.astro';
+import { lienVisible } from '@/lib/publication';
+
+type Niveau = 'mesure' | 'estimation' | 'calcul' | 'fournisseur';
+
+interface Exemple {
+  avant: string;
+  apres: string;
+  unite: string;
+  niveau: Niveau;
+  contexte: string;
+  precision?: string;
+  resume?: string;
+  attribution?: string;
+  source: { auteur?: string; publication: string; annee?: number; url: string };
+}
+
+interface Props {
+  mesures: {
+    benefices?: { label: string; titre: string; texte: string }[];
+    avertissement?: string;
+    sourcesTitre?: string;
+    methode: { titre: string; texte: string }[];
+    introduction?: string;
+    indicateurs: { titre: string; mesure?: string; question: string; enAvant?: boolean; exemple?: Exemple }[];
+    fort?: string;
+    liens?: { label: string; href: string }[];
+    conclusion?: { titre: string; texte?: string; cta: { label: string; href: string } };
+  };
+}
+
+// Présentation commerciale d'abord (bénéfices, quelques chiffres externes attribués, avertissement), puis
+// zone dépliable « Sources et méthodologie » : méthode et études complètes, chacune avec sa source et son
+// niveau de preuve. Sans exemple, les cases « avant / après » d'un indicateur restent vides.
+const { mesures } = Astro.props;
+const enAvant = mesures.indicateurs.filter((x) => x.enAvant && x.exemple).slice(0, 3);
+const nbEtudes = mesures.indicateurs.filter((x) => x.exemple).length;
+const derniere = mesures.methode.length - 1;
+const liens = (mesures.liens ?? []).filter((l) => lienVisible(l.href));
+
+const NIVEAUX: Record<Niveau, { label: string; texte: string }> = {
+  mesure: { label: 'Mesure observée', texte: 'relevée dans une étude publiée' },
+  fournisseur: { label: 'Communiqué par un fournisseur', texte: "présenté par l'éditeur de la solution, sans validation indépendante" },
+  calcul: { label: 'Calcul dérivé', texte: 'calculé à partir de données publiées' },
+  estimation: { label: 'Estimation', texte: 'valeur estimée par la source' },
+};
+const niveauxPresents = (Object.keys(NIVEAUX) as Niveau[]).filter((n) =>
+  mesures.indicateurs.some((x) => x.exemple?.niveau === n),
+);
+
+// Longueur des barres : proportion de chaque valeur par rapport à la plus grande des deux.
+const nombre = (v: string) => Number.parseFloat(v.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+const barres = (e: Exemple) => {
+  const max = Math.max(nombre(e.avant), nombre(e.apres)) || 1;
+  return [nombre(e.avant) / max, nombre(e.apres) / max];
+};
+---
+
+<div class="measure">
+  {mesures.benefices && <BenefitGrid items={mesures.benefices} />}
+
+  {
+    enAvant.length > 0 && (
+      <div class="highlights">
+        <p class="highlights__eyebrow mono">Exemples externes · pas des réalisations ACDT Solutions</p>
+        <ul class="highlights__liste">
+          {enAvant.map((x) => {
+            const e = x.exemple!;
+            return (
+              <li class="chiffre">
+                <p class="chiffre__indicateur mono">{x.titre}</p>
+                <p class="chiffre__valeurs">
+                  <span class="visually-hidden">Avant : </span>
+                  <span class="chiffre__avant">{e.avant}</span>
+                  <span class="chiffre__fleche" aria-hidden="true">
+                    →
+                  </span>
+                  <span class="visually-hidden">, après : </span>
+                  <strong>{e.apres}</strong>
+                </p>
+                <p class="chiffre__unite">{e.unite}</p>
+                {e.resume && <p class="chiffre__resume">{e.resume}</p>}
+                <p class="chiffre__attribution">
+                  {e.attribution ?? [e.source.publication, e.source.annee].filter(Boolean).join(', ')}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+        {mesures.avertissement && <p class="highlights__avertissement">{mesures.avertissement}</p>}
+      </div>
+    )
+  }
+
+  <details class="sources">
+    <summary>
+      <span class="sources__titre">{mesures.sourcesTitre ?? 'Sources et méthodologie'}</span>
+      <span class="sources__meta mono">{nbEtudes > 0 ? `${nbEtudes} études détaillées · notre méthode` : 'Notre méthode'}</span>
+      <span class="sources__icone" aria-hidden="true">+</span>
+    </summary>
+    <div class="sources__corps">
+      <ol class="measure__methode" aria-label="Méthode de mesure">
+        {
+          mesures.methode.map((m, i) => (
+            <li class:list={['measure__temps', { 'measure__temps--hypothese': i > 0 && i < derniere }]}>
+              <p class="measure__n mono">
+                {String(i + 1).padStart(2, '0')}
+                <span>{i > 0 && i < derniere ? 'Hypothèse' : 'Mesure réelle'}</span>
+              </p>
+              <h3>{m.titre}</h3>
+              <p>{m.texte}</p>
+            </li>
+          ))
+        }
+      </ol>
+
+      {
+        (mesures.introduction || niveauxPresents.length > 0) && (
+          <div class="measure__exemples">
+            <p class="measure__eyebrow mono">Exemples externes · pas des réalisations ACDT Solutions</p>
+            {mesures.introduction && <p class="measure__intro">{mesures.introduction}</p>}
+            {niveauxPresents.length > 0 && (
+              <ul class="measure__legende" aria-label="Niveaux de preuve">
+                {niveauxPresents.map((n) => (
+                  <li>
+                    <span class="niveau mono" data-niveau={n}>
+                      {NIVEAUX[n].label}
+                    </span>
+                    {NIVEAUX[n].texte}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )
+      }
+
+      <ul class="measure__indicateurs" aria-label="Indicateurs et exemples">
+        {
+          mesures.indicateurs.map((x) => {
+            const e = x.exemple;
+            const [rAvant, rApres] = e ? barres(e) : [0, 0];
+            return (
+              <li class="tile">
+                <div class="tile__tete">
+                  {e && (
+                    <span class="niveau mono" data-niveau={e.niveau}>
+                      {NIVEAUX[e.niveau].label}
+                    </span>
+                  )}
+                  <h3 class="tile__titre">{x.titre}</h3>
+                </div>
+                {e ? (
+                  <>
+                    <div class="tile__valeurs">
+                      <p class="tile__valeur">
+                        <span class="mono">Avant</span>
+                        <strong>{e.avant}</strong>
+                        <span class="tile__barre" style={`--r: ${rAvant}`} aria-hidden="true" />
+                      </p>
+                      <span class="tile__fleche" aria-hidden="true">
+                        →
+                      </span>
+                      <p class="tile__valeur tile__valeur--apres">
+                        <span class="mono">Après</span>
+                        <strong>{e.apres}</strong>
+                        <span class="tile__barre" style={`--r: ${rApres}`} aria-hidden="true" />
+                      </p>
+                    </div>
+                    <p class="tile__unite mono">{e.unite}</p>
+                    <p class="tile__contexte">{e.contexte}</p>
+                    {e.precision && <p class="tile__precision">{e.precision}</p>}
+                    <p class="tile__source">
+                      <span>{[e.source.auteur, e.source.publication, e.source.annee].filter(Boolean).join(' · ')}</span>
+                      <a href={e.source.url} target="_blank" rel="noopener noreferrer">
+                        Voir la source<span class="visually-hidden"> (nouvel onglet)</span> <span aria-hidden="true">↗</span>
+                      </a>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div class="tile__valeurs" aria-hidden="true">
+                      <span>
+                        <span class="mono">Avant</span>
+                        <span class="tile__vide" />
+                      </span>
+                      <span>
+                        <span class="mono">Après</span>
+                        <span class="tile__vide" />
+                      </span>
+                    </div>
+                    {x.mesure && <p class="tile__mesure">{x.mesure}</p>}
+                  </>
+                )}
+                <p class="tile__question">
+                  {e && <span class="mono">Chez vous</span>}« {x.question} »
+                </p>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      {mesures.fort && <p class="measure__fort">{mesures.fort}</p>}
+    </div>
+  </details>
+
+  {
+    mesures.conclusion && (
+      <div class="conclusion">
+        <div class="conclusion__texte">
+          <h3>{mesures.conclusion.titre}</h3>
+          {mesures.conclusion.texte && <p>{mesures.conclusion.texte}</p>}
+        </div>
+        <div class="conclusion__actions">
+          <Button href={mesures.conclusion.cta.href} size="l" arrow>
+            {mesures.conclusion.cta.label}
+          </Button>
+          {liens.length > 0 && (
+            <ul class="measure__liens">
+              {liens.map((l) => (
+                <li>
+                  <a href={l.href}>
+                    {l.label} <span aria-hidden="true">→</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .measure {
+    display: grid;
+    gap: clamp(var(--space-6), 4vw, var(--space-8));
+  }
+
+  /* Méthode : trois temps, l'estimation entre deux mesures réelles. */
+  .measure__methode {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .measure__temps {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .measure__temps--hypothese {
+    border-style: dashed;
+    border-color: var(--signal-500);
+    background: transparent;
+  }
+
+  .measure__n {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .measure__temps--hypothese .measure__n {
+    color: var(--signal-600);
+  }
+
+  .measure__temps h3 {
+    font-size: var(--step-1);
+  }
+
+  .measure__temps p:last-child {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  /* Exemples externes : avertissement, introduction et légende des niveaux de preuve. */
+  .measure__exemples {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 52rem;
+  }
+
+  .measure__eyebrow {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  .measure__intro {
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .measure__legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .measure__legende li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* Niveau de preuve : plein (mesure), pointillés orange (fournisseur), points (calcul), tirets (estimation). */
+  .niveau {
+    display: inline-flex;
+    padding: 0.15rem 0.55rem;
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-pill);
+    background: var(--color-accent-soft);
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .niveau[data-niveau='fournisseur'] {
+    border-style: dashed;
+    border-color: var(--signal-500);
+    background: var(--color-signal-soft);
+    color: var(--signal-600);
+  }
+
+  .niveau[data-niveau='calcul'] {
+    border-style: dotted;
+    border-color: var(--ink-700);
+    background: var(--color-surface);
+    color: var(--ink-700);
+  }
+
+  .niveau[data-niveau='estimation'] {
+    border-style: dashed;
+    border-color: var(--color-line-strong);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+  }
+
+  /* Indicateurs : une carte par exemple, chacune avec sa propre source. */
+  .measure__indicateurs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .tile p {
+    margin: 0;
+  }
+
+  .tile__tete {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-2);
+  }
+
+  .tile__titre {
+    font-size: var(--step-1);
+  }
+
+  .tile__valeurs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  .tile__valeurs:has(.tile__fleche) {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .tile__valeurs > span {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .tile__valeurs .mono {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .tile__valeur {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-3) var(--space-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-s);
+    background: var(--color-bg);
+  }
+
+  .tile__valeur strong {
+    font-size: var(--step-3);
+    font-weight: 560;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .tile__valeur--apres {
+    border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+    background: var(--color-accent-soft);
+  }
+
+  .tile__valeur--apres strong {
+    color: var(--color-accent);
+  }
+
+  /* Barre proportionnelle : repère visuel, les valeurs écrites font foi. */
+  .tile__barre {
+    position: relative;
+    height: 4px;
+    margin-top: var(--space-1);
+    border-radius: var(--radius-pill);
+    background: var(--color-line);
+    overflow: hidden;
+  }
+
+  .tile__barre::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--r) * 100%);
+    border-radius: inherit;
+    background: var(--ink-400);
+  }
+
+  .tile__valeur--apres .tile__barre::after {
+    background: var(--color-accent);
+  }
+
+  .tile__fleche {
+    color: var(--color-text-subtle);
+  }
+
+  .tile__unite {
+    font-size: var(--step--2);
+    letter-spacing: 0.02em;
+    color: var(--color-text);
+  }
+
+  .tile__vide {
+    height: 2.25rem;
+    border: 1px dashed var(--color-line-strong);
+    border-radius: var(--radius-s);
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent 0 6px,
+      color-mix(in srgb, var(--color-line) 60%, transparent) 6px 7px
+    );
+  }
+
+  .tile__mesure,
+  .tile__contexte {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .tile__precision {
+    padding-left: var(--space-3);
+    border-left: 2px solid var(--color-line-strong);
+    font-size: var(--step--2);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  .tile__source {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+    margin-top: auto !important;
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--color-line-strong);
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+  }
+
+  .tile__source a {
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .tile__question {
+    display: grid;
+    gap: var(--space-1);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-line);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--step-0);
+    line-height: 1.35;
+    color: var(--color-accent);
+  }
+
+  .tile__question .mono {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  /* Chiffres mis en avant : bandeau vert, attribution courte sous chaque résultat. */
+  .highlights {
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(var(--space-5), 4vw, var(--space-7));
+    border-radius: var(--radius-l);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .highlights p {
+    margin: 0;
+  }
+
+  .highlights__eyebrow {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pine-300);
+  }
+
+  .highlights__liste {
+    display: grid;
+    gap: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .chiffre {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 1px solid color-mix(in srgb, var(--color-on-accent) 25%, transparent);
+  }
+
+  .chiffre__indicateur {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--pine-300);
+  }
+
+  .chiffre__valeurs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-3);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .chiffre__avant {
+    font-size: var(--step-2);
+    color: color-mix(in srgb, var(--color-on-accent) 60%, transparent);
+  }
+
+  .chiffre__fleche {
+    color: var(--pine-300);
+  }
+
+  .chiffre__valeurs strong {
+    font-size: var(--step-5);
+    font-weight: 560;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-on-accent);
+  }
+
+  .chiffre__unite {
+    font-size: var(--step--1);
+    color: color-mix(in srgb, var(--color-on-accent) 80%, transparent);
+  }
+
+  .chiffre__resume {
+    margin-top: var(--space-2) !important;
+    font-size: var(--step-0);
+    font-weight: 560;
+    line-height: 1.4;
+  }
+
+  .chiffre__attribution {
+    font-size: var(--step--2);
+    line-height: 1.5;
+    color: var(--pine-300);
+  }
+
+  .highlights__avertissement {
+    padding-top: var(--space-4);
+    border-top: 1px dashed color-mix(in srgb, var(--color-on-accent) 35%, transparent);
+    font-size: var(--step--1);
+    line-height: 1.55;
+    color: color-mix(in srgb, var(--color-on-accent) 88%, transparent);
+  }
+
+  /* Zone secondaire dépliable : méthode et études complètes. */
+  .sources {
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .sources summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-1) var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .sources summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .sources summary:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-m);
+  }
+
+  .sources__titre {
+    font-weight: 600;
+  }
+
+  .sources__meta {
+    grid-column: 1;
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .sources__icone {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 50%;
+    font-size: var(--step-1);
+    color: var(--color-accent);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .sources[open] .sources__icone {
+    transform: rotate(45deg);
+  }
+
+  .sources__corps {
+    display: grid;
+    gap: clamp(var(--space-5), 3vw, var(--space-7));
+    padding: var(--space-5);
+    border-top: 1px solid var(--color-line);
+    background: var(--color-bg);
+    border-radius: 0 0 var(--radius-m) var(--radius-m);
+  }
+
+  .measure__fort {
+    font-size: var(--step-0);
+    font-weight: 560;
+  }
+
+  /* Conclusion : question au prospect et accès au contact. */
+  .conclusion {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+    padding: clamp(var(--space-5), 4vw, var(--space-7));
+    border: 1px solid var(--color-line);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+
+  .conclusion h3 {
+    font-size: var(--step-2);
+    line-height: 1.2;
+  }
+
+  .conclusion__texte {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .conclusion__texte p {
+    max-width: 38rem;
+    color: var(--color-text-muted);
+  }
+
+  .conclusion__actions {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+  }
+
+  .measure__liens {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .measure__liens a {
+    font-size: var(--step--1);
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 56rem) {
+    .highlights__liste {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+
+    .conclusion {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: var(--space-7);
+    }
+  }
+
+  @media (min-width: 56rem) {
+    .measure__methode {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+
+    /* Flèche entre deux temps */
+    .measure__temps:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      top: 50%;
+      right: calc(-1 * var(--space-6) / 2);
+      transform: translate(50%, -50%);
+      color: var(--color-text-subtle);
+    }
+  }
+</style>

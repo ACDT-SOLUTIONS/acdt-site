@@ -6,6 +6,8 @@ interface Prestation {
   details?: { titre: string; texte: string }[];
   note?: string;
   lien?: { label: string; href: string };
+  regles?: string;
+  ia?: string;
 }
 
 interface Props {
@@ -16,7 +18,7 @@ interface Props {
 const { items } = Astro.props;
 ---
 
-<ul class:list={['services', { 'services--cinq': items.length === 5 }]}>
+<ul class:list={['services', { 'services--cinq': items.length === 5, 'services--trois': items.length % 3 === 0 }]}>
   {
     items.map((p, i) => (
       <li class="service">
@@ -29,6 +31,22 @@ const { items } = Astro.props;
               <li>{x}</li>
             ))}
           </ul>
+        )}
+        {(p.regles || p.ia) && (
+          <dl class="service__niveaux">
+            {p.regles && (
+              <div class="service__niveau service__niveau--regles">
+                <dt class="mono">Avec des règles</dt>
+                <dd>{p.regles}</dd>
+              </div>
+            )}
+            {p.ia && (
+              <div class="service__niveau service__niveau--ia">
+                <dt class="mono">Avec l'IA</dt>
+                <dd>{p.ia}</dd>
+              </div>
+            )}
+          </dl>
         )}
         {p.note && <p class="service__note">{p.note}</p>}
         {p.details && (
@@ -61,6 +79,19 @@ const { items } = Astro.props;
     gap: var(--space-4);
     padding: 0;
     list-style: none;
+  }
+
+  /* Multiple de trois : 2 colonnes sur tablette, 3 sur grand écran. */
+  @media (min-width: 40rem) {
+    .services--trois {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .services--trois {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 
   /* Cinq cartes : 2 + 2 + 1 sur tablette, 3 + 2 sur grand écran, sans case vide. */
@@ -188,5 +219,43 @@ const { items } = Astro.props;
 
   .service__lien:hover {
     text-decoration: underline;
+  }
+
+  /* Deux niveaux : règles (trait plein, accent) puis IA en complément (pointillés, signal). */
+  .service__niveaux {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .service__niveau {
+    display: grid;
+    gap: var(--space-1);
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--color-accent);
+    font-size: var(--step--1);
+  }
+
+  .service__niveau dt {
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .service__niveau dd {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .service__niveau--ia {
+    border-left-style: dashed;
+    border-left-color: var(--signal-500);
+  }
+
+  .service__niveau--ia dt {
+    color: var(--signal-600);
   }
 </style>

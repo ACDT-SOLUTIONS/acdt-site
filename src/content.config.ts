@@ -110,17 +110,38 @@ const lien = z.object({ label: z.string(), href: z.string() });
 const titreTexte = z.object({ titre: z.string(), texte: z.string() });
 const encadre = z.object({ titre: z.string().optional(), texte: z.array(z.string()).min(1), fort: z.string().optional() });
 
+// Niveau d'automatisation d'une étape ou d'une prestation : règles explicites, IA, ou validation par une personne.
+const typeEtape = z.enum(['regle', 'ia', 'humain']);
+const niveau = z.object({ titre: z.string(), texte: z.string(), exemples: z.array(z.string()).min(1) });
+
 const pagesSolutions = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/pages-solutions' }),
   schema: z.object({
-    hero: z.object({ accroche: z.string(), contexte: z.string(), promesse: z.string(), cta: lien.optional() }),
+    hero: z.object({
+      // Titre éditorial facultatif : le nom de la solution passe alors dans le surtitre.
+      titre: z.string().optional(),
+      titreAccent: z.string().optional(),
+      accroche: z.string(),
+      contexte: z.string(),
+      promesse: z.string(),
+      principal: lien.optional(),
+      cta: lien.optional(),
+    }),
     problemes: z
-      .object({ titre: z.string(), lead: z.string().optional(), items: z.array(titreTexte).min(1), complement: encadre.optional() })
+      .object({
+        titre: z.string(),
+        lead: z.string().optional(),
+        // `reponse` : ce que l'automatisation change pour ce problème (facultatif).
+        items: z.array(titreTexte.extend({ reponse: z.string().optional() })).min(1),
+        complement: encadre.optional(),
+      })
       .optional(),
     prestations: z
       .object({
         titre: z.string(),
         lead: z.string().optional(),
+        // Deux niveaux complémentaires présentés avant les prestations (facultatif).
+        niveaux: z.object({ classique: niveau, ia: niveau, note: z.string().optional() }).optional(),
         items: z
           .array(
             z.object({
@@ -130,9 +151,60 @@ const pagesSolutions = defineCollection({
               details: z.array(titreTexte).optional(),
               note: z.string().optional(),
               lien: lien.optional(),
+              // Ce que permettent des règles seules, puis ce que l'IA ajoute (facultatifs).
+              regles: z.string().optional(),
+              ia: z.string().optional(),
             }),
           )
           .min(1),
+      })
+      .optional(),
+    // Simulation interactive d'un processus (fictive) : remplace le schéma d'étapes de « fonctionnement ».
+    simulation: z
+      .object({
+        titre: z.string(),
+        lead: z.string(),
+        avertissement: z.string(),
+        entrees: z.object({ email: z.string(), formulaire: z.string() }),
+        email: z.object({
+          de: z.string(),
+          objet: z.string(),
+          // Les informations extraites sont balisées {{cle|texte}} pour être surlignées.
+          corps: z.string(),
+          pieces: z.array(z.string()),
+        }),
+        extraction: z.array(
+          z.object({ cle: z.string(), label: z.string(), valeur: z.string(), deduit: z.boolean().default(false) }),
+        ),
+        controles: z.array(z.object({ label: z.string(), ok: z.boolean(), detail: z.string() })),
+        dossier: z.object({
+          reference: z.string(),
+          titre: z.string(),
+          statut: z.string(),
+          lignes: z.array(z.object({ label: z.string(), valeur: z.string() })),
+        }),
+        validation: z.object({
+          brouillon: z.string(),
+          valider: z.string(),
+          modifier: z.string(),
+          messageModifier: z.string(),
+        }),
+        suivi: z.array(z.object({ quand: z.string(), action: z.string() })),
+        etapes: z
+          .array(
+            z.object({
+              id: z.string(),
+              titre: z.string(),
+              court: z.string(),
+              type: typeEtape,
+              texte: z.string(),
+              // Variante lorsque la demande arrive par formulaire (ex. étape réalisée sans IA).
+              typeFormulaire: typeEtape.optional(),
+              texteFormulaire: z.string().optional(),
+              utilite: z.string(),
+            }),
+          )
+          .length(6),
       })
       .optional(),
     modes: z
@@ -170,8 +242,64 @@ const pagesSolutions = defineCollection({
     secteurs: z
       .object({
         titre: z.string(),
-        items: z.array(z.object({ secteur: reference('secteurs'), texte: z.string() })).min(1),
+        // Mention affichée sur chaque carte, ex. « Scénario illustratif » (facultatif).
+        badge: z.string().optional(),
+        lead: z.string().optional(),
+        items: z
+          .array(z.object({ secteur: reference('secteurs'), texte: z.string(), etapes: z.array(z.string()).optional() }))
+          .min(1),
         conclusion: z.string().optional(),
+      })
+      .optional(),
+    // Indicateurs de suivi d'un processus : méthode de mesure, sans résultat chiffré annoncé.
+    mesures: z
+      .object({
+        eyebrow: z.string().optional(),
+        titre: z.string(),
+        lead: z.string(),
+        // Bénéfices pour le prospect, présentés avant tout chiffre (facultatif).
+        benefices: z.array(z.object({ label: z.string(), titre: z.string(), texte: z.string() })).optional(),
+        // Mention obligatoire près des chiffres mis en avant : exemples externes, gains non garantis.
+        avertissement: z.string().optional(),
+        // Zone dépliable regroupant méthode et études complètes.
+        sourcesTitre: z.string().optional(),
+        methode: z.array(titreTexte).min(2),
+        // Texte affiché avant les indicateurs (ex. : nature des exemples présentés).
+        introduction: z.string().optional(),
+        indicateurs: z
+          .array(
+            z.object({
+              titre: z.string(),
+              // Définition générique, affichée seulement sans exemple chiffré.
+              mesure: z.string().optional(),
+              question: z.string(),
+              // Résultat repris en tête de section (2 ou 3 au plus), avec une phrase et une attribution courtes.
+              enAvant: z.boolean().default(false),
+              // Exemple externe chiffré : une organisation, une source, un niveau de preuve explicite.
+              exemple: z
+                .object({
+                  avant: z.string(),
+                  apres: z.string(),
+                  unite: z.string(),
+                  niveau: z.enum(['mesure', 'estimation', 'calcul', 'fournisseur']),
+                  contexte: z.string(),
+                  precision: z.string().optional(),
+                  resume: z.string().optional(),
+                  attribution: z.string().optional(),
+                  source: z.object({
+                    auteur: z.string().optional(),
+                    publication: z.string(),
+                    annee: z.number().int().optional(),
+                    url: z.url(),
+                  }),
+                })
+                .optional(),
+            }),
+          )
+          .min(1),
+        fort: z.string().optional(),
+        liens: z.array(lien).optional(),
+        conclusion: z.object({ titre: z.string(), texte: z.string().optional(), cta: lien }).optional(),
       })
       .optional(),
     accompagnement: z

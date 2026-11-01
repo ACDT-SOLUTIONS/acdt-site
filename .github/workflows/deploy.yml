@@ -152,7 +152,10 @@ jobs:
           verifier /contact/ 200 'src="/consentement.js" data-ga4="G-'
           verifier /consentement.js 200 'acdt-consentement'
           verifier /rendez-vous/ 200 'cal\.com/\|calendar\.app\.google/\|calendar\.google\.com/'
-          verifier /services/ 200 'src="/consentement.js"'
+          verifier /services/ 301 'location: /solutions/'
+          verifier /services/automatisations-sur-mesure/ 301 'location: /solutions/automatisation-administrative/'
+          verifier /solutions/automatisation-administrative/ 200 'Plus de temps pour votre activité'
+          verifier /a-propos/ 200
           verifier /mentions-legales/ 200 'tel:+33757830279'
           verifier /politique-de-confidentialite/ 200 'Google Analytics'
           verifier /politique-cookies/ 200 'data-consentement-ouvrir'
@@ -166,7 +169,7 @@ jobs:
           verifier /sitemap.xml 200 '<urlset'
           verifier /rdv/ 301 'location: /rendez-vous/'
           verifier /test/ 410
-          verifier /solutions/ 404
+          verifier /solutions/ 200 'Automatisation des processus administratifs'
           code=$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' https://www.acdt-solutions.com/contact/)
           [ "$code" = "301 $URL_PUBLIQUE/contact/" ] && echo "✓ www → domaine principal" || { echo "✗ www : $code"; exit 1; }
           verifier /.git/HEAD 404

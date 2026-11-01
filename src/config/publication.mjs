@@ -16,7 +16,9 @@
 /** @type {string[]} */
 export const PAGES_PUBLIEES = [
   '/',
+  '/solutions/',
   '/solutions/accueil-telephonique-ia/',
+  '/solutions/automatisation-administrative/',
   '/tarifs/',
   '/contact/',
   '/rendez-vous/',

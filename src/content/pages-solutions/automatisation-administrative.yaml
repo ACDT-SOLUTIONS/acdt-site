@@ -1,0 +1,455 @@
+# Rédaction de la page « Automatisation des processus administratifs » (famille 02) — version de travail.
+# Positionnement : deux niveaux complémentaires (règles, puis IA lorsqu'elle apporte réellement quelque chose).
+# Exemples et simulation fictifs, présentés comme tels : aucune réalisation client n'est évoquée.
+
+hero:
+  titre: Moins de saisie.
+  titreAccent: Plus de suivi.
+  accroche: >-
+    Un email, un formulaire ou un document arrive : nous relions vos outils pour organiser son traitement,
+    mettre à jour vos dossiers, préparer les prochaines actions et vous alerter lorsque votre intervention
+    est nécessaire.
+  contexte: >-
+    Chaque automatisation part de vos logiciels, de vos règles et de vos contraintes. Les tâches répétitives
+    s'enchaînent ; les décisions restent entre vos mains.
+  promesse: L'intelligence artificielle n'intervient que lorsqu'elle apporte réellement quelque chose.
+  principal: { label: Étudier un processus, href: /contact/ }
+  cta: { label: Voir une automatisation en action, href: "#simulation" }
+
+problemes:
+  titre: Où se perd votre temps ?
+  lead: >-
+    Le temps perdu ne se concentre pas dans une seule tâche : il se disperse entre la saisie, les recherches,
+    les relances et les vérifications.
+  items:
+    - titre: Les mêmes informations saisies plusieurs fois
+      texte: >-
+        Une demande arrive par email, puis ses informations sont recopiées dans un tableur, dans le logiciel
+        métier et dans un document. Chaque ressaisie prend du temps et peut introduire une erreur.
+      reponse: Les informations sont saisies une fois, puis transmises aux outils qui en ont besoin.
+    - titre: Des emails et documents dispersés
+      texte: >-
+        Pièces jointes restées dans les boîtes de réception, fichiers sur un poste, versions dans plusieurs
+        dossiers partagés : retrouver le bon document devient une recherche.
+      reponse: Les documents reçus sont renommés et classés dans le bon dossier, selon des règles communes.
+    - titre: Des relances et vérifications faites à la main
+      texte: >-
+        Pièce manquante, devis sans réponse, échéance proche : le suivi dépend de la mémoire de chacun et d'une
+        liste tenue à jour manuellement.
+      reponse: Contrôles et relances sont programmés ; vous êtes alerté lorsque quelque chose bloque.
+    - titre: Des dossiers incomplets ou mal transmis
+      texte: >-
+        Un dossier passe d'une personne à l'autre sans que l'on sache ce qui a été reçu, vérifié ou envoyé.
+      reponse: Chaque dossier dispose d'un statut à jour et de l'historique des étapes réalisées.
+
+prestations:
+  titre: Ce que nous pouvons automatiser.
+  lead: >-
+    Six familles de tâches, traitées d'abord avec des règles simples, puis enrichies par l'IA lorsque les
+    informations ne sont pas structurées.
+  niveaux:
+    classique:
+      titre: Automatisations classiques
+      texte: >-
+        Des règles explicites : lorsqu'une information arrive, une action définie est réalisée. Le résultat
+        est prévisible et contrôlable.
+      exemples:
+        - Connexions entre logiciels
+        - Traitement d'emails
+        - Formulaires
+        - Création de dossiers
+        - Classement documentaire
+        - Synchronisation de données
+        - Relances et notifications
+    ia:
+      titre: Automatisations enrichies par l'IA
+      texte: >-
+        Pour les contenus rédigés librement ou trop variables pour des règles : l'IA interprète, extrait ou
+        prépare, puis ses résultats sont contrôlés selon leur importance.
+      exemples:
+        - Demandes non structurées
+        - Extraction contextuelle
+        - Classification documentaire
+        - Préparation de réponses
+        - Agents enchaînant plusieurs opérations
+    note: >-
+      L'IA est un moyen supplémentaire, pas une obligation : de nombreux processus s'améliorent nettement avec
+      des règles bien conçues.
+  items:
+    - titre: Réception et qualification des demandes
+      resume: Les demandes reçues par email, formulaire ou depuis votre site sont centralisées et orientées.
+      regles: >-
+        Tri selon l'expéditeur, l'objet ou le formulaire utilisé, accusé de réception, affectation à la bonne
+        personne.
+      ia: Comprendre une demande rédigée librement, en déterminer le type, l'urgence et les informations manquantes.
+    - titre: Formulaires et création de dossiers
+      resume: Un formulaire complété suffit à ouvrir un dossier dans vos outils.
+      regles: >-
+        Création du dossier, de la fiche client et de l'arborescence de fichiers ; contrôle des champs
+        obligatoires.
+      ia: Compléter le dossier à partir d'un message ou d'un document joint, lorsque les informations n'ont pas de format fixe.
+    - titre: Extraction et classement documentaire
+      resume: Les documents reçus rejoignent le bon dossier, sous un nom cohérent.
+      regles: Renommage, classement selon l'expéditeur ou le dossier concerné, archivage des pièces jointes.
+      ia: >-
+        Reconnaître le type de document (facture, contrat, justificatif…) et en extraire les informations utiles
+        selon leur contexte.
+    - titre: Préparation de documents et de réponses
+      resume: Les documents récurrents sont préparés à partir des données du dossier.
+      regles: Génération de courriers, devis ou attestations à partir de vos modèles et des données du dossier.
+      ia: Rédiger un brouillon de réponse adapté à la demande, soumis à votre validation avant envoi.
+    - titre: Relances et rappels d'échéances
+      resume: Ce qui doit être suivi l'est, sans liste tenue à la main.
+      regles: >-
+        Relances programmées tant qu'une pièce ou une réponse manque, rappels avant échéance, alertes en cas
+        de retard.
+      ia: Adapter le message de relance à l'historique de l'échange.
+    - titre: Synchronisation des outils et suivi administratif
+      resume: Vos logiciels partagent les mêmes informations et l'état de chaque dossier reste visible.
+      regles: Mise à jour croisée entre messagerie, tableur, CRM, logiciel métier et stockage ; tableau de suivi.
+      ia: >-
+        Un agent enchaîne plusieurs opérations (rechercher, vérifier, mettre à jour, notifier) dans un cadre
+        défini, avec validation des actions sensibles.
+
+# Démonstration fictive : personnes, société et adresse inventées ; aucune donnée n'est envoyée.
+simulation:
+  titre: Une demande, six étapes, un dossier à jour.
+  lead: >-
+    Suivez une demande fictive de sa réception à son suivi. Choisissez son point de départ, puis parcourez
+    les étapes une à une ou lancez la simulation.
+  avertissement: >-
+    Démonstration fictive et illustrative : aucun outil n'est connecté et aucune donnée n'est envoyée.
+  entrees:
+    email: Email rédigé librement
+    formulaire: Formulaire structuré
+  email:
+    de: Claire Martin <c.martin@example.com>
+    objet: Renouvellement du contrat d'entretien
+    corps: >-
+      Bonjour, je souhaite renouveler le contrat d'entretien de nos locaux situés {{adresse|12 rue des Lilas,
+      à Lyon}}. Vous trouverez ci-joint {{piece|le contrat actuel}}. Pourriez-vous me faire une proposition
+      avant le {{echeance|15 novembre}} ? Bien cordialement, {{demandeur|Claire Martin}}, {{societe|Atelier Exemple}}.
+    pieces: [contrat-entretien-2025.pdf]
+  extraction:
+    - { cle: demandeur, label: Demandeur, valeur: Claire Martin }
+    - { cle: societe, label: Société, valeur: Atelier Exemple }
+    - { cle: type, label: Type de demande, valeur: Renouvellement de contrat, deduit: true }
+    - { cle: adresse, label: Adresse, valeur: "12 rue des Lilas, Lyon" }
+    - { cle: echeance, label: Échéance, valeur: 15 novembre }
+    - { cle: piece, label: Pièce jointe, valeur: Contrat actuel }
+  controles:
+    - { label: Client connu, ok: true, detail: Fiche « Atelier Exemple » retrouvée }
+    - { label: Informations obligatoires, ok: true, detail: "Coordonnées, adresse et échéance présentes" }
+    - { label: Pièces requises, ok: false, detail: "Attestation d'assurance manquante : demande préparée" }
+    - { label: Délai, ok: true, detail: Échéance compatible avec le délai habituel }
+  dossier:
+    reference: DOS-0142
+    titre: Atelier Exemple — Renouvellement du contrat d'entretien
+    statut: En attente d'une pièce
+    lignes:
+      - { label: Client, valeur: Atelier Exemple (fiche existante) }
+      - { label: Échéance, valeur: 15 novembre }
+      - { label: Document classé, valeur: contrat-entretien-2025.pdf }
+      - { label: Responsable, valeur: Équipe commerciale }
+  validation:
+    brouillon: >-
+      Bonjour Madame Martin, nous avons bien reçu votre demande et le contrat actuel. Pour établir notre
+      proposition, pourriez-vous nous transmettre votre attestation d'assurance ? Nous reviendrons vers vous
+      avant le 15 novembre.
+    valider: Valider et envoyer
+    modifier: Demander une modification
+    messageModifier: Le brouillon reste modifiable. Rien n'est envoyé sans votre accord.
+  suivi:
+    - { quand: Maintenant, action: Réponse envoyée à Claire Martin }
+    - { quand: J+3, action: "Relance automatique si l'attestation n'est pas reçue" }
+    - { quand: À réception, action: "Pièce classée, dossier « Complet », responsable notifié" }
+    - { quand: J-5, action: "Alerte si la proposition n'est pas encore envoyée" }
+  etapes:
+    - id: reception
+      titre: Demande reçue
+      court: Réception
+      type: regle
+      texte: >-
+        La demande arrive dans la boîte ou le formulaire dédié. Le traitement démarre automatiquement :
+        personne n'a besoin de la repérer ni de la transférer.
+      utilite: Aucune demande ne reste dans une boîte de réception sans prise en charge.
+    - id: identification
+      titre: Informations identifiées
+      court: Identification
+      type: ia
+      texte: >-
+        Le message est rédigé librement : l'IA repère le demandeur, la société, l'adresse, l'échéance et la
+        pièce jointe, puis déduit le type de demande. Chaque élément extrait reste vérifiable.
+      typeFormulaire: regle
+      texteFormulaire: >-
+        Avec un formulaire, chaque champ arrive déjà identifié : de simples règles suffisent, sans recours à
+        l'IA.
+      utilite: Plus de copier-coller entre l'email et vos outils.
+    - id: verification
+      titre: Vérification
+      court: Vérification
+      type: regle
+      texte: >-
+        Des règles contrôlent la demande : client connu, informations obligatoires, pièces requises, délai.
+        Ce qui manque est signalé, pas ignoré.
+      utilite: Les dossiers incomplets sont repérés dès leur arrivée.
+    - id: dossier
+      titre: Création ou mise à jour du dossier
+      court: Dossier
+      type: regle
+      texte: >-
+        Le dossier est créé ou complété dans vos outils, la pièce jointe est classée sous un nom cohérent et
+        le statut est mis à jour.
+      utilite: Le dossier est à jour sans ressaisie, au même endroit pour toute l'équipe.
+    - id: validation
+      titre: Validation humaine
+      court: Validation
+      type: humain
+      texte: >-
+        Une réponse est préparée. Elle n'est envoyée qu'après validation : vous gardez la main sur ce qui part
+        à l'extérieur.
+      utilite: L'automatisation prépare ; une personne décide.
+    - id: suivi
+      titre: Transmission et suivi
+      court: Suivi
+      type: regle
+      texte: >-
+        La réponse est envoyée, les relances et les alertes sont programmées. Vous n'intervenez que si quelque
+        chose bloque.
+      utilite: Le suivi ne dépend plus de la mémoire de chacun.
+
+secteurs:
+  titre: Applications selon l'activité.
+  badge: Scénario illustratif
+  lead: >-
+    Trois exemples de ce qui peut être mis en place. Ce sont des illustrations, pas des réalisations clients.
+  items:
+    - secteur: cabinets-avocats
+      texte: >-
+        Collecte des pièces auprès du client, constitution et suivi du dossier, rappels avant les échéances.
+      etapes:
+        - Liste des pièces envoyée au client
+        - Pièces reçues classées dans le dossier
+        - Relance des pièces manquantes
+        - Rappel avant échéance
+    - secteur: artisans-services
+      texte: >-
+        Une demande d'intervention arrive : ses informations sont organisées, un devis est préparé pour
+        validation, puis suivi jusqu'à la réponse du client.
+      etapes:
+        - Demande reçue par email ou formulaire
+        - Fiche d'intervention créée
+        - Devis préparé, à valider
+        - Relance si le devis reste sans réponse
+    - secteur: tpe-pme
+      texte: >-
+        Les demandes internes sont centralisées, les documents classés, les outils mis à jour et les bonnes
+        personnes notifiées.
+      etapes:
+        - Demande interne déposée
+        - Document classé et référencé
+        - Outils mis à jour
+        - Responsable notifié
+  conclusion: >-
+    Chaque processus est étudié avec vous : les étapes, les règles et les points de validation dépendent de
+    votre organisation.
+
+mesures:
+  eyebrow: Ce que vous y gagnez
+  titre: Moins d'administratif. Plus de temps pour votre activité.
+  lead: >-
+    Les tâches répétitives passent en arrière-plan : votre équipe consacre son temps aux clients, aux dossiers
+    et aux décisions.
+  benefices:
+    - label: Rapidité
+      titre: Un traitement plus rapide
+      texte: >-
+        Les demandes sont triées, complétées et orientées dès leur arrivée : votre équipe démarre directement
+        sur l'essentiel.
+    - label: Saisie
+      titre: Moins de ressaisie
+      texte: Une information saisie une fois alimente vos autres outils, sans copier-coller.
+    - label: Suivi
+      titre: Des dossiers mieux suivis
+      texte: >-
+        Chaque dossier a un statut à jour : vous savez ce qui est reçu, en attente ou à traiter.
+    - label: Relances
+      titre: Des relances automatiques
+      texte: >-
+        Pièces manquantes, devis sans réponse, échéances : les relances partent au bon moment, sans liste
+        tenue à la main.
+  avertissement: >-
+    Exemples externes issus d'études publiées : ce ne sont ni des réalisations ACDT Solutions, ni des gains
+    garantis. Chez vous, nous évaluons d'abord votre processus, puis nous vérifions les résultats en situation
+    réelle.
+  sourcesTitre: Sources et méthodologie
+  methode:
+    - titre: Mesurer l'existant
+      texte: >-
+        Nombre de demandes, temps passé, ressaisies : un relevé simple sur une période représentative.
+    - titre: Estimer le gain potentiel
+      texte: >-
+        Nous identifions les étapes automatisables et estimons le temps qu'elles pourraient libérer, avec des
+        hypothèses explicites.
+    - titre: Vérifier en situation réelle
+      texte: >-
+        Après la mise en service, les mêmes indicateurs sont relevés pour confirmer ou corriger l'estimation.
+  introduction: >-
+    Des études et des retours d'expérience montrent comment l'automatisation peut améliorer le traitement des
+    tâches administratives. Les exemples ci-dessous proviennent d'organisations différentes et ne préjugent pas
+    des résultats d'un projet ACDT Solutions.
+  # Exemples externes vérifiés (tableau du 29/10/2026) : un processus et une organisation différents par carte.
+  # niveau : mesure (mesure observée), fournisseur (résultat communiqué par un éditeur), calcul (calcul dérivé),
+  # estimation. Ne pas arrondir ni reformuler les valeurs sans revenir à la source.
+  indicateurs:
+    - titre: Temps de traitement
+      enAvant: true
+      question: Combien de minutes faut-il pour traiter un dossier type ?
+      exemple:
+        avant: "17,25"
+        apres: "13,20"
+        unite: minutes par réponse
+        niveau: mesure
+        resume: Des réponses administratives rédigées plus vite avec l'aide de l'IA.
+        attribution: "Étude publiée · Government Information Quarterly, 2026 · administration sud-coréenne"
+        contexte: >-
+          Rédaction de réponses administratives à des citoyens avec un modèle d'IA spécialisé, dans une
+          administration centrale sud-coréenne.
+        precision: >-
+          Étude quasi expérimentale avec groupe témoin (effet net non ajusté : 3,81 minutes). Elle mesure le
+          temps de rédaction, pas le traitement complet d'un dossier.
+        source:
+          auteur: Eungjoon Kim
+          publication: Government Information Quarterly
+          annee: 2026
+          url: https://www.sciencedirect.com/science/article/pii/S0740624X26000055
+    - titre: Ressaisies
+      question: Dans combien d'outils recopie-t-on le nom d'un client ?
+      exemple:
+        avant: "1"
+        apres: "0"
+        unite: étape de ressaisie manuelle par facture
+        niveau: fournisseur
+        contexte: >-
+          Factures d'une entreprise internationale de gestion immobilière, extraites par OCR et transmises
+          automatiquement vers Workday par RPA.
+        precision: >-
+          Une seconde saisie manuelle supprimée ; d'autres interventions humaines demeurent. Résultat présenté par
+          l'éditeur, sans validation indépendante disponible.
+        source:
+          publication: Noblq, étude de cas éditeur
+          url: https://www.noblq.com/case-studies/artificial-intelligence/invoice-processing-automation
+    - titre: Délais
+      question: Combien de jours faut-il pour obtenir une pièce manquante ?
+      exemple:
+        avant: "14"
+        apres: "≤ 7"
+        unite: jours ouvrés de traitement des factures
+        niveau: fournisseur
+        contexte: >-
+          Université publique américaine, après automatisation de la gestion des factures et des emails
+          associés.
+        precision: Retour d'expérience présenté par l'éditeur, pas une étude indépendante.
+        source:
+          publication: Auditoria, retour d'expérience éditeur
+          url: https://blog.auditoria.ai/from-100k-emails-to-zero-chaos
+    - titre: Erreurs
+      enAvant: true
+      question: Combien de corrections chaque mois ?
+      exemple:
+        avant: "1"
+        apres: "0,4"
+        unite: "% de documents mal classés"
+        niveau: mesure
+        resume: Moins d'erreurs de classement avec un tri automatisé des documents.
+        attribution: "Étude publiée · AI & Society, 2025 · archives du Cabinet Office britannique"
+        contexte: >-
+          Archives du Cabinet Office britannique : classification manuelle et classification automatisée
+          comparées sur deux échantillons d'environ 1 000 documents.
+        precision: Concerne le classement de documents d'archives, pas toutes les erreurs d'un processus.
+        source:
+          auteur: David Canning et Lise Jaillant
+          publication: AI & Society
+          annee: 2025
+          url: https://pmc.ncbi.nlm.nih.gov/articles/PMC12442487/
+    - titre: Complétude des dossiers
+      enAvant: true
+      question: Combien de dossiers restent incomplets au moment de les traiter ?
+      exemple:
+        avant: "93"
+        apres: "100"
+        unite: "% de formulaires finalisés"
+        niveau: mesure
+        resume: Des formulaires tous finalisés grâce à des rappels automatiques.
+        attribution: "Étude publiée · International Journal of Medical Informatics, 2011 · formulaires hospitaliers"
+        contexte: >-
+          Formulaires d'antécédents médicaux d'un hôpital, après mise en place de rappels automatiques :
+          145 sur 156 finalisés avant, 206 sur 206 après.
+        precision: Étude en milieu médical, citée pour l'effet de rappels automatisés sur la complétude documentaire.
+        source:
+          publication: International Journal of Medical Informatics
+          annee: 2011
+          url: https://www.sciencedirect.com/science/article/abs/pii/S1386505611000499
+    - titre: Volumes traitables
+      question: Le volume peut-il augmenter sans surcharger l'équipe ?
+      exemple:
+        avant: "≈ 6"
+        apres: "≈ 44"
+        unite: demandes par heure, capacité théorique
+        niveau: calcul
+        contexte: >-
+          Étude d'automatisation robotisée (RPA) portant sur 100 demandes : 1 000 minutes de traitement manuel
+          contre 135 minutes automatisées.
+        precision: >-
+          Débit calculé à partir de ces durées : capacité théorique, pas un débit constaté en exploitation
+          continue.
+        source:
+          publication: "Human Behavior and Emerging Technologies, « Empirical Study of Robotic Process Automation »"
+          annee: 2025
+          url: https://onlinelibrary.wiley.com/doi/10.1155/hbe2/2876164
+  fort: "Nous n'annonçons pas de pourcentage à l'avance : nous mesurons avant, puis nous vérifions après."
+  conclusion:
+    titre: Et dans votre entreprise, quelles tâches pourrions-nous simplifier ?
+    texte: >-
+      Décrivez-nous un processus qui vous prend du temps : nous regardons ce qui peut être automatisé et ce que
+      cela pourrait vous faire gagner.
+    cta: { label: Nous contacter, href: /contact/ }
+  liens:
+    - { label: Évaluer le potentiel d'automatisation, href: /evaluer-le-potentiel/ }
+    - { label: "Voir un cas pratique chiffré : relance des pièces", href: /cas-pratiques/avocats-relances-pieces/ }
+
+accompagnement:
+  titre: Un processus amélioré étape par étape.
+  etapes:
+    - titre: Analyser le processus
+      texte: >-
+        Nous observons le processus tel qu'il fonctionne : sources des demandes, outils utilisés, étapes,
+        personnes impliquées et points de blocage.
+    - titre: Concevoir les règles
+      texte: >-
+        Nous définissons ce qui est automatisé, ce qui relève de l'IA, ce qui reste validé par une personne et
+        ce qui se passe en cas d'anomalie.
+    - titre: Intégrer et tester
+      texte: >-
+        Les automatisations sont connectées à vos outils et testées sur des cas représentatifs avant leur mise
+        en service.
+    - titre: Suivre et ajuster
+      texte: >-
+        Nous suivons les indicateurs convenus, corrigeons les difficultés et adaptons les règles à l'évolution
+        de votre activité.
+  devis:
+    titre: Une prestation sur devis
+    facteurs:
+      - Nombre d'étapes et de règles
+      - Outils à connecter et possibilités d'intégration
+      - Recours éventuel à l'IA et niveau de validation
+      - Volumes traités et coûts récurrents des services utilisés
+    texte: Nous établissons une proposition adaptée après analyse de votre processus.
+
+cta:
+  titre: Quel processus vous fait perdre du temps chaque semaine ?
+  texte: >-
+    Décrivez-le-nous : nous identifions les étapes qui peuvent être automatisées et ce qu'elles pourraient
+    vous faire gagner.
+  principal: { label: Étudier mon processus, href: /contact/ }
+  secondaire: { label: Prendre rendez-vous, href: /rendez-vous/ }

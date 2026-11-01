@@ -1,0 +1,179 @@
+---
+interface Niveau {
+  titre: string;
+  texte: string;
+  exemples: string[];
+}
+
+interface Props {
+  classique: Niveau;
+  ia: Niveau;
+  note?: string;
+}
+
+// Deux niveaux complémentaires : les règles d'abord, l'IA en complément (pas en prérequis).
+const { classique, ia, note } = Astro.props;
+const niveaux = [
+  { ...classique, cle: 'classique', tag: 'Niveau 1 · Règles' },
+  { ...ia, cle: 'ia', tag: 'Niveau 2 · IA, si utile' },
+];
+---
+
+<div class="levels">
+  <div class="levels__pair">
+    {
+      niveaux.map((n, i) => (
+        <>
+          {i === 1 && (
+            <span class="levels__plus" aria-hidden="true">
+              +
+            </span>
+          )}
+          <article class:list={['level', `level--${n.cle}`]}>
+            <p class="level__tag mono">{n.tag}</p>
+            <h3>{n.titre}</h3>
+            <p class="level__texte">{n.texte}</p>
+            <ul class="level__exemples" aria-label={`Exemples : ${n.titre}`}>
+              {n.exemples.map((e) => (
+                <li>{e}</li>
+              ))}
+            </ul>
+          </article>
+        </>
+      ))
+    }
+  </div>
+  {note && <p class="levels__note">{note}</p>}
+</div>
+
+<style>
+  .levels {
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: clamp(var(--space-6), 4vw, var(--space-8));
+  }
+
+  .levels__pair {
+    display: grid;
+    gap: var(--space-3);
+    align-items: stretch;
+  }
+
+  .level {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border-radius: var(--radius-l);
+  }
+
+  .level--classique {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .level--ia {
+    border: 1px dashed var(--signal-500);
+    background: var(--color-surface);
+  }
+
+  .level__tag {
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .level--classique .level__tag {
+    color: var(--pine-300);
+  }
+
+  .level--ia .level__tag {
+    color: var(--signal-600);
+  }
+
+  h3 {
+    font-size: var(--step-2);
+    line-height: 1.15;
+  }
+
+  .level--classique h3 {
+    color: var(--color-on-accent);
+  }
+
+  .level__texte {
+    max-width: 34rem;
+  }
+
+  .level--classique .level__texte {
+    color: color-mix(in srgb, var(--color-on-accent) 82%, transparent);
+  }
+
+  .level--ia .level__texte {
+    color: var(--color-text-muted);
+  }
+
+  .level__exemples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .level__exemples li {
+    padding: 0.25rem 0.7rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+  }
+
+  .level--classique .level__exemples li {
+    border: 1px solid color-mix(in srgb, var(--color-on-accent) 30%, transparent);
+  }
+
+  .level--ia .level__exemples li {
+    border: 1px solid var(--signal-300);
+    color: var(--signal-600);
+  }
+
+  .levels__plus {
+    display: grid;
+    place-items: center;
+    justify-self: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 50%;
+    background: var(--color-surface);
+    font-size: var(--step-1);
+    color: var(--color-text-muted);
+  }
+
+  .levels__note {
+    max-width: 46rem;
+    font-size: var(--step-0);
+    color: var(--color-text);
+  }
+
+  .levels__note::before {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: var(--space-2);
+    border-radius: 50%;
+    background: var(--signal-500);
+    vertical-align: 0.1em;
+  }
+
+  @media (min-width: 56rem) {
+    .levels__pair {
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+    }
+
+    .level {
+      align-self: stretch;
+    }
+  }
+</style>

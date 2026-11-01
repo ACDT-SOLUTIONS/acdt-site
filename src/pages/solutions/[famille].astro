@@ -23,6 +23,10 @@ import BenefitGrid from '@/components/solution/BenefitGrid.astro';
 import Timeline from '@/components/solution/Timeline.astro';
 import QuoteNote from '@/components/solution/QuoteNote.astro';
 import ConfidentialityNote from '@/components/solution/ConfidentialityNote.astro';
+import AutomationLevels from '@/components/solution/AutomationLevels.astro';
+import ProcessSimulator from '@/components/solution/ProcessSimulator.astro';
+import DossierIllustration from '@/components/solution/DossierIllustration.astro';
+import MeasureBoard from '@/components/solution/MeasureBoard.astro';
 import { ctaPrincipal } from '@/config/site';
 
 export async function getStaticPaths() {
@@ -48,10 +52,12 @@ const sections = [
   'prestations',
   p?.modes ? 'modes' : null,
   'fonctionnement',
-  'benefices',
+  !p || p.benefices ? 'benefices' : null,
   !p ? 'accompagnement' : null,
   'secteurs',
-  !p || nbCas > 0 ? 'cas' : null,
+  p?.mesures ? 'mesures' : null,
+  // Avec une section « mesures », le cas pratique est proposé en lien plutôt qu'en section.
+  !p || (nbCas > 0 && !p.mesures) ? 'cas' : null,
   p?.accompagnement ? 'accompagnement' : null,
   'faq',
 ].filter((cle): cle is string => cle !== null);
@@ -60,19 +66,35 @@ const idx = (cle: string) => String(sections.indexOf(cle) + 1).padStart(2, '0');
 const textesSecteurs = p?.secteurs
   ? Object.fromEntries(p.secteurs.items.map((i) => [i.secteur.id, i.texte]))
   : undefined;
+const etapesSecteurs = p?.secteurs?.items.some((i) => i.etapes)
+  ? Object.fromEntries(p.secteurs.items.flatMap((i) => (i.etapes ? [[i.secteur.id, i.etapes]] : [])))
+  : undefined;
+
+// Titre éditorial (facultatif) : le nom de la solution passe alors dans le surtitre.
+const titreEditorial = p?.hero.titre;
 ---
 
 <BaseLayout title={s.titre} description={p?.hero.accroche ?? s.accroche}>
   <PageHero
-    eyebrow="Solution"
+    eyebrow={titreEditorial ? s.titre : 'Solution'}
     numero={s.numero}
     breadcrumbs={[
       { label: 'Solutions', href: '/solutions/' },
       { label: s.titre, href: `/solutions/${solution.id}/` },
     ]}
   >
-    <Fragment slot="title">{s.titre}</Fragment>
-    <p class="accroche">{p?.hero.accroche ?? s.accroche}</p>
+    <Fragment slot="title">
+      {
+        titreEditorial ? (
+          <>
+            {titreEditorial} {p?.hero.titreAccent && <em class="accent">{p.hero.titreAccent}</em>}
+          </>
+        ) : (
+          s.titre
+        )
+      }
+    </Fragment>
+    <p class:list={[titreEditorial ? 'introduction' : 'accroche']}>{p?.hero.accroche ?? s.accroche}</p>
     {
       p ? (
         <>
@@ -91,7 +113,9 @@ const textesSecteurs = p?.secteurs
       )
     }
     <Fragment slot="actions">
-      <Button href={ctaPrincipal.href} arrow>{ctaPrincipal.label}</Button>
+      <Button href={p?.hero.principal?.href ?? ctaPrincipal.href} arrow>
+        {p?.hero.principal?.label ?? ctaPrincipal.label}
+      </Button>
       {
         p?.hero.cta ? (
           <Button href={p.hero.cta.href} variant="secondary">{p.hero.cta.label}</Button>
@@ -104,6 +128,8 @@ const textesSecteurs = p?.secteurs
       {
         solution.id === 'accueil-telephonique-ia' ? (
           <FlowIllustration />
+        ) : p?.simulation ? (
+          <DossierIllustration simulation={p.simulation} />
         ) : (
           <MiniFlow etapes={s.flux} label={`Exemple de flux : ${s.titre}`} />
         )
@@ -141,7 +167,10 @@ const textesSecteurs = p?.secteurs
     </SectionHeader>
     {
       p?.prestations ? (
-        <ServiceCards items={p.prestations.items} />
+        <>
+          {p.prestations.niveaux && <AutomationLevels {...p.prestations.niveaux} />}
+          <ServiceCards items={p.prestations.items} />
+        </>
       ) : (
         <ol class="prestations">
           {s.capacites.map((c, i) => (
@@ -167,14 +196,25 @@ const textesSecteurs = p?.secteurs
     )
   }
 
-  <!-- Fonctionnement -->
-  <Section tone={p?.modes ? 'sunken' : 'default'} labelledby="processus-titre">
-    <SectionHeader eyebrow="Comment cela fonctionne" index={idx('fonctionnement')} align="split" id="processus-titre">
-      <Fragment slot="title">{p?.fonctionnement?.titre ?? 'Comment cela fonctionne.'}</Fragment>
-      {p?.fonctionnement?.lead}
+  <!-- Fonctionnement (schéma d'étapes, ou simulation interactive si rédigée) -->
+  <Section
+    tone={p?.modes ? 'sunken' : 'default'}
+    labelledby="processus-titre"
+    id={p?.simulation ? 'simulation' : undefined}
+  >
+    <SectionHeader
+      eyebrow={p?.simulation ? 'Comment fonctionne une automatisation' : 'Comment cela fonctionne'}
+      index={idx('fonctionnement')}
+      align="split"
+      id="processus-titre"
+    >
+      <Fragment slot="title">{p?.simulation?.titre ?? p?.fonctionnement?.titre ?? 'Comment cela fonctionne.'}</Fragment>
+      {p?.simulation?.lead ?? p?.fonctionnement?.lead}
     </SectionHeader>
     {
-      p?.fonctionnement ? (
+      p?.simulation ? (
+        <ProcessSimulator simulation={p.simulation} />
+      ) : p?.fonctionnement ? (
         <>
           <ProcessSteps etapes={p.fonctionnement.etapes} label="Étapes de traitement d'un appel" />
           {p.fonctionnement.conclusion && (
@@ -215,6 +255,7 @@ const textesSecteurs = p?.secteurs
         )}
       </Section>
     ) : (
+      !p && (
       <Section tone="sunken" labelledby="benefices-titre">
         <div class="duo">
           <div>
@@ -233,15 +274,25 @@ const textesSecteurs = p?.secteurs
           </div>
         </div>
       </Section>
+      )
     )
   }
 
   <!-- Secteurs concernés -->
   <Section tone={p ? 'sunken' : 'default'} labelledby="secteurs-titre">
-    <SectionHeader eyebrow="Secteurs concernés" index={idx('secteurs')} id="secteurs-titre">
-      <Fragment slot="title">{p?.secteurs?.titre ?? 'Pour quels métiers.'}</Fragment>
-    </SectionHeader>
-    <SectorCards famille={solution.id} textes={textesSecteurs} />
+    {
+      p?.secteurs?.lead ? (
+        <SectionHeader eyebrow="Applications selon l'activité" index={idx('secteurs')} align="split" id="secteurs-titre">
+          <Fragment slot="title">{p.secteurs.titre}</Fragment>
+          {p.secteurs.lead}
+        </SectionHeader>
+      ) : (
+        <SectionHeader eyebrow="Secteurs concernés" index={idx('secteurs')} id="secteurs-titre">
+          <Fragment slot="title">{p?.secteurs?.titre ?? 'Pour quels métiers.'}</Fragment>
+        </SectionHeader>
+      )
+    }
+    <SectorCards famille={solution.id} textes={textesSecteurs} etapes={etapesSecteurs} badge={p?.secteurs?.badge} />
     {
       p?.secteurs?.conclusion && (
         <div class="bloc-suivant">
@@ -250,6 +301,19 @@ const textesSecteurs = p?.secteurs
       )
     }
   </Section>
+
+  <!-- Résultats mesurables -->
+  {
+    p?.mesures && (
+      <Section labelledby="mesures-titre">
+        <SectionHeader eyebrow={p.mesures.eyebrow ?? 'Des résultats mesurables'} index={idx('mesures')} align="split" id="mesures-titre">
+          <Fragment slot="title">{p.mesures.titre}</Fragment>
+          {p.mesures.lead}
+        </SectionHeader>
+        <MeasureBoard mesures={p.mesures} />
+      </Section>
+    )
+  }
 
   <!-- Cas pratiques -->
   {
@@ -266,7 +330,7 @@ const textesSecteurs = p?.secteurs
   <!-- Accompagnement -->
   {
     p?.accompagnement && (
-      <Section labelledby="accompagnement-titre">
+      <Section tone={p.mesures ? 'sunken' : 'default'} labelledby="accompagnement-titre">
         <SectionHeader
           eyebrow="Un déploiement adapté à vos outils"
           index={idx('accompagnement')}
@@ -311,6 +375,18 @@ const textesSecteurs = p?.secteurs
   }
 
   .accroche + p {
+    margin-top: var(--space-3);
+  }
+
+  /* Introduction sous un titre éditorial : texte courant plus grand, sans italique. */
+  .introduction {
+    max-width: 36rem;
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--color-text);
+  }
+
+  .introduction + p {
     margin-top: var(--space-3);
   }
 

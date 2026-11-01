@@ -1,0 +1,1379 @@
+---
+// Simulation interactive et fictive d'un processus administratif (aucun service connecté, rien n'est envoyé).
+// Sans JavaScript, toutes les étapes restent visibles les unes sous les autres, avec la variante « email ».
+type TypeEtape = 'regle' | 'ia' | 'humain';
+
+interface Props {
+  simulation: {
+    avertissement: string;
+    entrees: { email: string; formulaire: string };
+    email: { de: string; objet: string; corps: string; pieces: string[] };
+    extraction: { cle: string; label: string; valeur: string; deduit: boolean }[];
+    controles: { label: string; ok: boolean; detail: string }[];
+    dossier: { reference: string; titre: string; statut: string; lignes: { label: string; valeur: string }[] };
+    validation: { brouillon: string; valider: string; modifier: string; messageModifier: string };
+    suivi: { quand: string; action: string }[];
+    etapes: {
+      id: string;
+      titre: string;
+      court: string;
+      type: TypeEtape;
+      texte: string;
+      typeFormulaire?: TypeEtape;
+      texteFormulaire?: string;
+      utilite: string;
+    }[];
+  };
+}
+
+const { simulation: s } = Astro.props;
+const TYPES: Record<TypeEtape, string> = { regle: 'Règle', ia: 'IA', humain: 'Validation humaine' };
+
+// Corps de l'email : segments de texte et passages extraits ({{cle|texte}}).
+const segments = s.email.corps
+  .split(/(\{\{[a-z]+\|[^}]+\}\})/)
+  .filter(Boolean)
+  .map((m) => {
+    const r = m.match(/^\{\{([a-z]+)\|([^}]+)\}\}$/);
+    return r ? { cle: r[1], texte: r[2] } : { texte: m };
+  });
+const nomExpediteur = s.email.de.replace(/\s*<.*>/, '');
+const piece = s.email.pieces[0];
+const n = s.etapes.length;
+---
+
+<process-sim class="sim" data-entree="email" data-etape={s.etapes[0].id} data-valide="false" style={`--n: ${n}; --pos: 0`}>
+  <div class="sim__barre">
+    <fieldset class="sim__entrees">
+      <legend class="mono">Point de départ</legend>
+      <label>
+        <input type="radio" name="sim-entree" value="email" checked />
+        <span>{s.entrees.email}</span>
+      </label>
+      <label>
+        <input type="radio" name="sim-entree" value="formulaire" />
+        <span>{s.entrees.formulaire}</span>
+      </label>
+    </fieldset>
+    <div class="sim__commandes" hidden>
+      <button type="button" class="sim__lecture" data-lecture>
+        <span class="sim__lecture-icone" aria-hidden="true"></span>
+        <span data-lecture-libelle>Lancer la simulation</span>
+      </button>
+      <button type="button" class="sim__reset" data-reset>Recommencer</button>
+    </div>
+  </div>
+
+  <div class="sim__piste" hidden>
+    <div class="sim__fil" aria-hidden="true">
+      <span class="sim__fil-plein"></span>
+      <span class="sim__jeton">
+        <svg viewBox="0 0 16 20" aria-hidden="true"
+          ><path d="M2 1h8l4 4v14H2z" fill="currentColor"></path><path d="M10 1v4h4" fill="none" stroke="var(--color-surface)" stroke-width="1.2"></path></svg
+        >
+      </span>
+    </div>
+    <div class="sim__etapes" role="tablist" aria-label="Étapes du traitement">
+      {
+        s.etapes.map((e, i) => (
+          <button
+            type="button"
+            role="tab"
+            class="sim__etape"
+            id={`sim-tab-${e.id}`}
+            aria-controls={`sim-panel-${e.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-type={e.type}
+            data-type-form={e.typeFormulaire ?? e.type}
+          >
+            <span class="sim__noeud mono">{String(i + 1).padStart(2, '0')}</span>
+            <span class="sim__etape-label">{e.court}</span>
+          </button>
+        ))
+      }
+    </div>
+    <ul class="sim__legende mono" aria-label="Légende">
+      <li data-type="regle">{TYPES.regle}</li>
+      <li data-type="ia">{TYPES.ia}</li>
+      <li data-type="humain">{TYPES.humain}</li>
+    </ul>
+  </div>
+
+  <p class="visually-hidden" role="status" data-annonce></p>
+
+  <div class="sim__panneaux">
+    {
+      s.etapes.map((e, i) => (
+        <section
+          class="sim__panneau"
+          id={`sim-panel-${e.id}`}
+          role="tabpanel"
+          aria-labelledby={`sim-tab-${e.id}`}
+          data-id={e.id}
+          tabindex="0"
+        >
+          <div class="sim__explication">
+            <p class="sim__meta mono">
+              <span>Étape {i + 1} / {n}</span>
+              <span class="sim__type si-email" data-type={e.type}>
+                {TYPES[e.type]}
+              </span>
+              <span class="sim__type si-form" data-type={e.typeFormulaire ?? e.type}>
+                {TYPES[e.typeFormulaire ?? e.type]}
+              </span>
+            </p>
+            <h3>{e.titre}</h3>
+            <p class="sim__texte si-email">{e.texte}</p>
+            <p class="sim__texte si-form">{e.texteFormulaire ?? e.texte}</p>
+            <p class="sim__utilite">
+              <span class="mono">Ce que vous y gagnez</span>
+              {e.utilite}
+            </p>
+          </div>
+
+          <div class="sim__apercu" data-apercu={e.id}>
+            {e.id === 'reception' && (
+              <>
+                <div class="ui si-email">
+                  <p class="ui__barre mono">
+                    Boîte « Demandes » <span class="ui__badge">1 nouveau</span>
+                  </p>
+                  <div class="ui__ligne ui__ligne--nouveau anime">
+                    <span class="ui__point" aria-hidden="true" />
+                    <div>
+                      <p class="ui__fort">{nomExpediteur}</p>
+                      <p>{s.email.objet}</p>
+                      <p class="ui__piece mono">{piece}</p>
+                    </div>
+                    <span class="ui__heure mono">09:12</span>
+                  </div>
+                  <div class="ui__ligne ui__ligne--ancien" aria-hidden="true">
+                    <span />
+                    <div>
+                      <p class="ui__fantome" />
+                      <p class="ui__fantome ui__fantome--court" />
+                    </div>
+                  </div>
+                  <p class="ui__pied mono anime">Traitement démarré automatiquement</p>
+                </div>
+                <div class="ui si-form">
+                  <p class="ui__barre mono">
+                    Formulaire « Nouvelle demande » <span class="ui__badge">Envoyé</span>
+                  </p>
+                  <dl class="ui__champs">
+                    {s.extraction.map((x, j) => (
+                      <div class="anime" style={`--j: ${j}`}>
+                        <dt>{x.label}</dt>
+                        <dd>{x.valeur}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <p class="ui__pied mono anime">Traitement démarré automatiquement</p>
+                </div>
+              </>
+            )}
+
+            {e.id === 'identification' && (
+              <div class="ui ui--duo">
+                <div class="ui__source si-email">
+                  <p class="ui__barre mono">De : {s.email.de}</p>
+                  <p class="ui__corps">
+                    {segments.map((seg) =>
+                      'cle' in seg ? (
+                        <mark data-cle={seg.cle}>{seg.texte}</mark>
+                      ) : (
+                        seg.texte
+                      ),
+                    )}
+                  </p>
+                  <p class="ui__piece mono">{piece}</p>
+                </div>
+                <div class="ui__source si-form">
+                  <p class="ui__barre mono">Champs du formulaire</p>
+                  <p class="ui__corps">
+                    Chaque information arrive dans un champ dédié : elle est lue directement, sans interprétation.
+                  </p>
+                </div>
+                <ul class="ui__extraits" aria-label="Informations identifiées">
+                  {s.extraction.map((x, j) => (
+                    <li class="anime" style={`--j: ${j}`} data-cle={x.cle} tabindex="-1">
+                      <span class="ui__label mono">{x.label}</span>
+                      <span class="ui__valeur">{x.valeur}</span>
+                      {x.deduit && <span class="ui__deduit mono si-email">déduit par l'IA</span>}
+                      {x.deduit && <span class="ui__deduit ui__deduit--form mono si-form">choisi dans une liste</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {e.id === 'verification' && (
+              <div class="ui">
+                <p class="ui__barre mono">Contrôles automatiques</p>
+                <ul class="ui__controles">
+                  {s.controles.map((c, j) => (
+                    <li class:list={['anime', c.ok ? 'is-ok' : 'is-alerte']} style={`--j: ${j}`}>
+                      <span class="ui__etat" aria-hidden="true">
+                        {c.ok ? '✓' : '!'}
+                      </span>
+                      <span>
+                        <span class="ui__fort">{c.label}</span>
+                        <span class="visually-hidden">{c.ok ? ' : conforme. ' : ' : à traiter. '}</span>
+                        <span class="ui__detail">{c.detail}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {e.id === 'dossier' && (
+              <div class="ui ui--dossier">
+                <div class="ui__dossier-tete anime">
+                  <span class="ui__ref mono">{s.dossier.reference}</span>
+                  <span class="ui__statut mono">{s.dossier.statut}</span>
+                </div>
+                <p class="ui__dossier-titre anime">{s.dossier.titre}</p>
+                <dl class="ui__champs">
+                  {s.dossier.lignes.map((l, j) => (
+                    <div class="anime" style={`--j: ${j + 1}`}>
+                      <dt>{l.label}</dt>
+                      <dd>{l.valeur}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p class="ui__chemin mono anime" style={`--j: ${s.dossier.lignes.length + 1}`}>
+                  Dossiers / {s.dossier.reference} / {piece}
+                </p>
+              </div>
+            )}
+
+            {e.id === 'validation' && (
+              <div class="ui ui--validation">
+                <p class="ui__barre mono">
+                  Réponse préparée <span class="ui__badge ui__badge--attente">À valider</span>
+                </p>
+                <p class="ui__brouillon anime">{s.validation.brouillon}</p>
+                <div class="ui__actions" data-actions hidden>
+                  <button type="button" class="ui__valider" data-valider>
+                    {s.validation.valider}
+                  </button>
+                  <button type="button" class="ui__modifier" data-modifier>
+                    {s.validation.modifier}
+                  </button>
+                </div>
+                <p class="ui__message" data-message hidden>
+                  {s.validation.messageModifier}
+                </p>
+                <p class="ui__valide mono">Validé · envoi en cours</p>
+              </div>
+            )}
+
+            {e.id === 'suivi' && (
+              <div class="ui">
+                <p class="ui__barre mono">Suivi du dossier {s.dossier.reference}</p>
+                <ol class="ui__suivi">
+                  {s.suivi.map((x, j) => (
+                    <li class="anime" style={`--j: ${j}`}>
+                      <span class="ui__quand mono">{x.quand}</span>
+                      <span>{x.action}</span>
+                      {j === 0 ? (
+                        <>
+                          <span class="ui__puce ui__puce--fait mono si-valide">Envoyé</span>
+                          <span class="ui__puce ui__puce--attente mono si-non-valide">Après validation</span>
+                        </>
+                      ) : (
+                        <span class="ui__puce mono">Programmé</span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+
+  <div class="sim__nav" hidden>
+    <button type="button" data-precedent aria-label="Étape précédente">
+      <span aria-hidden="true">←</span> <span class="sim__long">Étape précédente</span><span class="sim__court">Précédente</span>
+    </button>
+    <p class="sim__compteur mono" aria-hidden="true"><span data-compteur>1</span> / {n}</p>
+    <button type="button" data-suivant aria-label="Étape suivante">
+      <span class="sim__long">Étape suivante</span><span class="sim__court">Suivante</span> <span aria-hidden="true">→</span>
+    </button>
+  </div>
+
+  <p class="sim__avertissement">{s.avertissement}</p>
+</process-sim>
+
+<script>
+  const DUREE_ETAPE = 4200;
+
+  class ProcessSim extends HTMLElement {
+    private etape = 0;
+    private minuterie: number | undefined;
+
+    connectedCallback() {
+      const onglets = [...this.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+      const panneaux = [...this.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+      if (!onglets.length) return;
+      const annonce = this.querySelector<HTMLElement>('[data-annonce]');
+      const compteur = this.querySelector<HTMLElement>('[data-compteur]');
+      const lecture = this.querySelector<HTMLButtonElement>('[data-lecture]');
+      const libelleLecture = this.querySelector<HTMLElement>('[data-lecture-libelle]');
+      const precedent = this.querySelector<HTMLButtonElement>('[data-precedent]');
+      const suivant = this.querySelector<HTMLButtonElement>('[data-suivant]');
+      const message = this.querySelector<HTMLElement>('[data-message]');
+      const iValidation = panneaux.findIndex((p) => p.dataset.id === 'validation');
+      const dernier = onglets.length - 1;
+
+      // Amélioration progressive : piste, commandes et navigation n'apparaissent qu'avec JavaScript.
+      this.classList.add('is-enhanced');
+      for (const el of this.querySelectorAll<HTMLElement>('.sim__piste, .sim__commandes, .sim__nav, [data-actions]')) {
+        el.hidden = false;
+      }
+
+      const arreter = () => {
+        window.clearTimeout(this.minuterie);
+        this.minuterie = undefined;
+        this.classList.remove('is-lecture');
+        if (libelleLecture) libelleLecture.textContent = this.etape === dernier ? 'Rejouer la simulation' : 'Lancer la simulation';
+      };
+
+      const afficher = (index: number, { focus = false, annoncer = true } = {}) => {
+        this.etape = index;
+        this.dataset.etape = panneaux[index].dataset.id ?? String(index);
+        this.style.setProperty('--pos', String(index));
+        onglets.forEach((o, i) => {
+          const actif = i === index;
+          o.setAttribute('aria-selected', String(actif));
+          o.tabIndex = actif ? 0 : -1;
+          o.classList.toggle('is-fait', i < index);
+          panneaux[i].hidden = !actif;
+        });
+        // Rejoue les apparitions du nouvel aperçu.
+        const p = panneaux[index];
+        p.classList.remove('is-entree');
+        void p.offsetWidth;
+        p.classList.add('is-entree');
+        if (compteur) compteur.textContent = String(index + 1);
+        if (precedent) precedent.disabled = index === 0;
+        if (suivant) suivant.disabled = index === dernier;
+        if (annonce && annoncer) annonce.textContent = `Étape ${index + 1} sur ${onglets.length} : ${p.querySelector('h3')?.textContent ?? ''}`;
+        if (focus) onglets[index].focus();
+      };
+
+      const planifier = () => {
+        window.clearTimeout(this.minuterie);
+        // La lecture s'arrête à la validation humaine : elle attend votre décision.
+        if (this.etape === iValidation && this.dataset.valide !== 'true') {
+          this.classList.remove('is-lecture');
+          if (libelleLecture) libelleLecture.textContent = 'En attente de votre validation';
+          this.querySelector<HTMLButtonElement>('[data-valider]')?.focus({ preventScroll: true });
+          return;
+        }
+        if (this.etape === dernier) return arreter();
+        this.minuterie = window.setTimeout(() => {
+          afficher(this.etape + 1);
+          planifier();
+        }, DUREE_ETAPE);
+      };
+
+      const reinitialiser = () => {
+        arreter();
+        this.dataset.valide = 'false';
+        if (message) message.hidden = true;
+        afficher(0);
+      };
+
+      // Choix du point de départ : email libre (IA à l'étape 2) ou formulaire (règles seules).
+      for (const radio of this.querySelectorAll<HTMLInputElement>('input[name="sim-entree"]')) {
+        radio.addEventListener('change', () => {
+          this.dataset.entree = radio.value;
+          afficher(this.etape, { annoncer: false });
+        });
+      }
+
+      onglets.forEach((o, i) => {
+        o.addEventListener('click', () => {
+          arreter();
+          afficher(i);
+        });
+        o.addEventListener('keydown', (e) => {
+          const cible =
+            e.key === 'ArrowRight' ? (i === dernier ? 0 : i + 1)
+            : e.key === 'ArrowLeft' ? (i === 0 ? dernier : i - 1)
+            : e.key === 'Home' ? 0
+            : e.key === 'End' ? dernier
+            : null;
+          if (cible === null) return;
+          e.preventDefault();
+          arreter();
+          afficher(cible, { focus: true });
+        });
+      });
+
+      precedent?.addEventListener('click', () => {
+        arreter();
+        afficher(Math.max(0, this.etape - 1));
+      });
+      suivant?.addEventListener('click', () => {
+        arreter();
+        afficher(Math.min(dernier, this.etape + 1));
+      });
+
+      lecture?.addEventListener('click', () => {
+        if (this.minuterie !== undefined) return arreter();
+        if (this.etape === dernier) reinitialiser();
+        this.classList.add('is-lecture');
+        if (libelleLecture) libelleLecture.textContent = 'Mettre en pause';
+        planifier();
+      });
+      this.querySelector('[data-reset]')?.addEventListener('click', reinitialiser);
+
+      // Validation humaine : rien ne part sans décision.
+      this.querySelector('[data-valider]')?.addEventListener('click', () => {
+        this.dataset.valide = 'true';
+        if (message) message.hidden = true;
+        arreter();
+        window.setTimeout(() => {
+          afficher(dernier);
+          arreter();
+        }, 700);
+      });
+      this.querySelector('[data-modifier]')?.addEventListener('click', () => {
+        if (message) message.hidden = false;
+      });
+
+      // Survol d'une information extraite : le passage correspondant de l'email est mis en évidence.
+      for (const item of this.querySelectorAll<HTMLElement>('.ui__extraits li')) {
+        const marque = this.querySelector<HTMLElement>(`mark[data-cle="${item.dataset.cle}"]`);
+        if (!marque) continue;
+        const on = () => marque.classList.add('is-survol');
+        const off = () => marque.classList.remove('is-survol');
+        item.addEventListener('mouseenter', on);
+        item.addEventListener('mouseleave', off);
+      }
+
+      afficher(0, { annoncer: false });
+    }
+
+    disconnectedCallback() {
+      window.clearTimeout(this.minuterie);
+    }
+  }
+
+  customElements.define('process-sim', ProcessSim);
+</script>
+
+<style>
+  .sim {
+    --c-regle: var(--color-accent);
+    --c-ia: var(--signal-600);
+    --c-humain: var(--ink-900);
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(var(--space-4), 3vw, var(--space-6));
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Variantes de contenu selon le point de départ choisi. */
+  .sim[data-entree='email'] .si-form,
+  .sim[data-entree='formulaire'] .si-email,
+  .sim[data-valide='true'] .si-non-valide,
+  .sim[data-valide='false'] .si-valide {
+    display: none !important;
+  }
+
+  /* ---------- Barre : point de départ et commandes ---------- */
+  .sim__barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .sim__entrees {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .sim__entrees legend {
+    width: 100%;
+    margin-bottom: var(--space-2);
+    font-size: var(--step--2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .sim__entrees label {
+    position: relative;
+  }
+
+  .sim__entrees input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .sim__entrees span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .sim__entrees input:checked + span {
+    border-color: var(--color-text);
+    background: var(--color-text);
+    color: var(--color-surface);
+  }
+
+  .sim__entrees input:focus-visible + span {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  .sim__commandes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .sim__commandes button,
+  .sim__nav button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding: 0.5rem 1.1rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font-size: var(--step--1);
+    font-weight: 560;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .sim__commandes button:hover,
+  .sim__nav button:hover:not(:disabled) {
+    border-color: var(--color-text);
+  }
+
+  .sim__lecture {
+    border-color: var(--color-accent) !important;
+    background: var(--color-accent) !important;
+    color: var(--color-on-accent);
+  }
+
+  .sim__lecture-icone {
+    width: 0;
+    height: 0;
+    border-block: 0.38rem solid transparent;
+    border-left: 0.6rem solid currentColor;
+  }
+
+  .sim.is-lecture .sim__lecture-icone {
+    width: 0.6rem;
+    height: 0.75rem;
+    border: 0;
+    border-inline: 0.2rem solid currentColor;
+  }
+
+  /* ---------- Piste des étapes ---------- */
+  .sim__piste {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-6);
+  }
+
+  .sim__fil {
+    position: absolute;
+    top: calc(var(--space-6) + 1.375rem);
+    left: calc(100% / var(--n) / 2);
+    right: calc(100% / var(--n) / 2);
+    height: 2px;
+    background: var(--color-line);
+  }
+
+  .sim__fil-plein {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--pos) / (var(--n) - 1) * 100%);
+    background: var(--color-accent);
+    transition: width var(--duration-base) var(--ease-out);
+  }
+
+  .sim__jeton {
+    position: absolute;
+    top: calc(-1.375rem - var(--space-2) - 1.15rem);
+    left: calc(var(--pos) / (var(--n) - 1) * 100%);
+    width: 0.9rem;
+    color: var(--color-text);
+    transform: translateX(-50%);
+    transition: left 600ms var(--ease-out);
+  }
+
+  .sim__jeton svg {
+    display: block;
+    width: 100%;
+  }
+
+  .sim__etapes {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  }
+
+  .sim__etape {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: 0 0 var(--space-1);
+    border: 0;
+    background: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .sim__noeud {
+    --c: var(--c-regle);
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 2px solid var(--c);
+    border-radius: 50%;
+    background: var(--color-surface);
+    font-size: var(--step--1);
+    color: var(--c);
+    transition:
+      background-color var(--duration-base) var(--ease-out),
+      color var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
+
+  .sim__etape[data-type='ia'] .sim__noeud {
+    --c: var(--c-ia);
+    border-style: dashed;
+  }
+
+  .sim__etape[data-type='humain'] .sim__noeud {
+    --c: var(--c-humain);
+  }
+
+  .sim[data-entree='formulaire'] .sim__etape[data-type-form='regle'] .sim__noeud {
+    --c: var(--c-regle);
+    border-style: solid;
+  }
+
+  .sim__etape.is-fait .sim__noeud {
+    background: var(--c);
+    color: var(--color-surface);
+  }
+
+  .sim__etape[aria-selected='true'] .sim__noeud {
+    background: var(--c);
+    color: var(--color-surface);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 18%, transparent);
+    transform: scale(1.08);
+  }
+
+  .sim__etape-label {
+    font-size: var(--step--1);
+    text-align: center;
+  }
+
+  .sim__etape[aria-selected='true'] .sim__etape-label {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .sim__etape:hover .sim__etape-label {
+    color: var(--color-text);
+  }
+
+  .sim__etape:focus-visible {
+    outline: none;
+  }
+
+  .sim__etape:focus-visible .sim__noeud {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  .sim__legende {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2) var(--space-5);
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .sim__legende li::before {
+    content: '';
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-right: var(--space-2);
+    border-radius: 50%;
+    background: var(--c-regle);
+    vertical-align: -0.05em;
+  }
+
+  .sim__legende [data-type='ia']::before {
+    background: var(--c-ia);
+  }
+
+  .sim__legende [data-type='humain']::before {
+    background: var(--c-humain);
+  }
+
+  /* ---------- Panneaux ---------- */
+  .sim__panneaux {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .sim__panneau {
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(var(--space-4), 3vw, var(--space-6));
+    border-radius: var(--radius-m);
+    background: var(--color-bg);
+  }
+
+  .sim__panneau:focus-visible {
+    outline-offset: 3px;
+  }
+
+  .sim__explication {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+  }
+
+  .sim__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--step--2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .sim__type {
+    padding: 0.15rem 0.55rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  .sim__type[data-type='ia'] {
+    background: var(--color-signal-soft);
+    color: var(--signal-600);
+  }
+
+  .sim__type[data-type='humain'] {
+    background: var(--ink-900);
+    color: var(--paper-0);
+  }
+
+  .sim__explication h3 {
+    font-size: var(--step-2);
+    line-height: 1.15;
+  }
+
+  .sim__texte {
+    color: var(--color-text-muted);
+  }
+
+  .sim__utilite {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-line);
+    font-weight: 560;
+  }
+
+  .sim__utilite .mono {
+    font-size: var(--step--2);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .sim__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .sim__court {
+    display: none;
+  }
+
+  .sim__nav button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .sim__compteur {
+    white-space: nowrap;
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .sim__avertissement {
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .sim__avertissement::before {
+    content: 'Démonstration · ';
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--signal-600);
+  }
+
+  /* ---------- Aperçus (maquettes d'interface) ---------- */
+  .ui {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    font-size: var(--step--1);
+  }
+
+  .ui p {
+    margin: 0;
+  }
+
+  .ui__barre {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-line);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+    overflow-wrap: anywhere;
+  }
+
+  .ui__badge {
+    padding: 0.1rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .ui__badge--attente {
+    background: var(--ink-900);
+  }
+
+  .ui__fort {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .ui__ligne {
+    display: grid;
+    grid-template-columns: 0.6rem minmax(0, 1fr) auto;
+    gap: var(--space-3);
+    align-items: start;
+    padding: var(--space-3);
+    border-radius: var(--radius-s);
+  }
+
+  .ui__ligne--nouveau {
+    background: var(--color-accent-soft);
+  }
+
+  .ui__ligne--nouveau p:not(.ui__fort) {
+    color: var(--color-text-muted);
+  }
+
+  .ui__point {
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-top: 0.4rem;
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  .ui__heure {
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+  }
+
+  .ui__piece {
+    display: inline-flex;
+    margin-top: var(--space-2) !important;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-s);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  .ui__piece::before {
+    content: '📎 ';
+  }
+
+  .ui__fantome {
+    height: 0.6rem;
+    margin: 0.35rem 0 !important;
+    border-radius: var(--radius-pill);
+    background: var(--color-line);
+  }
+
+  .ui__fantome--court {
+    width: 60%;
+  }
+
+  .ui__pied {
+    font-size: var(--step--2);
+    color: var(--color-accent);
+  }
+
+  .ui__pied::before {
+    content: '● ';
+  }
+
+  .ui__champs {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .ui__champs > div {
+    display: grid;
+    grid-template-columns: minmax(6.5rem, 0.8fr) minmax(0, 1.4fr);
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px dashed var(--color-line);
+  }
+
+  .ui__champs dt {
+    color: var(--color-text-subtle);
+  }
+
+  .ui__champs dd {
+    margin: 0;
+    font-weight: 560;
+    overflow-wrap: anywhere;
+  }
+
+  .ui--duo {
+    gap: var(--space-4);
+  }
+
+  .ui__corps {
+    line-height: 1.7;
+    color: var(--color-text-muted);
+  }
+
+  .ui__corps mark {
+    padding: 0.05rem 0.2rem;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--signal-300) 35%, transparent);
+    color: var(--color-text);
+    transition: background-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+  }
+
+  .ui__corps mark.is-survol {
+    background: var(--signal-300);
+    box-shadow: 0 0 0 2px var(--signal-300);
+  }
+
+  .ui__extraits {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .ui__extraits li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-line);
+    border-left: 3px solid var(--c-regle);
+    border-radius: var(--radius-s);
+    background: var(--color-surface);
+  }
+
+  .sim[data-entree='email'] .ui__extraits li {
+    border-left-color: var(--c-ia);
+  }
+
+  .ui__label {
+    min-width: 7rem;
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+  }
+
+  .ui__valeur {
+    font-weight: 560;
+  }
+
+  .ui__deduit {
+    margin-left: auto;
+    padding: 0.05rem 0.45rem;
+    border: 1px dashed var(--signal-500);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+    color: var(--signal-600);
+  }
+
+  .ui__deduit--form {
+    border-color: var(--color-line-strong);
+    color: var(--color-text-muted);
+  }
+
+  .ui__controles {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .ui__controles li {
+    display: grid;
+    grid-template-columns: 1.6rem minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+    padding: var(--space-3);
+    border-radius: var(--radius-s);
+    background: var(--color-bg);
+  }
+
+  .ui__controles .is-alerte {
+    background: var(--color-signal-soft);
+  }
+
+  .ui__etat {
+    display: grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    font-size: var(--step--2);
+    font-weight: 700;
+    color: var(--color-on-accent);
+  }
+
+  .is-alerte .ui__etat {
+    background: var(--signal-600);
+  }
+
+  .ui__detail {
+    display: block;
+    color: var(--color-text-muted);
+  }
+
+  .ui--dossier {
+    border-top: 3px solid var(--color-accent);
+  }
+
+  .ui__dossier-tete {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .ui__ref {
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+  }
+
+  .ui__statut {
+    padding: 0.1rem 0.55rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-signal-soft);
+    font-size: var(--step--2);
+    color: var(--signal-600);
+  }
+
+  .ui__dossier-titre {
+    font-size: var(--step-0);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .ui__chemin {
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+    overflow-wrap: anywhere;
+  }
+
+  .ui__chemin::before {
+    content: '▸ ';
+    color: var(--color-accent);
+  }
+
+  .ui__brouillon {
+    padding: var(--space-4);
+    border: 1px dashed var(--color-line-strong);
+    border-radius: var(--radius-s);
+    background: var(--color-bg);
+    line-height: 1.6;
+  }
+
+  .ui__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .ui__actions button {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+    font-weight: 560;
+    cursor: pointer;
+  }
+
+  .ui__valider {
+    border: 1px solid var(--ink-900);
+    background: var(--ink-900);
+    color: var(--paper-0);
+  }
+
+  .ui__valider:hover {
+    background: var(--ink-700);
+  }
+
+  .ui__modifier {
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+  }
+
+  .ui__modifier:hover {
+    border-color: var(--color-text);
+  }
+
+  /* En lecture automatique, le bouton de validation attire l'attention. */
+  .sim[data-etape='validation'][data-valide='false'] .ui__valider {
+    animation: appel 1.8s var(--ease-out) infinite;
+  }
+
+  .ui__message {
+    color: var(--color-text-muted);
+  }
+
+  .ui__valide {
+    display: none;
+    font-size: var(--step--2);
+    color: var(--color-accent);
+  }
+
+  .sim[data-valide='true'] .ui__valide {
+    display: block;
+  }
+
+  .sim[data-valide='true'] .ui__actions {
+    display: none;
+  }
+
+  .ui__suivi {
+    display: grid;
+    gap: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ui__suivi li {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    gap: var(--space-3);
+    align-items: center;
+    padding: var(--space-3) 0;
+    border-bottom: 1px dashed var(--color-line);
+  }
+
+  .ui__suivi li:last-child {
+    border-bottom: 0;
+  }
+
+  .ui__quand {
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+  }
+
+  .ui__puce {
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .ui__puce--fait {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .ui__puce--attente {
+    border-style: dashed;
+  }
+
+  /* ---------- Apparitions (uniquement si le mouvement est autorisé) ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    .sim.is-enhanced .sim__panneau.is-entree .anime {
+      animation: apparition 520ms var(--ease-out) both;
+      animation-delay: calc(120ms + var(--j, 0) * 110ms);
+    }
+
+    .sim.is-enhanced .sim__panneau.is-entree .sim__explication {
+      animation: apparition 380ms var(--ease-out) both;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sim__jeton,
+    .sim__fil-plein {
+      transition: none;
+    }
+
+    .sim[data-etape='validation'] .ui__valider {
+      animation: none;
+    }
+  }
+
+  @keyframes apparition {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes appel {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink-900) 35%, transparent);
+    }
+    60% {
+      box-shadow: 0 0 0 6px transparent;
+    }
+  }
+
+  /* ---------- Mise en page ---------- */
+  @media (max-width: 40rem) {
+    .sim__etape-label {
+      display: none;
+    }
+
+    .sim__noeud {
+      width: 2.25rem;
+      height: 2.25rem;
+      font-size: var(--step--2);
+    }
+
+    .sim__fil {
+      top: calc(var(--space-6) + 1.125rem);
+    }
+
+    .sim__jeton {
+      top: calc(-1.125rem - var(--space-2) - 1.15rem);
+    }
+
+    .sim__nav button {
+      padding-inline: 0.9rem;
+    }
+
+    .sim__long {
+      display: none;
+    }
+
+    .sim__court {
+      display: inline;
+    }
+
+    .ui__suivi li {
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+    }
+
+    .ui__suivi .ui__puce {
+      grid-column: 2;
+      justify-self: start;
+    }
+
+    .ui__champs > div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .sim__panneau {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: var(--space-7);
+      align-items: start;
+      min-height: 25rem;
+    }
+
+    .ui--duo {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  /* Sans JavaScript : panneaux empilés, étiquette d'étape visible. */
+  .sim:not(.is-enhanced) .sim__panneau + .sim__panneau {
+    margin-top: var(--space-2);
+  }
+</style>

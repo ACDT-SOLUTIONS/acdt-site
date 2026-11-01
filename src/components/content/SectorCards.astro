@@ -9,9 +9,13 @@ interface Props {
   avecPreparation?: boolean;
   /** Texte propre à la page qui remplace l'accroche générique, par identifiant de secteur. L'ordre des clés fixe l'ordre d'affichage. */
   textes?: Record<string, string>;
+  /** Étapes d'un scénario propre à la page, par identifiant de secteur (mini-parcours numéroté). */
+  etapes?: Record<string, string[]>;
+  /** Mention affichée en tête de chaque carte, ex. « Scénario illustratif ». */
+  badge?: string;
 }
 
-const { famille, avecPreparation = false, textes } = Astro.props;
+const { famille, avecPreparation = false, textes, etapes, badge } = Astro.props;
 const ordreImpose = textes ? Object.keys(textes) : null;
 
 const secteurs = (
@@ -37,8 +41,16 @@ const items = await Promise.all(secteurs.map(async (s) => ({ ...s, familles: awa
       return (
         <li class:list={['sector', { 'sector--pending': enPreparation, 'sector--statique': !enPreparation && !lien }]}>
           {enPreparation && <p class="sector__status mono">En préparation</p>}
+          {badge && !enPreparation && <p class="sector__badge mono">{badge}</p>}
           <h3>{lien ? <a href={`/secteurs/${s.id}/`}>{s.data.nom}</a> : s.data.nom}</h3>
           <p class="sector__accroche">{textes?.[s.id] ?? s.data.accroche}</p>
+          {etapes?.[s.id] && (
+            <ol class="sector__etapes">
+              {etapes[s.id].map((e) => (
+                <li>{e}</li>
+              ))}
+            </ol>
+          )}
           {s.data.mention && <p class="sector__mention">{s.data.mention}</p>}
           {lien && textes && (
             <p class="sector__lien mono" aria-hidden="true">
@@ -162,5 +174,59 @@ const items = await Promise.all(secteurs.map(async (s) => ({ ...s, familles: awa
   .sector__lien {
     font-size: var(--step--2);
     color: var(--color-accent);
+  }
+
+  .sector__badge {
+    align-self: flex-start;
+    padding: 0.15rem 0.55rem;
+    border: 1px dashed var(--signal-500);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+    color: var(--signal-600);
+  }
+
+  /* Mini-parcours : étapes numérotées reliées par un trait. */
+  .sector__etapes {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4) 0 0;
+    border-top: 1px solid var(--color-line);
+    list-style: none;
+    counter-reset: etape;
+  }
+
+  .sector__etapes li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: center;
+    font-size: var(--step--1);
+    counter-increment: etape;
+  }
+
+  .sector__etapes li::before {
+    content: counter(etape);
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 50%;
+    background: var(--color-surface);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--color-accent);
+  }
+
+  .sector__etapes li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    left: calc(0.75rem - 0.5px);
+    height: var(--space-2);
+    width: 1px;
+    background: var(--color-accent);
+    opacity: 0.4;
   }
 </style>
