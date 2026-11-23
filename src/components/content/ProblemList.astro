@@ -1,5 +1,6 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
+import { lienVisible } from '@/lib/publication';
 
 interface Props {
   /** Ne garder que les problèmes d'une famille. */
@@ -22,7 +23,7 @@ const items = await Promise.all(problemes.map(async (p) => ({ ...p, famille: awa
       <li class="problem">
         <span class="problem__index mono">{String(i + 1).padStart(2, '0')}</span>
         <h3>
-          {afficherFamille ? <a href={`/solutions/${p.data.famille.id}/`}>{p.data.titre}</a> : p.data.titre}
+          {afficherFamille && lienVisible(`/solutions/${p.data.famille.id}/`) ? <a href={`/solutions/${p.data.famille.id}/`}>{p.data.titre}</a> : p.data.titre}
         </h3>
         <p>{p.data.description}</p>
         {afficherFamille && (

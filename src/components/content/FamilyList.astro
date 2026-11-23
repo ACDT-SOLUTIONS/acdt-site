@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import MiniFlow from './MiniFlow.astro';
+import { lienVisible } from '@/lib/publication';
 
 interface Props {
   /** Limiter à certaines familles ; toutes par défaut. */
@@ -23,7 +24,7 @@ const solutions = (await getCollection('solutions', (s) => !ids || ids.includes(
           </p>
           <div class="family__text">
             <h3>
-              <a href={`/solutions/${s.id}/`}>{s.data.titre}</a>
+              {lienVisible(`/solutions/${s.id}/`) ? <a href={`/solutions/${s.id}/`}>{s.data.titre}</a> : s.data.titre}
             </h3>
             <p class="family__accroche">{s.data.accroche}</p>
             <p class="family__description">{s.data.description}</p>
@@ -32,8 +33,8 @@ const solutions = (await getCollection('solutions', (s) => !ids || ids.includes(
                 <span class="mono">Sous réserve</span> {s.data.mention}
               </p>
             )}
-            <a class="family__lien mono" href={`/solutions/${s.id}/`}>
-              Découvrir cette solution <span aria-hidden="true">→</span>
+            <a class="family__lien mono" href={lienVisible(`/solutions/${s.id}/`) ? `/solutions/${s.id}/` : "/contact/"}>
+              {lienVisible(`/solutions/${s.id}/`) ? "Découvrir cette solution" : "Parlons de votre besoin"} <span aria-hidden="true">→</span>
             </a>
           </div>
         </div>
