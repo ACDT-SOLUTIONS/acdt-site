@@ -5,3 +5,7 @@ dist/
 .env.*
 !.env.example
 .DS_Store
+
+# Dépendances exclues de la synchro iCloud (lien node_modules -> node_modules.nosync)
+node_modules
+node_modules.nosync/

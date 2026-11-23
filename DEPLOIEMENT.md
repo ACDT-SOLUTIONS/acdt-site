@@ -207,8 +207,8 @@ Autres points à traiter :
   documentées ; Telegram ne propose pas d'accord de sous-traitance pour un usage standard. La politique mentionne
   les transferts sans revendiquer de garantie.
 - Vapi : fournisseurs de reconnaissance vocale, de modèle de langage et de synthèse vocale de l'assistant de démo.
-- Démonstration : deux workflows Vapi actifs (« ACDT Continuité - démo », « permanence tel avocat ») ; confirmer
-  celui du 09 72 19 98 15.
+- Démonstration : ligne retirée du site en novembre 2026 (le numéro sert désormais à un client). Vérifier que les
+  données des anciens appels de démo (Vapi, n8n, Telegram) sont bien purgées sous 14 jours.
 - Serveur OVH : localisation du centre de données du VPS.
 - Google Sheets « Prospects-formulaire » et Gmail : suppression à 30 jours des prospects sans suite.
 - Note SQLite : n8n efface les exécutions, mais `database.sqlite` n'est pas compacté
@@ -216,10 +216,6 @@ Autres points à traiter :
 
 ## 11. Tests humains avant publication
 
-- [ ] Appeler le 09 72 19 98 15 : réponse de l'assistant, annonce de l'enregistrement et de la transcription,
-      scénario « cabinet d'avocats », durée d'environ deux minutes.
-- [ ] SMS récapitulatif : réception et contenu.
-- [ ] Sur mobile : « Appeler la démonstration » ouvre le composeur avec le bon numéro ; « Copier le numéro » fonctionne.
 - [ ] Formulaire : un envoi réel depuis la version publiée → notification sur contact@, accusé de réception chez
       l'expéditeur, ligne dans « Prospects-formulaire » ; puis supprimer ces données de test.
 - [ ] Réservation (Cal.com, puis chaque page Google Agenda) : réservation test, confirmation, puis annulation.

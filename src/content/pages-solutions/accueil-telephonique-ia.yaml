@@ -9,7 +9,7 @@ hero:
   promesse: >-
     ACDT Solutions conçoit des permanences téléphoniques intelligentes qui prennent le relais
     lorsque vous êtes indisponible.
-  cta: { label: Tester notre permanence IA, href: "#demonstration" }
+  cta: { label: Étudier ma permanence téléphonique, href: /rendez-vous/ }
 
 problemes:
   titre: Vos appels ne devraient pas dépendre de votre disponibilité immédiate.
@@ -129,36 +129,6 @@ fonctionnement:
     L'automatisation prend en charge l'accueil initial. Votre équipe conserve la maîtrise des décisions
     importantes.
 
-demo:
-  titre: Testez notre permanence téléphonique IA
-  accroche: La meilleure façon de comprendre ? L'essayer.
-  intro: >-
-    Nous avons préparé une démonstration permettant de découvrir concrètement comment un assistant vocal
-    peut accueillir un appel professionnel.
-  numero: 09 72 19 98 15
-  tel: tel:+33972199815
-  scenario:
-    titre: Mettez-vous dans la peau d'un client.
-    texte:
-      - La démonstration utilise le scénario d'un cabinet d'avocats.
-      - >-
-        Imaginez que vous souhaitez contacter un avocat pour une affaire commerciale, mais que celui-ci se
-        trouve en audience et ne peut pas répondre.
-  duree: Environ deux minutes
-  avertissement: >-
-    Il s'agit d'un environnement de démonstration. N'y communiquez aucune information personnelle sensible
-    ni aucun élément confidentiel relatif à une véritable affaire.
-  etapes:
-    - Appelez le numéro de démonstration.
-    - Présentez-vous comme un client souhaitant contacter un cabinet d'avocats.
-    - Expliquez brièvement le motif fictif de votre demande.
-    - Observez comment l'assistant recueille et organise les informations.
-    - Découvrez le récapitulatif prévu à l'issue de la conversation.
-  remarque: Selon le fonctionnement du scénario actif, un SMS récapitulatif peut vous être envoyé.
-  suite:
-    texte: Vous souhaitez découvrir comment un tel système pourrait fonctionner dans votre entreprise ?
-    cta: { label: Adapter cette solution à mon activité, href: /rendez-vous/ }
-
 benefices:
   titre: Moins d'interruptions. Des demandes mieux organisées.
   items:
@@ -271,4 +241,4 @@ cta:
     Découvrez comment une permanence téléphonique automatisée peut compléter votre accueil existant, faciliter
     le suivi des demandes et préserver le temps de votre équipe.
   principal: { label: Étudier ma permanence téléphonique, href: /rendez-vous/ }
-  secondaire: { label: Tester la permanence IA, href: "#demonstration" }
+  secondaire: { label: Voir des cas pratiques, href: /cas-pratiques/ }

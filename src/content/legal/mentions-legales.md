@@ -3,7 +3,7 @@ titre: "Mentions légales"
 ordre: 1
 source: "Texte de l'ancien site (main, ceeb27c), complété de l'identité de l'entreprise (octobre 2026) et mis en cohérence avec la configuration du nouveau site (GA4 avec consentement, formulaire n8n)."
 ---
-Date de dernière mise à jour : 26 octobre 2026
+Date de dernière mise à jour : 22 novembre 2026
 
 ## 1. Éditeur du site
 
@@ -46,7 +46,7 @@ Les données transmises via le formulaire de contact, par email ou lors d'une pr
 - Les données ne sont conservées que pour la durée indiquée dans la politique de confidentialité.
 - L’utilisateur peut demander l'accès à ses données, leur rectification ou leur suppression à tout moment.
 
-Le détail des traitements, des prestataires et des durées de conservation, notamment pour la ligne de démonstration téléphonique, figure dans la [politique de confidentialité](/politique-de-confidentialite/).
+Le détail des traitements, des prestataires et des durées de conservation figure dans la [politique de confidentialité](/politique-de-confidentialite/).
 
 ### Cookies et mesure d’audience
 
