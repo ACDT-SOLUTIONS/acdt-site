@@ -1,29 +1,33 @@
 # Sections propres à la page /secteurs/kinesitherapeutes/.
-# Le cas client reprend la fiche Notion « Prise de rendez-vous téléphonique pour les kinésithérapeutes ».
-# Le numéro de la permanence du client n'est pas publié.
+# Cas d'usage issu de la fiche Notion « Prise de rendez-vous téléphonique pour les kinésithérapeutes »,
+# au conditionnel tant que le parcours n'a pas été testé de bout en bout sur l'agenda réellement utilisé.
+# Avant publication : traiter les points ouverts dans Notion (réservations en attente, numéros fixes ou
+# masqués, données de santé dans les journaux et services utilisés). Ne publier ni le nom du cabinet, ni
+# celui du praticien, ni sa ville, ni le numéro de sa permanence.
 
-casClient:
-  eyebrow: Cas client
-  titre: Prise de rendez-vous téléphonique pour un kinésithérapeute.
-  lead: >-
-    Gérer les appels sans interrompre les soins, tout en conservant son agenda Apple et en gardant la main
-    sur les rendez-vous qu'on peut accepter ou non.
-  besoin:
-    - >-
-      Lorsqu'un kinésithérapeute est en séance ou se déplace au domicile de ses patients, il n'est pas toujours
-      disponible pour répondre au téléphone.
-    - Certains préfèrent aussi gérer leur activité sans utiliser Doctolib.
-  solution:
-    - >-
-      Un agent téléphonique répond aux appels, recueille les demandes et consulte les disponibilités dans
-      l'agenda Apple du praticien.
-    - >-
-      Si le créneau demandé nécessite une vérification particulière, le praticien reçoit un SMS pour accepter
-      ou refuser le rendez-vous. L'agent ne confirme la réservation au patient qu'une fois celle-ci enregistrée
-      dans l'agenda.
-  retour: >-
-    Le praticien estime que cette solution pourrait être particulièrement utile aux kinésithérapeutes qui
-    n'ont pas encore Doctolib et à ceux qui se déplacent au domicile de leurs patients.
+cas:
+  eyebrow: Cas d'usage
+  titre: Les demandes de rendez-vous pendant les soins.
+  blocs:
+    - titre: Le besoin
+      textes:
+        - >-
+          Lorsqu'un kinésithérapeute est en séance ou en déplacement à domicile, il ne peut pas toujours répondre
+          au téléphone. Certains souhaitent conserver leur agenda habituel et décider eux-mêmes des rendez-vous à
+          accepter.
+    - titre: Le fonctionnement envisagé
+      textes:
+        - >-
+          Une permanence téléphonique peut recueillir la demande et consulter les disponibilités de l'agenda, sous
+          réserve que l'intégration soit validée avec les outils du praticien. Pour un créneau nécessitant son
+          accord, une demande lui est transmise. Le patient n'est informé d'une réservation qu'après confirmation
+          effective dans l'agenda.
+    - titre: Pour qui
+      textes:
+        - >-
+          Cette organisation peut intéresser les praticiens qui n'utilisent pas encore de plateforme de
+          réservation ou qui effectuent des visites à domicile. Le périmètre, les données recueillies,
+          l'hébergement et les prestataires sont à cadrer avant toute mise en service.
 
 exigences:
   eyebrow: Les exigences de votre cabinet
@@ -34,12 +38,13 @@ exigences:
   items:
     - titre: La décision reste au praticien
       texte: >-
-        Vous définissez les créneaux que l'agent peut proposer seul et ceux qui nécessitent votre accord.
-        Pour ces derniers, vous acceptez ou refusez par SMS ; rien n'est confirmé au patient sans vous.
+        Vous définissez les créneaux que la permanence peut proposer seule et ceux qui nécessitent votre
+        accord. Pour ces derniers, une demande vous est transmise ; le patient n'est informé qu'après
+        confirmation effective dans l'agenda.
     - titre: Votre agenda reste la référence
       texte: >-
-        L'agent consulte et alimente l'agenda que vous utilisez déjà. Une réservation n'est annoncée au patient
-        qu'une fois enregistrée dans cet agenda.
+        La permanence peut consulter et alimenter l'agenda que vous utilisez déjà, sous réserve que
+        l'intégration soit validée avec vos outils.
     - titre: Des données à cadrer avec soin
       texte: >-
         Un appel de patient peut contenir des informations sur sa santé. Les données recueillies, leur

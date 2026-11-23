@@ -30,7 +30,7 @@ const s = secteur.data;
 const page = (await getEntry('pagesSecteurs', secteur.id))?.data;
 const valeur = page?.valeur;
 const exigences = page?.exigences;
-const casClient = page?.casClient;
+const cas = page?.cas;
 ---
 
 <BaseLayout title={s.nom} description={s.accroche}>
@@ -89,27 +89,23 @@ const casClient = page?.casClient;
           </div>
         </div>
       </Section>
-    ) : casClient ? (
+    ) : cas ? (
       <Section labelledby="cas-titre">
-        <SectionHeader eyebrow={casClient.eyebrow} index="03" id="cas-titre">
-          <Fragment slot="title">{casClient.titre}</Fragment>
-          {casClient.lead}
+        <SectionHeader eyebrow={cas.eyebrow} index="03" id="cas-titre">
+          <Fragment slot="title">{cas.titre}</Fragment>
+          {cas.lead}
         </SectionHeader>
-        <div class="cas-client">
-          <div class="cas-client__bloc">
-            <h3>Le besoin</h3>
-            {casClient.besoin.map((t) => <p>{t}</p>)}
+        {cas.blocs && (
+          <div class="cas">
+            {cas.blocs.map((b) => (
+              <div class="cas__bloc">
+                <h3>{b.titre}</h3>
+                {b.textes.map((t) => <p>{t}</p>)}
+              </div>
+            ))}
           </div>
-          <div class="cas-client__bloc">
-            <h3>La solution</h3>
-            {casClient.solution.map((t) => <p>{t}</p>)}
-          </div>
-          <blockquote class="cas-client__retour">
-            <p class="mono">Le retour du praticien</p>
-            <p>{casClient.retour}</p>
-          </blockquote>
-        </div>
-        {casClient.mention && <p class="cas-client__mention">{casClient.mention}</p>}
+        )}
+        {cas.mention && <p class="cas__mention">{cas.mention}</p>}
       </Section>
     ) : (
       <Section labelledby="cas-titre">
@@ -128,15 +124,17 @@ const casClient = page?.casClient;
           <Fragment slot="title">{exigences.titre}</Fragment>
           {exigences.lead}
         </SectionHeader>
-        <ul class="exigences">
-          {exigences.items.map((x, i) => (
-            <li>
-              <span class="mono">{String(i + 1).padStart(2, '0')}</span>
-              <h3>{x.titre}</h3>
-              <p>{x.texte}</p>
-            </li>
-          ))}
-        </ul>
+        {exigences.items && (
+          <ul class="exigences">
+            {exigences.items.map((x, i) => (
+              <li>
+                <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{x.titre}</h3>
+                <p>{x.texte}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </Section>
     ) : (
       <Section labelledby="contraintes-titre">
@@ -199,18 +197,16 @@ const casClient = page?.casClient;
     text-wrap: balance;
   }
 
-  .cas-client {
+  .cas {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
     gap: var(--space-4);
   }
 
-  .cas-client__bloc,
-  .cas-client__retour {
+  .cas__bloc {
     display: grid;
     align-content: start;
     gap: var(--space-3);
-    margin: 0;
     padding: var(--space-6) var(--space-5) var(--space-5);
     border: 1px solid var(--color-line);
     border-radius: var(--radius-l);
@@ -218,31 +214,19 @@ const casClient = page?.casClient;
     box-shadow: var(--shadow-card);
   }
 
-  .cas-client h3 {
+  .cas__bloc h3 {
     font-size: var(--step-1);
     line-height: 1.2;
   }
 
-  .cas-client__bloc p {
+  .cas__bloc p {
     font-size: var(--step--1);
     color: var(--color-text-muted);
   }
 
-  .cas-client__retour .mono {
-    font-size: var(--step--2);
-    color: var(--signal-600);
-  }
-
-  .cas-client__retour p:last-child {
-    font-family: var(--font-serif);
-    font-size: var(--step-1);
-    font-style: italic;
-    line-height: 1.3;
-  }
-
-  .cas-client__mention {
+  .cas__mention {
     margin-top: var(--space-4);
-    font-size: var(--step--2);
+    font-size: var(--step--1);
     color: var(--color-text-muted);
   }
 

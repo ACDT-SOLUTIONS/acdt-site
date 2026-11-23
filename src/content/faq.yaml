@@ -22,17 +22,19 @@
   pages: [/solutions/]
   question: Faut-il changer de logiciels ?
   reponse: >-
-    En priorité, nous partons des outils que vous utilisez déjà. Si l'un d'eux bloque la solution,
-    nous vous le disons et nous vous présentons les options avant tout développement.
+    Pas nécessairement. Nous commençons par examiner les outils déjà utilisés et leurs possibilités
+    d'intégration. Un changement n'est proposé que s'il répond à un besoin identifié ; ses coûts et ses
+    limites sont discutés avant le devis.
 
 - id: donnees
   ordre: 4
   pages: [/methode/, /solutions/infrastructure-privee/]
   question: Que deviennent nos données ?
   reponse: >-
-    Le périmètre des données traitées est défini avec vous avant le démarrage. Pour les informations
-    les plus sensibles, une infrastructure privée peut être étudiée, sous réserve de validation
-    technique et réglementaire.
+    Leur traitement dépend de l'architecture retenue. Avant le projet, nous identifions où elles sont
+    stockées, quels services y accèdent, combien de temps elles sont conservées et comment elles sont
+    supprimées ou restaurées. Un hébergement local ne constitue pas, à lui seul, une garantie de sécurité
+    ou de conformité.
 
 - id: permanence-numero
   ordre: 10
@@ -86,8 +88,9 @@
   pages: [/secteurs/]
   question: Travaillez-vous avec les professionnels de santé ?
   reponse: >-
-    Une offre dédiée est à l'étude. Les données de santé imposent des exigences spécifiques :
-    nous ne proposerons ces solutions qu'une fois leur conformité validée.
+    Nous étudions certains besoins d'organisation et d'accueil, mais nous ne proposons pas actuellement
+    d'offre générale pour les professionnels de santé. Les projets concernés nécessitent un cadrage
+    technique et réglementaire spécifique avant toute proposition.
 
 # Page « Automatisation des processus administratifs » (famille 02).
 - id: administratif-logiciels

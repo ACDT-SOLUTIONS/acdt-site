@@ -1,7 +1,7 @@
 - id: accueil-telephonique-ia
   numero: "01"
   titre: Accueil et permanence téléphonique IA
-  accroche: Chaque appel reçoit une réponse, même quand personne n'est disponible pour décrocher.
+  accroche: Un assistant peut prendre le relais selon les horaires et les règles définis avec vous.
   description: >-
     Un assistant vocal prend le relais lorsque vous êtes occupé, absent ou hors horaires :
     il identifie le motif de l'appel, prend un message ou un rendez-vous, et prévient la bonne personne.
@@ -20,7 +20,7 @@
 - id: automatisation-administrative
   numero: "02"
   titre: Automatisation des processus administratifs
-  accroche: Les relances, la saisie et les documents avancent sans que quelqu'un ait à y penser.
+  accroche: Les tâches répétitives peuvent avancer selon des règles définies, avec validation humaine aux étapes prévues.
   description: >-
     Nous automatisons les tâches répétitives qui ralentissent vos dossiers : collecte de pièces,
     formulaires, génération de documents, devis, facturation et suivi des échéances.
@@ -41,7 +41,7 @@
 - id: crm-automatisation-commerciale
   numero: "03"
   titre: CRM et automatisation commerciale
-  accroche: Aucune demande ne reste sans réponse, et vous savez où en est chaque opportunité.
+  accroche: Centralisez les demandes et rendez leur suivi plus lisible.
   description: >-
     Vos demandes entrantes sont centralisées, qualifiées et suivies jusqu'à la signature,
     avec des relances au bon moment et des tableaux de bord qui se mettent à jour seuls.
@@ -60,11 +60,11 @@
 - id: infrastructure-privee
   numero: "04"
   titre: Infrastructure privée et automatisations sécurisées
-  accroche: Pour les données qui ne doivent pas quitter votre environnement.
+  accroche: Vos données restent dans un périmètre défini avec vous.
   description: >-
-    Lorsque la confidentialité l'exige, les automatisations peuvent être hébergées sur une
-    infrastructure maîtrisée — serveur local ou hébergement dédié — avec, si c'est pertinent,
-    une IA exécutée localement.
+    Certaines automatisations peuvent être hébergées sur un serveur local ou une infrastructure dédiée.
+    Le choix dépend des outils, des données, des accès nécessaires et des obligations applicables. Une IA
+    exécutée localement peut être étudiée lorsque le cas d'usage s'y prête.
   capacites:
     - Serveurs locaux
     - Automatisations hébergées sur infrastructure adaptée

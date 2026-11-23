@@ -38,12 +38,14 @@ const items = await Promise.all(scenarios.map(chargerScenario));
               <dt>Temps libéré</dt>
               <dd class="mono">{formatHeures(resultat.heuresLibereesParMois)} / mois</dd>
             </div>
-            <div>
-              <dt>Économies effectives</dt>
-              <dd class="mono">{formatEuros(resultat.economiesEffectivesParMois)} / mois</dd>
-            </div>
+            {scenario.data.analyse === 'complete' && (
+              <div>
+                <dt>Économie simulée selon les hypothèses</dt>
+                <dd class="mono">{formatEuros(resultat.economiesEffectivesParMois)} / mois</dd>
+              </div>
+            )}
           </dl>
-          <p class="case__mention">Scénario chiffré — hypothèses et limites détaillées.</p>
+          <p class="case__mention">Simulation — hypothèses et limites détaillées. Ni économie constatée, ni tarif ACDT.</p>
         </li>
       ))}
     </ul>

@@ -22,7 +22,7 @@ const { scenario, secteur, famille, base } = data;
     <h2 id="calc-titre">{scenario.data.titre}</h2>
     <p class="calc__contexte">
       {scenario.data.contexte}
-      <a href={`/cas-pratiques/${scenario.id}/`}>Voir le cas pratique documenté</a>
+      <a href={`/cas-pratiques/${scenario.id}/`}>Voir la simulation détaillée</a>
     </p>
     <p class="calc__avertissement">
       <strong>Estimation.</strong> Les résultats dépendent entièrement des hypothèses saisies ; ils ne constituent ni une
@@ -103,7 +103,7 @@ const { scenario, secteur, famille, base } = data;
       this.toggleAttribute('data-negatif', r.economiesEffectivesParMois < 0);
       this.ecrire(
         '[data-resume]',
-        `Économies effectives : ${formatEuros(r.economiesEffectivesParMois)} par mois. Gain net : ${formatEuros(r.gainNetSurHorizon)}.`,
+        `Économie théorique : ${formatEuros(r.economiesEffectivesParMois)} par mois. Gain net : ${formatEuros(r.gainNetSurHorizon)}.`,
       );
     }
 

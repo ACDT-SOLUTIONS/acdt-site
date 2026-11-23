@@ -19,39 +19,41 @@ const sourcesNonVerifiees = sources.some((s) => s.data.statut !== 'verifiee');
       {scenario.data.limites.map((l) => <li>{l}</li>)}
     </ul>
   </div>
-  <div id="sources">
-    <Titre class="notes__titre mono">Études et sources</Titre>
-    {
-      sourcesNonVerifiees && (
-        <p class="notes__alerte">
-          Maquette : certaines sources sont en cours de vérification. Les valeurs concernées sont des hypothèses de
-          travail.
-        </p>
-      )
-    }
-    <ul class="notes__sources">
+  {sources.length > 0 && (
+    <div id="sources">
+      <Titre class="notes__titre mono">Études et sources</Titre>
       {
-        sources.map((s) => (
-          <li>
-            <span class:list={['statut mono', `statut--${s.data.statut}`]}>
-              {s.data.statut === 'verifiee' ? 'Vérifiée' : 'À vérifier'}
-            </span>
-            <span class="notes__source-titre">
-              {s.data.url ? (
-                <a href={s.data.url} rel="noopener" target="_blank">
-                  {s.data.titre}
-                </a>
-              ) : (
-                s.data.titre
-              )}
-            </span>
-            <span class="notes__meta">{s.data.editeur}</span>
-            <span class="notes__meta">{s.data.note}</span>
-          </li>
-        ))
+        sourcesNonVerifiees && (
+          <p class="notes__alerte">
+            Maquette : certaines sources sont en cours de vérification. Les valeurs concernées sont des hypothèses de
+            travail.
+          </p>
+        )
       }
-    </ul>
-  </div>
+      <ul class="notes__sources">
+        {
+          sources.map((s) => (
+            <li>
+              <span class:list={['statut mono', `statut--${s.data.statut}`]}>
+                {s.data.statut === 'verifiee' ? 'Vérifiée' : 'À vérifier'}
+              </span>
+              <span class="notes__source-titre">
+                {s.data.url ? (
+                  <a href={s.data.url} rel="noopener" target="_blank">
+                    {s.data.titre}
+                  </a>
+                ) : (
+                  s.data.titre
+                )}
+              </span>
+              <span class="notes__meta">{s.data.editeur}</span>
+              <span class="notes__meta">{s.data.note}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  )}
 </div>
 
 <style>

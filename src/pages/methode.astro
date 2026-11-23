@@ -3,20 +3,51 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/layout/PageHero.astro';
 import Section from '@/components/layout/Section.astro';
 import SectionHeader from '@/components/ui/SectionHeader.astro';
-import Placeholder from '@/components/ui/Placeholder.astro';
 import CtaBand from '@/components/layout/CtaBand.astro';
 import MethodSteps from '@/components/content/MethodSteps.astro';
 import FaqSection from '@/components/content/FaqSection.astro';
 
 const phases = [
-  'Premier échange',
-  'Analyse et diagnostic chiffré',
-  'Devis',
-  'Conception',
-  'Tests avec vous',
-  'Mise en service',
-  'Mesure des résultats',
-  'Suivi et maintenance',
+  {
+    titre: 'Premier échange',
+    texte:
+      'Nous échangeons sur la tâche qui prend du temps, les outils utilisés et le résultat que vous souhaitez améliorer. Ce premier échange sert à déterminer si une analyse est pertinente.',
+  },
+  {
+    titre: 'Analyse et diagnostic',
+    texte:
+      "Nous observons les étapes, volumes, durées, exceptions, personnes concernées et données utilisées. Le diagnostic distingue ce qui relève de règles simples, d'une intégration, d'une IA éventuelle ou d'une validation humaine.",
+  },
+  {
+    titre: 'Devis',
+    texte:
+      'Vous recevez un périmètre, les livrables, le calendrier, les coûts initiaux et récurrents, ainsi que les dépendances aux outils ou prestataires. Aucun développement ne commence sans accord sur ce périmètre.',
+  },
+  {
+    titre: 'Conception',
+    texte:
+      'Nous définissons le fonctionnement attendu, les droits, les erreurs à traiter et les étapes qui nécessitent votre décision.',
+  },
+  {
+    titre: 'Tests avec vous',
+    texte:
+      "Les scénarios habituels et les cas d'erreur sont testés avec des données adaptées. Les résultats et limites sont consignés avant la mise en service.",
+  },
+  {
+    titre: 'Mise en service',
+    texte:
+      'Le démarrage se fait sur le périmètre convenu, avec consignes de reprise manuelle et personnes responsables identifiées.',
+  },
+  {
+    titre: 'Mesure',
+    texte:
+      'Nous comparons les indicateurs définis au départ, avec les mêmes méthodes de calcul. Les résultats observés sont distingués des estimations.',
+  },
+  {
+    titre: 'Suivi et maintenance',
+    texte:
+      'Les mises à jour, sauvegardes, incidents, coûts récurrents et changements de règles sont suivis selon les responsabilités prévues au devis ou au contrat.',
+  },
 ];
 ---
 
@@ -42,8 +73,8 @@ const phases = [
         phases.map((p, i) => (
           <li>
             <span class="phases__n mono">{String(i + 1).padStart(2, '0')}</span>
-            <h3>{p}</h3>
-            <p class="phases__todo mono">À rédiger</p>
+            <h3>{p.titre}</h3>
+            <p class="phases__texte">{p.texte}</p>
           </li>
         ))
       }
@@ -54,7 +85,13 @@ const phases = [
     <SectionHeader eyebrow="Données et confidentialité" index="03" id="donnees-titre">
       <Fragment slot="title">Le cadrage des données.</Fragment>
     </SectionHeader>
-    <Placeholder>Ce qui est défini avec le client avant tout développement : périmètre, accès, hébergement, conservation.</Placeholder>
+    <p class="donnees">
+      Avant tout développement, nous recensons les données concernées, leur origine, les personnes qui y accèdent, les
+      outils et prestataires sollicités, les lieux d'hébergement, les durées de conservation et les règles de
+      suppression. Les accès et mesures de sécurité sont définis pour le périmètre retenu. Si les exigences ne peuvent
+      pas être satisfaites ou vérifiées, le projet est réduit, reporté ou refusé. La localisation d'un serveur ne suffit
+      pas à établir la conformité d'un traitement.
+    </p>
   </Section>
 
   <FaqSection index="04" />
@@ -90,8 +127,12 @@ const phases = [
     line-height: 1.2;
   }
 
-  .phases__todo {
-    font-size: var(--step--2);
-    color: var(--color-text-subtle);
+  .phases__texte {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .donnees {
+    max-width: 48rem;
   }
 </style>

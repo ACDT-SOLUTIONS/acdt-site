@@ -3,7 +3,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/layout/PageHero.astro';
 import Section from '@/components/layout/Section.astro';
 import SectionHeader from '@/components/ui/SectionHeader.astro';
-import Placeholder from '@/components/ui/Placeholder.astro';
 import CtaBand from '@/components/layout/CtaBand.astro';
 import Calculator from '@/components/simulation/Calculator.astro';
 import FaqSection from '@/components/content/FaqSection.astro';
@@ -27,10 +26,35 @@ const data = await scenarioMisEnAvant();
     <SectionHeader eyebrow="Mode d'emploi" index="01" id="lecture-titre">
       <Fragment slot="title">Lire les résultats.</Fragment>
     </SectionHeader>
-    <Placeholder>
-      Explication des quatre notions (temps libéré, temps valorisé, économies effectives, retour sur investissement
-      net) et de la manière de choisir ses hypothèses.
-    </Placeholder>
+    <div class="lecture">
+      <p class="lecture__avertissement">
+        Les résultats reprennent uniquement les hypothèses affichées. Le temps estimé ne devient une économie que si le
+        temps est réaffecté à une activité utile ou si une dépense est réellement évitée. Les coûts de projet et de
+        fonctionnement sont fictifs tant qu'ils n'ont pas été remplacés par un devis ou des montants réels.
+      </p>
+      <dl class="lecture__notions">
+        <div>
+          <dt>Temps libéré</dt>
+          <dd>Volume mensuel × durée moyenne × part automatisée.</dd>
+        </div>
+        <div>
+          <dt>Valeur théorique du temps</dt>
+          <dd>Temps libéré × coût horaire que vous avez choisi.</dd>
+        </div>
+        <div>
+          <dt>Économie potentielle</dt>
+          <dd>Valeur du temps × part réellement réaffectée, moins les coûts récurrents saisis.</dd>
+        </div>
+        <div>
+          <dt>Retour net simulé</dt>
+          <dd>Économies potentielles sur la période moins l'investissement initial.</dd>
+        </div>
+      </dl>
+      <p>
+        Ces étapes décrivent un calcul, pas une prévision. Ajustez une hypothèse à la fois et vérifiez les volumes et
+        durées sur votre propre activité.
+      </p>
+    </div>
   </Section>
 
   <FaqSection index="02" />
@@ -40,3 +64,29 @@ const data = await scenarioMisEnAvant();
     Une estimation reste une estimation. Lors de l'analyse, nous mesurons vos volumes et vos coûts réels.
   </CtaBand>
 </BaseLayout>
+
+<style>
+  .lecture {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 48rem;
+  }
+
+  .lecture__avertissement {
+    color: var(--color-text-muted);
+  }
+
+  .lecture__notions {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .lecture__notions dt {
+    font-weight: 600;
+  }
+
+  .lecture__notions dd {
+    margin: var(--space-1) 0 0;
+    color: var(--color-text-muted);
+  }
+</style>
