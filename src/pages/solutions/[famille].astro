@@ -216,7 +216,7 @@ const titreEditorial = p?.hero.titre;
         <ProcessSimulator simulation={p.simulation} />
       ) : p?.fonctionnement ? (
         <>
-          <ProcessSteps etapes={p.fonctionnement.etapes} label="Étapes de traitement d'un appel" />
+          <ProcessSteps etapes={p.fonctionnement.etapes} label={`Étapes : ${s.titre}`} />
           {p.fonctionnement.conclusion && (
             <div class="bloc-suivant">
               <Callout fort={p.fonctionnement.conclusion} />
@@ -292,7 +292,8 @@ const titreEditorial = p?.hero.titre;
         </SectionHeader>
       )
     }
-    <SectorCards famille={solution.id} textes={textesSecteurs} etapes={etapesSecteurs} badge={p?.secteurs?.badge} />
+    <SectorCards famille={solution.id} textes={textesSecteurs} etapes={etapesSecteurs} badge={p?.secteurs?.badge} complementaires={s.metiersComplementaires} />
+    {s.metiersNote && <div class="bloc-suivant"><Callout fort={s.metiersNote} /></div>}
     {
       p?.secteurs?.conclusion && (
         <div class="bloc-suivant">

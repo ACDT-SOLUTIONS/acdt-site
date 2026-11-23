@@ -22,17 +22,19 @@
   pages: [/solutions/]
   question: Faut-il changer de logiciels ?
   reponse: >-
-    En priorité, nous partons des outils que vous utilisez déjà. Si l'un d'eux bloque la solution,
-    nous vous le disons et nous vous présentons les options avant tout développement.
+    Pas nécessairement. Nous commençons par examiner les outils déjà utilisés et leurs possibilités
+    d'intégration. Un changement n'est proposé que s'il répond à un besoin identifié ; ses coûts et ses
+    limites sont discutés avant le devis.
 
 - id: donnees
   ordre: 4
   pages: [/methode/, /solutions/infrastructure-privee/]
   question: Que deviennent nos données ?
   reponse: >-
-    Le périmètre des données traitées est défini avec vous avant le démarrage. Pour les informations
-    les plus sensibles, une infrastructure privée peut être étudiée, sous réserve de validation
-    technique et réglementaire.
+    Leur traitement dépend de l'architecture retenue. Avant le projet, nous identifions où elles sont
+    stockées, quels services y accèdent, combien de temps elles sont conservées et comment elles sont
+    supprimées ou restaurées. Un hébergement local ne constitue pas, à lui seul, une garantie de sécurité
+    ou de conformité.
 
 - id: permanence-numero
   ordre: 10
@@ -86,8 +88,9 @@
   pages: [/secteurs/]
   question: Travaillez-vous avec les professionnels de santé ?
   reponse: >-
-    Une offre dédiée est à l'étude. Les données de santé imposent des exigences spécifiques :
-    nous ne proposerons ces solutions qu'une fois leur conformité validée.
+    Nous étudions certains besoins d'organisation et d'accueil, mais nous ne proposons pas actuellement
+    d'offre générale pour les professionnels de santé. Les projets concernés nécessitent un cadrage
+    technique et réglementaire spécifique avant toute proposition.
 
 # Page « Automatisation des processus administratifs » (famille 02).
 - id: administratif-logiciels
@@ -143,3 +146,55 @@
     Sur devis, après analyse du processus. Le prix dépend du nombre d'étapes et de règles, des outils à
     connecter, du recours éventuel à l'IA, des validations nécessaires et des coûts récurrents des services
     utilisés.
+
+- id: crm-existant
+  ordre: 40
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Faut-il remplacer notre CRM ?
+  reponse: >-
+    Pas nécessairement. Nous regardons d'abord comment améliorer votre outil actuel : champs, étapes,
+    rappels, rapports et connexions. Un remplacement est étudié seulement s'il apporte un intérêt clair.
+
+- id: crm-suitecrm
+  ordre: 41
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Travaillez-vous uniquement avec SuiteCRM ?
+  reponse: >-
+    Non. SuiteCRM est une option que nous avons prototypée sur des données fictives. Le choix dépend de
+    votre organisation, de vos logiciels, de votre budget et de vos contraintes d'hébergement.
+
+- id: crm-relances
+  ordre: 42
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Peut-on automatiser les relances après un devis ?
+  reponse: >-
+    C'est un usage que nous pouvons étudier. Il faut connaître le statut du devis, les réponses reçues,
+    les règles de contact et les conditions d'arrêt. Nous définissons avec vous ce qui relève d'un rappel,
+    d'un brouillon à valider ou d'un envoi automatique, puis testons le parcours avant sa mise en service.
+
+- id: crm-reprise
+  ordre: 43
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Peut-on reprendre nos fichiers de contacts ?
+  reponse: >-
+    Nous examinons leurs formats et leur qualité, puis préparons les correspondances de champs et un import
+    d'essai. Les doublons, les informations contradictoires et les préférences de contact demandent des règles
+    validées avec vous avant l'import final.
+
+- id: crm-ia
+  ordre: 44
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: L'intelligence artificielle est-elle nécessaire ?
+  reponse: >-
+    Non. Une base bien structurée, des règles de suivi et des rappels peuvent suffire. Une aide à la synthèse
+    ou à la préparation de messages peut être étudiée si elle apporte une utilité et si le traitement des
+    données est compatible avec vos contraintes. Les contenus engageants restent validés par votre équipe.
+
+- id: crm-resultats
+  ordre: 45
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Pouvez-vous garantir davantage de ventes ?
+  reponse: >-
+    Nous ne garantissons pas de hausse des ventes. Le CRM aide à organiser les contacts et les prochaines
+    actions ; les résultats dépendent aussi de votre offre, de votre marché et du travail commercial.
+    Nous suivons avec vous des indicateurs concrets de qualité et de continuité du suivi.

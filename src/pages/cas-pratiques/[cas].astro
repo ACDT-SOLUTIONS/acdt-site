@@ -11,8 +11,8 @@ import MiniFlow from '@/components/content/MiniFlow.astro';
 import HypothesesPanel from '@/components/simulation/HypothesesPanel.astro';
 import ResultsPanel from '@/components/simulation/ResultsPanel.astro';
 import SourcesLimits from '@/components/simulation/SourcesLimits.astro';
-import { PARAMETRES } from '@/lib/roi/engine';
-import { formatParametre } from '@/lib/roi/format';
+import { FORMULES, PARAMETRES } from '@/lib/roi/engine';
+import { formatNombre, formatParametre, formatPourcent } from '@/lib/roi/format';
 import { chargerScenario } from '@/lib/simulations';
 import { lienEvaluation } from '@/config/site';
 
@@ -28,6 +28,12 @@ interface Props {
 const data = await chargerScenario(Astro.props.scenario);
 const { scenario, secteur, famille, base } = data;
 const d = scenario.data;
+// Mode « temps » : seuls volume, durée et part automatisée sont publiés, avec le temps libéré.
+const tempsSeul = d.analyse === 'temps';
+const clesTemps = ['occurrencesParMois', 'minutesParOccurrence', 'tauxAutomatisation'] as const;
+const clesMasquees = tempsSeul
+  ? (Object.keys(PARAMETRES) as (keyof typeof PARAMETRES)[]).filter((c) => !(clesTemps as readonly string[]).includes(c))
+  : [];
 const clesCouts = ['coutsRecurrentsMensuels', 'investissementInitial'] as const;
 const couts = clesCouts.map((cle) => ({
   label: PARAMETRES[cle].label,
@@ -53,7 +59,7 @@ const couts = clesCouts.map((cle) => ({
       <strong>Scénario d'automatisation.</strong> Ce cas ne présente pas le résultat d'un client réel.
     </p>
     <Fragment slot="actions">
-      <Button href="#analyse" arrow>Voir l'analyse économique</Button>
+      <Button href="#analyse" arrow>{tempsSeul ? 'Voir le calcul' : "Voir l'analyse économique"}</Button>
       <Button href={lienEvaluation.href} variant="secondary">{lienEvaluation.label}</Button>
     </Fragment>
   </PageHero>
@@ -75,6 +81,11 @@ const couts = clesCouts.map((cle) => ({
         {
           d.processusActuel ? (
             <MiniFlow etapes={d.processusActuel} label="Processus actuel" />
+          ) : d.processusTextes?.actuel ? (
+            <div class="processus__texte">
+              <p class="processus__titre">{d.processusTextes.actuel.titre}</p>
+              <p>{d.processusTextes.actuel.texte}</p>
+            </div>
           ) : (
             <Placeholder>Description étape par étape de la façon dont la tâche est réalisée aujourd'hui.</Placeholder>
           )
@@ -85,6 +96,11 @@ const couts = clesCouts.map((cle) => ({
         {
           d.processusAutomatise ? (
             <MiniFlow etapes={d.processusAutomatise} label="Automatisation envisagée" />
+          ) : d.processusTextes?.automatise ? (
+            <div class="processus__texte">
+              <p class="processus__titre">{d.processusTextes.automatise.titre}</p>
+              <p>{d.processusTextes.automatise.texte}</p>
+            </div>
           ) : (
             famille && (
               <>
@@ -98,43 +114,80 @@ const couts = clesCouts.map((cle) => ({
     </div>
   </Section>
 
-  <Section tone="inverse" id="analyse" labelledby="analyse-titre">
-    <SectionHeader eyebrow="Analyse économique" index="03" tone="inverse" id="analyse-titre">
-      <Fragment slot="title">Le calcul, <em class="accent">étape par étape.</em></Fragment>
-    </SectionHeader>
+  {
+    tempsSeul ? (
+      <Section tone="inverse" id="analyse" labelledby="analyse-titre">
+        <SectionHeader eyebrow="Simulation" index="03" tone="inverse" id="analyse-titre">
+          <Fragment slot="title">Le temps en jeu, <em class="accent">pas une économie.</em></Fragment>
+        </SectionHeader>
 
-    <div class="analyse">
-      <div class="analyse__bloc">
-        <h3 class="sous-titre mono">Hypothèses de calcul</h3>
-        <HypothesesPanel data={data} exclure={[...clesCouts]} />
+        <div class="analyse">
+          <div class="analyse__bloc">
+            <h3 class="sous-titre mono">Hypothèses de calcul</h3>
+            <HypothesesPanel data={data} exclure={[...clesMasquees]} />
+          </div>
+
+          <div class="analyse__colonne">
+            <div class="analyse__bloc">
+              <h3 class="sous-titre mono">Temps potentiellement consacré à la tâche automatisée</h3>
+              <p class="temps__valeur mono">{formatNombre(data.resultat.heuresLibereesParMois)} heures / mois</p>
+              <p class="temps__formule mono">{FORMULES.tempsLibere}</p>
+              <p class="temps__note">
+                Simulation : {base.occurrencesParMois} × {formatNombre(base.minutesParOccurrence)} min ×{' '}
+                {formatPourcent(base.tauxAutomatisation)} ÷ 60. Les coûts, économies et retours sur investissement ne
+                sont pas présentés tant que leurs montants n'ont pas été vérifiés.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="analyse__notes">
+          <SourcesLimits data={data} />
+        </div>
+      </Section>
+    ) : (
+    <Section tone="inverse" id="analyse" labelledby="analyse-titre">
+      <SectionHeader eyebrow="Analyse économique" index="03" tone="inverse" id="analyse-titre">
+        <Fragment slot="title">Le calcul, <em class="accent">étape par étape.</em></Fragment>
+      </SectionHeader>
+
+      <div class="analyse">
+        <div class="analyse__bloc">
+          <h3 class="sous-titre mono">Hypothèses de calcul</h3>
+          <HypothesesPanel data={data} exclure={[...clesCouts]} />
+        </div>
+
+        <div class="analyse__colonne">
+          <div class="analyse__bloc">
+            <h3 class="sous-titre mono">Coûts</h3>
+            <dl class="couts">
+              {
+                couts.map((c) => (
+                  <div>
+                    <dt>{c.label}</dt>
+                    <dd class="mono">{c.valeur}</dd>
+                    <dd class="couts__note">{c.note}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+          <div class="analyse__bloc">
+            <h3 class="sous-titre mono">Indicateurs et rentabilité potentielle</h3>
+            <p class="temps__note temps__note--avant">
+              Simulation : ces montants découlent des hypothèses ci-contre. Aucune dépense évitée n'est observée.
+            </p>
+            <ResultsPanel data={data} />
+          </div>
+        </div>
       </div>
 
-      <div class="analyse__colonne">
-        <div class="analyse__bloc">
-          <h3 class="sous-titre mono">Coûts</h3>
-          <dl class="couts">
-            {
-              couts.map((c) => (
-                <div>
-                  <dt>{c.label}</dt>
-                  <dd class="mono">{c.valeur}</dd>
-                  <dd class="couts__note">{c.note}</dd>
-                </div>
-              ))
-            }
-          </dl>
-        </div>
-        <div class="analyse__bloc">
-          <h3 class="sous-titre mono">Indicateurs et rentabilité potentielle</h3>
-          <ResultsPanel data={data} />
-        </div>
+      <div class="analyse__notes">
+        <SourcesLimits data={data} />
       </div>
-    </div>
-
-    <div class="analyse__notes">
-      <SourcesLimits data={data} />
-    </div>
-  </Section>
+    </Section>
+    )
+  }
 
   <Section labelledby="suite-titre">
     <div class="suite">
@@ -169,6 +222,31 @@ const couts = clesCouts.map((cle) => ({
     margin-top: var(--space-4);
     font-size: var(--step--1);
     color: var(--signal-600);
+  }
+
+  .processus__texte {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 40rem;
+  }
+
+  .processus__titre {
+    font-weight: 600;
+  }
+
+  .temps__valeur {
+    font-size: var(--step-3);
+  }
+
+  .temps__note--avant {
+    margin: 0 0 var(--space-4);
+  }
+
+  .temps__formule,
+  .temps__note {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--color-inverse-muted);
   }
 
   .texte {

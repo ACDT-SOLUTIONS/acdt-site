@@ -1,11 +1,28 @@
 - id: avocats-relances-pieces
-  titre: Relance automatique des pièces clients
+  titre: "Simulation : relance automatique des pièces clients"
+  # Seul le temps est publié : coût horaire, économies, investissement et retour sur investissement restent
+  # masqués tant que les coûts et leur source n'ont pas été vérifiés.
+  analyse: temps
   secteur: cabinets-avocats
   famille: automatisation-administrative
   miseEnAvant: true
   contexte: >-
     Scénario d'automatisation pour un cabinet qui ouvre une trentaine de nouveaux dossiers par mois
     et relance chaque client en moyenne quatre fois pour obtenir ses pièces.
+  processusTextes:
+    actuel:
+      titre: Processus de départ illustratif
+      texte: >-
+        Une équipe ouvre un dossier, vérifie les pièces reçues, repère celles qui manquent, contacte le client,
+        puis met à jour le suivi. Dans cette simulation, 30 dossiers et quatre relances par dossier donnent
+        120 relances par mois. La durée retenue pour chaque relance est une hypothèse à remplacer par une mesure
+        réelle.
+    automatise:
+      titre: Automatisation envisagée
+      texte: >-
+        Le dossier est contrôlé selon une liste de pièces définie par le cabinet. Une relance peut être préparée
+        pour les éléments manquants et un rappel interne créé. Les réponses inhabituelles, contestations et
+        décisions sur le dossier restent traitées par une personne.
   parametres:
     occurrencesParMois: 120
     minutesParOccurrence: 6
@@ -26,9 +43,8 @@
       origine: hypothese
       note: 20 % des relances restent traitées à la main (cas particuliers).
     coutHoraireCharge:
-      origine: source
-      source: cout-horaire-main-oeuvre
-      note: Hypothèse de travail en attendant la source vérifiée.
+      origine: hypothese
+      note: "38 € par heure : hypothèse de travail, à remplacer par votre propre coût horaire chargé."
     tauxReaffectation:
       origine: hypothese
       note: Hypothèse prudente — la moitié du temps libéré seulement est réellement réemployée.
@@ -49,7 +65,7 @@
 
 
 - id: tpe-pme-reporting
-  titre: Préparation automatisée d'un reporting d'activité
+  titre: "Simulation : préparation automatisée d'un reporting d'activité"
   secteur: tpe-pme
   famille: automatisation-administrative
   miseEnAvant: false

@@ -14,8 +14,8 @@ valeur:
       Le simulateur interactif nécessite JavaScript. L'exemple chiffré ci-dessous reste consultable.
     hypotheses: Vos hypothèses
     avertissement: >-
-      Ces valeurs sont des hypothèses modifiables, pas des moyennes professionnelles ni des résultats clients.
-      La part prise en charge doit tenir compte des vérifications et du suivi qui restent à votre équipe.
+      Simulation fondée sur des hypothèses modifiables ; ce ne sont ni des résultats clients ni des économies
+      garanties. La part prise en charge doit tenir compte des vérifications et du suivi qui restent à votre équipe.
     reinitialiser: Réinitialiser les hypothèses
     # Les pourcentages sont saisis et affichés de 0 à 100 ; le simulateur les transmet au moteur entre 0 et 1.
     scenarios:
@@ -136,7 +136,7 @@ valeur:
     mention: >-
       Exemple indépendant des réglages du simulateur. Les montants sont fictifs : ce ne sont ni un devis ni des
       résultats clients.
-    lien: Voir le cas pratique documenté
+    lien: Voir la simulation détaillée
 
   conclusion:
     titre: Ces hypothèses ressemblent-elles au fonctionnement de votre cabinet ?

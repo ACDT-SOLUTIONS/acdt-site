@@ -147,7 +147,7 @@ jobs:
             echo "✓ $1 : HTTP $code"
           }
           verifier / 200 'Automatiser ce qui vous coûte'
-          verifier /solutions/accueil-telephonique-ia/ 200 'tel:+33972199815'
+          verifier /solutions/accueil-telephonique-ia/ 200 'permanence'
           verifier /tarifs/ 200 'sur devis'
           verifier /contact/ 200 '<contact-form'
           verifier /contact/ 200 'tel:+33757830279'

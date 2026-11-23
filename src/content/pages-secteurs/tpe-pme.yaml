@@ -121,8 +121,8 @@ valeur:
     resume: "{occurrences} rapports par mois × {minutes} minutes, dont {taux} prises en charge : {heures} heures
       potentiellement libérées par mois."
     detail: Voir les autres hypothèses et résultats
-    mention: "Scénario fictif indépendant de vos réglages. Les volumes, durées et montants sont des hypothèses :
-      ni moyenne professionnelle, ni tarif ACDT, ni résultat client."
+    mention: "Simulation illustrative : les volumes, durées, coûts et taux de réaffectation sont des hypothèses,
+      pas des moyennes professionnelles ou des résultats clients."
     lien: Voir les hypothèses du cas pratique
   conclusion:
     titre: Quelle tâche répétitive aimeriez-vous alléger en premier ?

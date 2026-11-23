@@ -3,7 +3,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/layout/PageHero.astro';
 import Section from '@/components/layout/Section.astro';
 import SectionHeader from '@/components/ui/SectionHeader.astro';
-import Placeholder from '@/components/ui/Placeholder.astro';
 import CtaBand from '@/components/layout/CtaBand.astro';
 import Orientation from '@/components/home/Orientation.astro';
 ---
@@ -16,9 +15,29 @@ import Orientation from '@/components/home/Orientation.astro';
 
   <Section labelledby="approche-titre">
     <SectionHeader eyebrow="Notre approche" index="01" id="approche-titre">
-      <Fragment slot="title">Pourquoi nous travaillons ainsi.</Fragment>
+      <Fragment slot="title">Une approche construite autour de votre travail réel.</Fragment>
     </SectionHeader>
-    <Placeholder>Présentation de la structure et de son positionnement, sans exagération de taille.</Placeholder>
+    <div class="approche">
+      <p>
+        ACDT Solutions analyse les tâches répétitives et les points de friction avant de proposer une automatisation.
+        L'objectif est de relier les outils déjà utiles, de réduire les manipulations manuelles et de conserver une
+        validation humaine aux étapes qui l'exigent.
+      </p>
+      <p>
+        Chaque projet commence par un besoin précis. Nous vérifions les outils, les données, les contraintes et les
+        coûts, puis nous proposons un périmètre sur devis. Les résultats sont mesurés avec les indicateurs définis au
+        départ ; ils ne sont pas promis à l'avance.
+      </p>
+      <p>
+        ACDT Solutions propose quatre familles de solutions : accueil téléphonique, processus administratifs, CRM et
+        automatisation commerciale, infrastructure privée. Les exemples du site sont identifiés comme scénarios
+        lorsqu'ils ne décrivent pas un résultat client.
+      </p>
+      <p class="approche__appel">
+        Vous avez un processus précis à examiner ? Présentez-nous son fonctionnement ; nous vous dirons si une étude a
+        du sens.
+      </p>
+    </div>
   </Section>
 
   <Section tone="sunken" labelledby="activite-titre">
@@ -30,3 +49,17 @@ import Orientation from '@/components/home/Orientation.astro';
 
   <CtaBand />
 </BaseLayout>
+
+<style>
+  .approche {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 48rem;
+  }
+
+  .approche__appel {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-style: italic;
+  }
+</style>

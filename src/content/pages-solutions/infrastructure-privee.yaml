@@ -1,0 +1,91 @@
+# Rédaction de la page « Infrastructure privée et automatisations sécurisées » (famille 04).
+# Ne pas présenter cette page comme une solution prête à déployer pour la santé, les données classifiées ou un
+# système soumis à agrément ou certification : le catalogue Notion indique ces offres comme « à cadrer ».
+
+hero:
+  accroche: Vos données restent dans un périmètre défini avec vous.
+  contexte: >-
+    Certaines automatisations peuvent être hébergées sur un serveur local ou une infrastructure dédiée. Le
+    choix dépend des outils, des données, des accès nécessaires et des obligations applicables.
+  promesse: Une IA exécutée localement peut être étudiée lorsque le cas d'usage s'y prête.
+  cta: { label: Voir le fonctionnement, href: '#processus-titre' }
+
+problemes:
+  titre: Les situations rencontrées.
+  items:
+    - titre: Des documents que vous ne souhaitez pas transmettre à plusieurs services
+      texte: >-
+        Nous recensons les données manipulées et les services actuellement sollicités avant de choisir une
+        architecture.
+    - titre: Des outils qui échangent des informations sensibles
+      texte: >-
+        Nous définissons les flux nécessaires, les personnes autorisées et les étapes qui doivent rester
+        humaines.
+    - titre: Une dépendance au cloud à mieux maîtriser
+      texte: >-
+        Certaines étapes peuvent être hébergées sur une machine dédiée ; les dépendances externes restantes sont
+        identifiées avec vous.
+
+prestations:
+  titre: Ce que la prestation peut inclure.
+  lead: >-
+    Une IA locale n'est proposée qu'après vérification de sa faisabilité et de son utilité. Les coûts de
+    matériel, d'hébergement, de maintenance et de services externes sont précisés au devis.
+  items:
+    - titre: Étudier et installer
+      resume: Un environnement dédié, mis en place sur le périmètre retenu.
+      liste:
+        - Étude de faisabilité
+        - Installation d'un serveur ou d'un environnement dédié
+        - Automatisations et stockage sur le périmètre retenu
+    - titre: Exploiter et maintenir
+      resume: Les accès, la reprise et le suivi, définis pour votre usage.
+      liste:
+        - Gestion des comptes et droits
+        - Sauvegardes et procédure de restauration
+        - Journalisation et maintenance selon le contrat
+
+fonctionnement:
+  titre: Un fonctionnement en quatre temps.
+  lead: Fonctionnement illustratif, à adapter à chaque projet.
+  etapes:
+    - titre: Définir le périmètre
+      texte: Identifier les documents, les utilisateurs, les outils et les flux concernés.
+    - titre: Choisir l'architecture
+      texte: Comparer les options locales, dédiées et les éventuels services externes nécessaires.
+    - titre: Configurer et tester
+      texte: >-
+        Vérifier les droits, les cas d'erreur, les sauvegardes et les actions qui demandent une validation
+        humaine.
+    - titre: Documenter et suivre
+      texte: Décrire les accès, la restauration, les mises à jour et les responsabilités de maintenance.
+
+benefices:
+  titre: Ce qu'une infrastructure dédiée peut apporter.
+  items:
+    - label: Transferts
+      titre: Moins de transferts vers des services externes
+      texte: Une infrastructure définie pour votre usage peut limiter certains transferts vers des services externes.
+    - label: Accès
+      titre: Des accès plus lisibles
+      texte: Les comptes, les droits et les flux sont décrits pour le périmètre retenu.
+  evaluation:
+    titre: Ce qu'elle ne fait pas
+    texte:
+      - >-
+        Elle ne supprime pas les risques : sécurité, disponibilité, sauvegardes, mises à jour et obligations de
+        protection des données doivent être examinées pour chaque projet.
+
+accompagnement:
+  titre: Un projet validé étape par étape.
+  etapes:
+    - titre: Cartographier les données et les flux
+      texte: Nous commençons par recenser les données, leurs flux et les personnes qui y accèdent.
+    - titre: Vérifier la faisabilité
+      texte: Nous vérifions la faisabilité technique et les contraintes applicables.
+    - titre: Proposer une architecture
+      texte: Si le périmètre est pertinent, nous proposons une architecture, un devis et un plan de test.
+    - titre: Mettre en service
+      texte: >-
+        La mise en service intervient après validation des accès, des sauvegardes et des responsabilités.
+        Maintenance et supervision sont définies au contrat.

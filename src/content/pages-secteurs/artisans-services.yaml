@@ -1,0 +1,21 @@
+# Sections propres à la page /secteurs/artisans-services/.
+# Scénario illustratif : il ne décrit pas une réalisation client.
+
+cas:
+  eyebrow: Cas d'usage illustratif
+  titre: Une demande de devis pendant une intervention.
+  lead: >-
+    Une demande de devis arrive pendant une intervention. Elle est enregistrée avec les coordonnées et les
+    informations fournies, puis affectée à la bonne personne. Un devis peut être préparé à partir d'un modèle et
+    reste à valider avant envoi. Si le client ne répond pas, un rappel peut être programmé selon les règles fixées
+    par l'entreprise.
+  mention: Ce scénario illustre un fonctionnement possible ; il ne décrit pas une réalisation client.
+
+exigences:
+  eyebrow: Spécificités
+  titre: Contraintes propres au métier.
+  lead: >-
+    Les demandes arrivent parfois par téléphone, email ou formulaire, tandis que l'équipe est en déplacement.
+    Nous définissons les informations réellement nécessaires, les personnes qui reçoivent les alertes et les
+    moments où une validation est requise. Les prix, délais, engagements et factures restent sous le contrôle de
+    l'entreprise. Les intégrations dépendent des outils utilisés et sont vérifiées avant le devis.

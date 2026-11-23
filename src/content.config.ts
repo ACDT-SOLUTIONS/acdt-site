@@ -11,6 +11,8 @@ const solutions = defineCollection({
     accroche: z.string(),
     description: z.string(),
     capacites: z.array(z.string()).min(1),
+    metiersComplementaires: z.array(z.object({ nom: z.string(), texte: z.string() })).optional(),
+    metiersNote: z.string().optional(),
     flux: z.array(z.object({ etape: z.string(), detail: z.string() })).length(3),
     // « sous-reserve » : présenté sans être affiché comme commercialisable en l'état.
     statut: z.enum(['disponible', 'sous-reserve']),
@@ -80,6 +82,16 @@ const simulations = defineCollection({
     // Facultatifs : la page affiche un emplacement « à rédiger » tant qu'ils sont absents.
     processusActuel: etapesFlux.optional(),
     processusAutomatise: etapesFlux.optional(),
+    // Description rédigée, affichée à la place d'un parcours en étapes absent.
+    processusTextes: z
+      .object({
+        actuel: z.object({ titre: z.string(), texte: z.string() }).optional(),
+        automatise: z.object({ titre: z.string(), texte: z.string() }).optional(),
+      })
+      .optional(),
+    // « temps » : seul le temps libéré est publié ; coûts, économies et retour sur investissement sont masqués
+    // tant que leurs montants et sources n'ont pas été vérifiés.
+    analyse: z.enum(['complete', 'temps']).default('complete'),
     parametres: z.object({
       occurrencesParMois: parametre('occurrencesParMois'),
       minutesParOccurrence: parametre('minutesParOccurrence'),
@@ -261,6 +273,12 @@ const pagesSolutions = defineCollection({
         benefices: z.array(z.object({ label: z.string(), titre: z.string(), texte: z.string() })).optional(),
         // Mention obligatoire près des chiffres mis en avant : exemples externes, gains non garantis.
         avertissement: z.string().optional(),
+        // Études externes masquées tant que leurs chiffres n'ont pas été contrôlés sur les publications
+        // originales : les données restent dans le fichier, `texteSansEtudes` s'affiche à leur place.
+        etudesMasquees: z.boolean().default(false),
+        texteSansEtudes: z.string().optional(),
+        // Liens affichés seulement si toutes leurs pages sont publiées (sinon aucun).
+        liensGroupes: z.boolean().default(false),
         // Zone dépliable regroupant méthode et études complètes.
         sourcesTitre: z.string().optional(),
         methode: z.array(titreTexte).min(2),
@@ -415,8 +433,19 @@ const pagesSecteurs = defineCollection({
         conclusion: z.object({ titre: z.string(), cta: lien }),
       })
       .optional(),
+    // Cas sans chiffres (cas d'usage, scénario illustratif) : remplace les cas pratiques chiffrés quand
+    // `valeur` est absent. `blocs` : cartes facultatives (ex. besoin, solution, à qui cela s'adresse).
+    cas: z
+      .object({
+        eyebrow: z.string(),
+        titre: z.string(),
+        lead: z.string().optional(),
+        blocs: z.array(z.object({ titre: z.string(), textes: z.array(z.string()).min(1) })).optional(),
+        mention: z.string().optional(),
+      })
+      .optional(),
     exigences: z
-      .object({ eyebrow: z.string(), titre: z.string(), lead: z.string(), items: z.array(titreTexte).min(1) })
+      .object({ eyebrow: z.string(), titre: z.string(), lead: z.string(), items: z.array(titreTexte).min(1).optional() })
       .optional(),
   }),
 });

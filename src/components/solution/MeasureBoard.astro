@@ -21,6 +21,9 @@ interface Props {
   mesures: {
     benefices?: { label: string; titre: string; texte: string }[];
     avertissement?: string;
+    etudesMasquees?: boolean;
+    texteSansEtudes?: string;
+    liensGroupes?: boolean;
     sourcesTitre?: string;
     methode: { titre: string; texte: string }[];
     introduction?: string;
@@ -35,10 +38,16 @@ interface Props {
 // zone dépliable « Sources et méthodologie » : méthode et études complètes, chacune avec sa source et son
 // niveau de preuve. Sans exemple, les cases « avant / après » d'un indicateur restent vides.
 const { mesures } = Astro.props;
-const enAvant = mesures.indicateurs.filter((x) => x.enAvant && x.exemple).slice(0, 3);
-const nbEtudes = mesures.indicateurs.filter((x) => x.exemple).length;
+// Études masquées : les indicateurs restent, sans leurs exemples chiffrés.
+const indicateurs = mesures.etudesMasquees
+  ? mesures.indicateurs.map((x) => ({ ...x, exemple: undefined }))
+  : mesures.indicateurs;
+const enAvant = indicateurs.filter((x) => x.enAvant && x.exemple).slice(0, 3);
+const nbEtudes = indicateurs.filter((x) => x.exemple).length;
 const derniere = mesures.methode.length - 1;
-const liens = (mesures.liens ?? []).filter((l) => lienVisible(l.href));
+const tousLiens = mesures.liens ?? [];
+const liensVisibles = tousLiens.filter((l) => lienVisible(l.href));
+const liens = mesures.liensGroupes && liensVisibles.length < tousLiens.length ? [] : liensVisibles;
 
 const NIVEAUX: Record<Niveau, { label: string; texte: string }> = {
   mesure: { label: 'Mesure observée', texte: 'relevée dans une étude publiée' },
@@ -47,7 +56,7 @@ const NIVEAUX: Record<Niveau, { label: string; texte: string }> = {
   estimation: { label: 'Estimation', texte: 'valeur estimée par la source' },
 };
 const niveauxPresents = (Object.keys(NIVEAUX) as Niveau[]).filter((n) =>
-  mesures.indicateurs.some((x) => x.exemple?.niveau === n),
+  indicateurs.some((x) => x.exemple?.niveau === n),
 );
 
 // Longueur des barres : proportion de chaque valeur par rapport à la plus grande des deux.
@@ -60,6 +69,8 @@ const barres = (e: Exemple) => {
 
 <div class="measure">
   {mesures.benefices && <BenefitGrid items={mesures.benefices} />}
+
+  {mesures.etudesMasquees && mesures.texteSansEtudes && <p class="measure__sans-etudes">{mesures.texteSansEtudes}</p>}
 
   {
     enAvant.length > 0 && (
@@ -117,7 +128,7 @@ const barres = (e: Exemple) => {
       </ol>
 
       {
-        (mesures.introduction || niveauxPresents.length > 0) && (
+        !mesures.etudesMasquees && (mesures.introduction || niveauxPresents.length > 0) && (
           <div class="measure__exemples">
             <p class="measure__eyebrow mono">Exemples externes · pas des réalisations ACDT Solutions</p>
             {mesures.introduction && <p class="measure__intro">{mesures.introduction}</p>}
@@ -139,7 +150,7 @@ const barres = (e: Exemple) => {
 
       <ul class="measure__indicateurs" aria-label="Indicateurs et exemples">
         {
-          mesures.indicateurs.map((x) => {
+          indicateurs.map((x) => {
             const e = x.exemple;
             const [rAvant, rApres] = e ? barres(e) : [0, 0];
             return (
@@ -290,6 +301,12 @@ const barres = (e: Exemple) => {
   }
 
   /* Exemples externes : avertissement, introduction et légende des niveaux de preuve. */
+  .measure__sans-etudes {
+    max-width: 62ch;
+    font-size: var(--step-0);
+    color: var(--color-text-muted);
+  }
+
   .measure__exemples {
     display: grid;
     gap: var(--space-4);

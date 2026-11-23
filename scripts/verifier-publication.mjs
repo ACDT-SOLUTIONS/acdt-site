@@ -109,7 +109,8 @@ for (const f of pages) {
   // L'adresse du formulaire, si elle a été explicitement activée, est la seule exception admise.
   const formulaire = process.env.PUBLIC_FORMULAIRE_URL;
   const sansFormulaire = formulaire ? visible.split(formulaire).join('') : visible;
-  if (/googletagmanager|gtag\(|GTM-|n8n\.acdt-solutions\.com|webhook|chat-panel/i.test(sansFormulaire)) {
+  // « /webhook/ » vise une adresse de webhook, pas le mot employé dans un texte (ex. page CRM).
+  if (/googletagmanager|gtag\(|GTM-|n8n\.acdt-solutions\.com|\/webhook\/|chat-panel/i.test(sansFormulaire)) {
     echec(`${r} : référence à un service non autorisé (GTM, GA hors consentement, n8n, chatbot)`);
   }
   // Mesure d'audience : uniquement via la gestion du consentement, avec l'identifiant configuré.

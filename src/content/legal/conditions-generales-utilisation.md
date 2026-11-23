@@ -3,7 +3,7 @@ titre: "Conditions Générales d'Utilisation (CGU)"
 ordre: 4
 source: "Texte de l'ancien site (main, ceeb27c), complété de l'identité de l'éditeur et de l'hébergeur (octobre 2026)."
 ---
-Date de dernière mise à jour : 26 octobre 2026
+Date de dernière mise à jour : 22 novembre 2026
 
 Les présentes Conditions Générales d'Utilisation (CGU) régissent l’accès et l’utilisation du site web d’ACDT Solutions (ci-après « le Site »). En accédant à ce Site, vous acceptez sans réserve les présentes CGU.
 
@@ -17,8 +17,6 @@ L'hébergement du site est assuré par OVH SAS, 2 rue Kellermann, 59100 Roubaix,
 ## 2. Objet du Site
 
 Le Site a pour objet la présentation des services de conseil, d'automatisation, d'intégration de systèmes et de transformation digitale proposés par ACDT Solutions, principalement destinés aux TPE et PME.
-
-Le Site propose également une ligne téléphonique de démonstration d'un assistant vocal. Son fonctionnement et le traitement des données correspondant sont décrits dans la [politique de confidentialité](/politique-de-confidentialite/).
 
 ## 3. Accès au Site
 
@@ -37,7 +35,7 @@ L'utilisateur s'engage à utiliser le Site et les informations qui y sont conten
 - de porter atteinte aux droits de propriété intellectuelle d'ACDT Solutions ou de tiers ;
 - d'introduire des virus ou tout autre programme malveillant ;
 - de collecter ou stocker des données personnelles d'autres utilisateurs ;
-- d'utiliser le formulaire de contact ou la ligne de démonstration de manière abusive ou automatisée.
+- d'utiliser le formulaire de contact de manière abusive ou automatisée.
 
 ## 6. Limitation de Responsabilité
 

@@ -13,9 +13,11 @@ interface Props {
   etapes?: Record<string, string[]>;
   /** Mention affichée en tête de chaque carte, ex. « Scénario illustratif ». */
   badge?: string;
+  /** Métiers présentés sans créer de nouvelles pages secteur. */
+  complementaires?: { nom: string; texte: string }[];
 }
 
-const { famille, avecPreparation = false, textes, etapes, badge } = Astro.props;
+const { famille, avecPreparation = false, textes, etapes, badge, complementaires = [] } = Astro.props;
 const ordreImpose = textes ? Object.keys(textes) : null;
 
 const secteurs = (
@@ -65,6 +67,14 @@ const items = await Promise.all(secteurs.map(async (s) => ({ ...s, familles: awa
         </li>
       );
     })
+  }
+  {
+    complementaires.map((m) => (
+      <li class="sector sector--statique">
+        <h3>{m.nom}</h3>
+        <p class="sector__accroche">{m.texte}</p>
+      </li>
+    ))
   }
 </ul>
 

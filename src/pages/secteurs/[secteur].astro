@@ -30,6 +30,7 @@ const s = secteur.data;
 const page = (await getEntry('pagesSecteurs', secteur.id))?.data;
 const valeur = page?.valeur;
 const exigences = page?.exigences;
+const cas = page?.cas;
 ---
 
 <BaseLayout title={s.nom} description={s.accroche}>
@@ -88,6 +89,24 @@ const exigences = page?.exigences;
           </div>
         </div>
       </Section>
+    ) : cas ? (
+      <Section labelledby="cas-titre">
+        <SectionHeader eyebrow={cas.eyebrow} index="03" id="cas-titre">
+          <Fragment slot="title">{cas.titre}</Fragment>
+          {cas.lead}
+        </SectionHeader>
+        {cas.blocs && (
+          <div class="cas">
+            {cas.blocs.map((b) => (
+              <div class="cas__bloc">
+                <h3>{b.titre}</h3>
+                {b.textes.map((t) => <p>{t}</p>)}
+              </div>
+            ))}
+          </div>
+        )}
+        {cas.mention && <p class="cas__mention">{cas.mention}</p>}
+      </Section>
     ) : (
       <Section labelledby="cas-titre">
         <SectionHeader eyebrow="Cas pratiques" index="03" id="cas-titre">
@@ -105,15 +124,17 @@ const exigences = page?.exigences;
           <Fragment slot="title">{exigences.titre}</Fragment>
           {exigences.lead}
         </SectionHeader>
-        <ul class="exigences">
-          {exigences.items.map((x, i) => (
-            <li>
-              <span class="mono">{String(i + 1).padStart(2, '0')}</span>
-              <h3>{x.titre}</h3>
-              <p>{x.texte}</p>
-            </li>
-          ))}
-        </ul>
+        {exigences.items && (
+          <ul class="exigences">
+            {exigences.items.map((x, i) => (
+              <li>
+                <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{x.titre}</h3>
+                <p>{x.texte}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </Section>
     ) : (
       <Section labelledby="contraintes-titre">
@@ -174,6 +195,39 @@ const exigences = page?.exigences;
     font-style: italic;
     line-height: 1.2;
     text-wrap: balance;
+  }
+
+  .cas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-4);
+  }
+
+  .cas__bloc {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .cas__bloc h3 {
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  .cas__bloc p {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+
+  .cas__mention {
+    margin-top: var(--space-4);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
   }
 
   .exigences {

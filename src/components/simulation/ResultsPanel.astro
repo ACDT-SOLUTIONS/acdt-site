@@ -34,11 +34,11 @@ const ratio = (v: number) => `${Math.max(0, Math.min(100, (v / (r.tempsValoriseP
       <p class="metric__formule mono">{FORMULES.tempsValorise}</p>
     </li>
     <li class="metric metric--key">
-      <p class="metric__label"><span class="mono">3</span> Économies effectives</p>
+      <p class="metric__label"><span class="mono">3</span> Économie théorique selon l'hypothèse de réaffectation</p>
       <p class="metric__value mono">
         <span data-out="economiesEffectivesParMois">{formatEuros(r.economiesEffectivesParMois)}</span><small> / mois</small>
       </p>
-      <p class="metric__def">La part réellement récupérée, une fois les coûts récurrents déduits.</p>
+      <p class="metric__def">La part supposée réaffectée ou évitée, une fois les coûts récurrents déduits. Aucune dépense évitée n'est observée ici.</p>
       <p class="metric__formule mono">{FORMULES.economiesEffectives}</p>
     </li>
     <li class="metric metric--key">
@@ -55,7 +55,7 @@ const ratio = (v: number) => `${Math.max(0, Math.min(100, (v / (r.tempsValoriseP
     </li>
   </ol>
 
-  <figure class="cascade" aria-label="Du temps valorisé aux économies effectives, par mois">
+  <figure class="cascade" aria-label="Du temps valorisé à l'économie théorique, par mois">
     <div class="cascade__row">
       <span class="cascade__label">Temps valorisé</span>
       <span class="cascade__bar"><span style={`width: ${ratio(r.tempsValoriseParMois)}`} data-bar="valorise"></span></span>

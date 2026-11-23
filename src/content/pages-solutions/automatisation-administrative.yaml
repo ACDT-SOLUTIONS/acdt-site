@@ -278,6 +278,14 @@ mesures:
       texte: >-
         Pièces manquantes, devis sans réponse, échéances : les relances partent au bon moment, sans liste
         tenue à la main.
+  # Études externes masquées tant que références et chiffres n'ont pas été contrôlés sur les publications
+  # originales. Pour les réafficher : etudesMasquees: false.
+  etudesMasquees: true
+  texteSansEtudes: >-
+    Les automatisations peuvent réduire les ressaisies, rendre les dossiers plus faciles à suivre et signaler
+    les étapes qui attendent une action. Le résultat dépend du processus, des outils disponibles et des
+    vérifications qui restent nécessaires. Nous définissons avec vous les indicateurs avant le démarrage, puis
+    nous comparons les mêmes mesures après la mise en service. Aucun gain n'est présumé.
   avertissement: >-
     Exemples externes issus d'études publiées : ce ne sont ni des réalisations ACDT Solutions, ni des gains
     garantis. Chez vous, nous évaluons d'abord votre processus, puis nous vérifions les résultats en situation
@@ -414,6 +422,8 @@ mesures:
       Décrivez-nous un processus qui vous prend du temps : nous regardons ce qui peut être automatisé et ce que
       cela pourrait vous faire gagner.
     cta: { label: Nous contacter, href: /contact/ }
+  # Ces deux liens ne s'affichent que si les deux pages sont publiées.
+  liensGroupes: true
   liens:
     - { label: Évaluer le potentiel d'automatisation, href: /evaluer-le-potentiel/ }
     - { label: "Voir un cas pratique chiffré : relance des pièces", href: /cas-pratiques/avocats-relances-pieces/ }

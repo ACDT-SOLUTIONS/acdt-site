@@ -31,8 +31,19 @@
   familles: [accueil-telephonique-ia, automatisation-administrative, crm-automatisation-commerciale]
   statut: lancement
 
-- id: sante
+- id: kinesitherapeutes
   ordre: 4
+  nom: Kinésithérapeutes
+  accroche: Vos patients prennent rendez-vous par téléphone, sans interrompre vos séances.
+  problemes:
+    - Appels manqués pendant les séances et les visites à domicile
+    - Rendez-vous pris au téléphone, entre deux patients
+    - Envie de garder son propre agenda plutôt qu'une plateforme de réservation
+  familles: [accueil-telephonique-ia]
+  statut: lancement
+
+- id: sante
+  ordre: 5
   nom: Professionnels de santé
   accroche: Une offre dédiée est à l'étude.
   problemes:
