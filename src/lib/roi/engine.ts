@@ -31,8 +31,14 @@ export interface ScenarioInputs {
 }
 
 export interface ScenarioResult {
+  /** Temps consacré aujourd'hui à la tâche, avant automatisation. */
+  heuresActuellesParMois: number;
   heuresLibereesParMois: number;
+  /** Temps qui reste à l'équipe (vérifications, cas particuliers). */
+  heuresRestantesParMois: number;
   tempsValoriseParMois: number;
+  /** Part du temps valorisé supposée éviter une dépense, avant coûts récurrents. */
+  valeurReaffecteeParMois: number;
   economiesEffectivesParMois: number;
   gainNetSurHorizon: number;
   /** Gain net rapporté à l'investissement ; `null` si l'investissement est nul. */
@@ -62,13 +68,18 @@ export const PARAMETRES: Record<Parametre, ParametreMeta> = {
 };
 
 export const FORMULES = {
+  tempsActuel: 'occurrences × durée ÷ 60',
   tempsLibere: "occurrences × durée × taux d'automatisation ÷ 60",
   tempsValorise: 'temps libéré × coût horaire chargé',
   economiesEffectives: 'temps valorisé × taux de réaffectation − coûts récurrents',
   gainNet: 'économies effectives × horizon − investissement initial',
   roiNet: 'gain net ÷ investissement initial',
   delaiRetour: 'investissement initial ÷ économies effectives mensuelles',
+  parSemaine: 'heures par mois × 12 ÷ 52',
 } as const;
+
+/** Convertit un volume mensuel en volume hebdomadaire moyen (52 semaines pour 12 mois). */
+export const parSemaine = (valeurMensuelle: number): number => (valeurMensuelle * 12) / 52;
 
 export function validerInputs(inputs: ScenarioInputs): void {
   for (const [cle, meta] of Object.entries(PARAMETRES) as [Parametre, ParametreMeta][]) {
@@ -82,16 +93,20 @@ export function validerInputs(inputs: ScenarioInputs): void {
 export function simuler(inputs: ScenarioInputs): ScenarioResult {
   validerInputs(inputs);
 
+  const heuresActuellesParMois = (inputs.occurrencesParMois * inputs.minutesParOccurrence) / 60;
   const heuresLibereesParMois =
     (inputs.occurrencesParMois * inputs.minutesParOccurrence * inputs.tauxAutomatisation) / 60;
   const tempsValoriseParMois = heuresLibereesParMois * inputs.coutHoraireCharge;
-  const economiesEffectivesParMois =
-    tempsValoriseParMois * inputs.tauxReaffectation - inputs.coutsRecurrentsMensuels;
+  const valeurReaffecteeParMois = tempsValoriseParMois * inputs.tauxReaffectation;
+  const economiesEffectivesParMois = valeurReaffecteeParMois - inputs.coutsRecurrentsMensuels;
   const gainNetSurHorizon = economiesEffectivesParMois * inputs.horizonMois - inputs.investissementInitial;
 
   return {
+    heuresActuellesParMois,
     heuresLibereesParMois,
+    heuresRestantesParMois: heuresActuellesParMois - heuresLibereesParMois,
     tempsValoriseParMois,
+    valeurReaffecteeParMois,
     economiesEffectivesParMois,
     gainNetSurHorizon,
     roiNet: inputs.investissementInitial > 0 ? gainNetSurHorizon / inputs.investissementInitial : null,

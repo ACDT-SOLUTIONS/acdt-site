@@ -1,0 +1,280 @@
+---
+// Illustration du hero de la famille 02 : une demande entrante devient un dossier suivi.
+// Mêmes données fictives que la simulation de la page, présentées comme une illustration.
+interface Props {
+  simulation: {
+    email: { de: string; objet: string; pieces: string[] };
+    extraction: { label: string; valeur: string }[];
+    dossier: { reference: string; statut: string };
+  };
+}
+
+const { simulation: s } = Astro.props;
+const expediteur = s.email.de.replace(/\s*<.*>/, '');
+const extraits = s.extraction.filter((x) => ['Demandeur', 'Échéance', 'Pièce jointe'].includes(x.label));
+const suivi = [
+  { etat: 'ok', texte: 'Fiche client mise à jour' },
+  { etat: 'ok', texte: 'Contrat classé dans le dossier' },
+  { etat: 'attente', texte: 'Attestation manquante · relance J+3' },
+  { etat: 'humain', texte: 'Réponse préparée · à valider' },
+];
+---
+
+<figure class="dossier" aria-labelledby="dossier-legende">
+  <div class="dossier__entree" style="--i: 0">
+    <p class="dossier__tete mono">
+      <span class="dossier__live" aria-hidden="true"></span>
+      Nouvelle demande · 09:12
+    </p>
+    <p class="dossier__de">{expediteur}</p>
+    <p class="dossier__objet">{s.email.objet}</p>
+    <p class="dossier__piece mono">{s.email.pieces[0]}</p>
+  </div>
+
+  <ul class="dossier__extraits" aria-label="Informations repérées">
+    {
+      extraits.map((x, j) => (
+        <li style={`--i: ${j + 1}`}>
+          <span class="mono">{x.label}</span>
+          {x.valeur}
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="dossier__fiche" style="--i: 4">
+    <p class="dossier__fiche-tete">
+      <span class="mono">{s.dossier.reference}</span>
+      <span class="dossier__statut mono">{s.dossier.statut}</span>
+    </p>
+    <ul class="dossier__suivi">
+      {
+        suivi.map((x, j) => (
+          <li class={`is-${x.etat}`} style={`--i: ${j + 5}`}>
+            <span class="dossier__puce" aria-hidden="true" />
+            {x.texte}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <figcaption id="dossier-legende" class="dossier__legende mono">
+    <span>Illustration d'un scénario</span>
+    <span>02 · Processus administratifs</span>
+  </figcaption>
+</figure>
+
+<style>
+  .dossier {
+    --cycle: 10s;
+    --pas: 0.55s;
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-float);
+    font-size: var(--step--1);
+  }
+
+  .dossier p {
+    margin: 0;
+  }
+
+  .dossier__entree {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--color-bg);
+  }
+
+  .dossier__tete {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-1) !important;
+    font-size: var(--step--2);
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .dossier__live {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  .dossier__de {
+    font-weight: 600;
+  }
+
+  .dossier__objet {
+    color: var(--color-text-muted);
+  }
+
+  .dossier__piece {
+    justify-self: start;
+    margin-top: var(--space-2) !important;
+    padding: 0.1rem 0.45rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-s);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  /* Informations repérées : étiquettes qui « descendent » vers le dossier. */
+  .dossier__extraits {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0 0 0 var(--space-5);
+    list-style: none;
+  }
+
+  .dossier__extraits::before {
+    content: '';
+    position: absolute;
+    top: calc(-1 * var(--space-4));
+    bottom: calc(-1 * var(--space-4));
+    left: var(--space-2);
+    width: 1px;
+    background: repeating-linear-gradient(to bottom, var(--color-line-strong) 0 4px, transparent 4px 8px);
+  }
+
+  .dossier__extraits li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--signal-300);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--signal-100) 60%, var(--color-surface));
+    font-size: var(--step--2);
+    font-weight: 560;
+  }
+
+  .dossier__extraits .mono {
+    font-weight: 400;
+    color: var(--signal-600);
+  }
+
+  .dossier__fiche {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border-top: 3px solid var(--color-accent);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .dossier__fiche-tete {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-size: var(--step--2);
+    color: var(--color-text-subtle);
+  }
+
+  .dossier__statut {
+    padding: 0.05rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-signal-soft);
+    color: var(--signal-600);
+  }
+
+  .dossier__suivi {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  .dossier__suivi li {
+    display: grid;
+    grid-template-columns: 0.75rem minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .dossier__puce {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  .is-attente .dossier__puce {
+    border: 1.5px dashed var(--signal-500);
+    background: transparent;
+  }
+
+  .is-humain .dossier__puce {
+    background: var(--ink-900);
+  }
+
+  .is-attente,
+  .is-humain {
+    color: var(--color-text-muted);
+  }
+
+  .dossier__legende {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 1px dashed var(--color-line-strong);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  /* Séquence : statique par défaut, animée si le mouvement est autorisé. */
+  @media (prefers-reduced-motion: no-preference) {
+    .dossier__entree,
+    .dossier__extraits li,
+    .dossier__fiche,
+    .dossier__suivi li {
+      animation: etape var(--cycle) var(--ease-out) infinite;
+      animation-delay: calc(var(--i) * var(--pas));
+    }
+
+    .dossier__live {
+      animation: pulse 2.4s var(--ease-out) infinite;
+    }
+  }
+
+  @keyframes etape {
+    0% {
+      opacity: 0.25;
+      transform: translateY(5px);
+    }
+    5%,
+    84% {
+      opacity: 1;
+      transform: none;
+    }
+    94%,
+    100% {
+      opacity: 0.25;
+    }
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-signal) 55%, transparent);
+    }
+    70%,
+    100% {
+      box-shadow: 0 0 0 0.6rem transparent;
+    }
+  }
+</style>

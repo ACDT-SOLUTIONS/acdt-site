@@ -1,0 +1,175 @@
+# Rédaction locale : scénarios illustratifs, sans référence client ni gain chiffré.
+hero:
+  titre: Chaque contact compte.
+  titreAccent: Gardez le fil.
+  accroche: Retrouvez vos échanges, vos opportunités et vos prochaines actions au même endroit.
+  contexte: >-
+    Une demande sur le site, un devis envoyé par email, une relance notée dans un agenda : quand le suivi
+    est dispersé, il devient difficile de savoir qui rappeler et où en est chaque échange.
+  promesse: >-
+    ACDT Solutions vous aide à organiser votre relation commerciale et à automatiser les tâches répétitives,
+    en partant de votre CRM ou en mettant en place un outil adapté à votre équipe.
+  principal: { label: Organiser mon suivi commercial, href: /contact/ }
+  cta: { label: Voir un parcours concret, href: '#processus-titre' }
+
+problemes:
+  titre: Vos opportunités méritent mieux qu'un suivi de mémoire.
+  lead: Le problème n'est pas toujours le manque de contacts. C'est le temps nécessaire pour bien les suivre.
+  items:
+    - titre: Des contacts éparpillés
+      texte: "Coordonnées dans un tableur, messages dans les boîtes mail, notes sur un téléphone : reconstituer un échange prend du temps."
+      reponse: Une fiche rassemble les coordonnées utiles, l'entreprise, les échanges enregistrés et la personne chargée du suivi.
+    - titre: Des relances qui passent après le reste
+      texte: Un devis attend une réponse, mais personne n'a prévu la prochaine action. Le suivi dépend des urgences du jour.
+      reponse: Chaque opportunité peut avoir un responsable, une échéance et un rappel ; les relances sont définies selon vos règles.
+    - titre: Les mêmes informations ressaisies
+      texte: Une demande arrive par formulaire puis ses informations sont recopiées dans le CRM et dans une liste de suivi.
+      reponse: Les outils peuvent être reliés pour transmettre les informations utiles et limiter les doubles saisies.
+    - titre: Une activité difficile à lire
+      texte: Pour préparer un point commercial, il faut demander des nouvelles à chacun et rapprocher plusieurs fichiers.
+      reponse: Des vues partagées permettent de retrouver les demandes en cours, les prochaines actions et les dossiers à débloquer.
+
+prestations:
+  titre: Un suivi commercial qui ressemble à votre façon de travailler.
+  lead: Nous définissons les informations utiles et les étapes du suivi, puis les connexions et automatisations qui vous simplifient la vie.
+  items:
+    - titre: Centraliser et fiabiliser vos contacts
+      resume: Une base structurée pour retrouver la bonne personne et comprendre son lien avec votre organisation.
+      liste:
+        - Fiches contacts et entreprises
+        - Champs, catégories et filtres adaptés à votre activité
+        - Import des fichiers existants et contrôle des doublons
+      note: Les règles de rapprochement et les données à conserver sont validées avant la reprise ; les fusions ambiguës restent contrôlées par une personne.
+    - titre: Retrouver l'historique des échanges
+      resume: Notes, appels, rendez-vous et emails enregistrés donnent du contexte à la prochaine prise de contact.
+      note: Le périmètre de connexion à votre messagerie, les éléments synchronisés et les droits de lecture sont vérifiés avec vos outils.
+    - titre: Suivre les opportunités et les prochaines actions
+      resume: Un parcours lisible pour savoir ce qui est nouveau, qualifié, en attente d'un devis ou d'une décision.
+      liste:
+        - Étapes et critères de passage définis avec votre équipe
+        - Responsable et prochaine action par opportunité
+        - Rappels sur les suivis arrivés à échéance
+      note: Ce parcours commercial est à configurer et à tester pour votre activité ; il ne constitue pas une démonstration déjà validée de bout en bout.
+    - titre: Relier vos formulaires et vos logiciels
+      resume: Une demande peut créer ou compléter une fiche et être orientée vers la bonne personne.
+      liste:
+        - Formulaires de contact reliés au CRM
+        - Échanges par API, webhook ou import selon les logiciels
+        - Vérification des champs transmis et des doublons
+      note: Nous vérifions les possibilités d'intégration, les licences et les accès nécessaires avant de confirmer le périmètre.
+    - titre: Préparer les relances et les campagnes
+      resume: Des segments utiles et des messages adaptés pour éviter de traiter toute votre base de la même manière.
+      details:
+        - titre: Relances commerciales
+          texte: Rappels internes, brouillons ou envois programmés peuvent être étudiés selon le statut du dossier, les délais convenus et les conditions d'arrêt. Les messages engageants restent soumis à votre validation.
+        - titre: Campagnes ciblées
+          texte: Des listes de contacts, des modèles de messages et un suivi des désinscriptions peuvent être mis en place selon les finalités et les règles retenues.
+      note: Les règles de contact, de consentement ou d'opposition, la délivrabilité et l'arrêt des relances sont cadrés et testés avant les envois réels.
+    - titre: Lire votre activité sans refaire le reporting
+      resume: Des vues et rapports pour préparer un point d'équipe avec les informations déjà présentes dans le CRM.
+      liste:
+        - Demandes et opportunités par étape ou responsable
+        - Actions prévues et suivis en retard
+        - Rapports et exports selon les droits accordés
+      note: Les indicateurs sont définis avec vous et dépendent de la qualité des informations enregistrées.
+
+fonctionnement:
+  titre: D'une demande à la prochaine action.
+  lead: >-
+    Scénario fictif : une entreprise de services reçoit une demande de devis depuis son site.
+    Ce parcours illustre une organisation possible, à configurer et à tester ; aucun outil n'est connecté ici.
+  etapes:
+    - titre: La demande rejoint le suivi
+      texte: Les coordonnées et le besoin saisis dans le formulaire peuvent alimenter le CRM, avec un contrôle des champs et des doublons.
+    - titre: Un responsable qualifie le besoin
+      texte: La bonne personne est prévenue, vérifie les informations et décide de la suite à donner. Le statut et la prochaine action sont renseignés.
+    - titre: Le devis reste visible
+      texte: Une fois le devis préparé et validé par votre équipe, sa date d'envoi et son statut sont enregistrés. La génération du document peut être étudiée selon vos outils.
+    - titre: La relance est encadrée
+      texte: Si aucune réponse n'est enregistrée, un rappel interne ou un message prévu peut être déclenché. Une réponse, une opposition ou une décision clôturant le dossier doit arrêter la séquence.
+    - titre: L'équipe reprend avec le bon contexte
+      texte: Le responsable retrouve l'échange, renseigne la décision et prépare la suite. La signature et le passage vers la facturation nécessitent des connexions spécifiques si vous souhaitez les automatiser.
+  conclusion: Votre équipe garde la maîtrise des offres, des engagements et des décisions ; les automatisations prennent en charge les actions définies ensemble.
+
+benefices:
+  titre: Moins de dispersion. Plus de continuité dans vos échanges.
+  items:
+    - label: Visibilité
+      titre: Savoir qui fait quoi
+      texte: Un responsable et une prochaine action rendent le suivi plus facile à reprendre et à partager.
+    - label: Continuité
+      titre: Reprendre un échange sans repartir de zéro
+      texte: Les informations enregistrées restent accessibles aux personnes autorisées, même lorsque l'interlocuteur habituel est absent.
+    - label: Temps utile
+      titre: Réduire les manipulations répétitives
+      texte: Des connexions adaptées limitent la recopie des coordonnées et la préparation manuelle des listes de suivi.
+    - label: Pilotage
+      titre: Repérer ce qui demande votre attention
+      texte: Des vues ciblées font ressortir les opportunités sans prochaine action ou les suivis arrivés à échéance.
+  evaluation:
+    titre: Des indicateurs choisis avec votre équipe
+    texte:
+      - Nous pouvons suivre le délai de prise en charge, les opportunités avec une prochaine action, les relances échues et la qualité de la base avant et après la mise en place.
+      - Les fonctions de contacts, formulaires, campagnes et rapports ont fait l'objet d'essais locaux sur données fictives dans un prototype SuiteCRM. Ces essais ne constituent ni un résultat client ni une validation de toutes les intégrations et automatisations commerciales.
+    fort: Nous évaluons les améliorations dans votre fonctionnement réel, sans promettre un taux de conversion ou un gain de chiffre d'affaires.
+
+secteurs:
+  titre: Des usages adaptés à votre activité.
+  badge: Scénario illustratif
+  lead: Deux exemples d'organisation possible, sans référence à un projet client livré.
+  items:
+    - secteur: tpe-pme
+      texte: Une équipe partage ses contacts, attribue les demandes et retrouve les opportunités qui nécessitent une prochaine action.
+      etapes:
+        - Demande centralisée
+        - Responsable désigné
+        - Prochaine action planifiée
+        - Vue d'équipe actualisée
+    - secteur: artisans-services
+      texte: Les demandes de devis sont regroupées et leur suivi peut continuer entre deux interventions, sans multiplier les listes.
+      etapes:
+        - Besoin recueilli
+        - Devis préparé et validé
+        - Rappel selon les règles convenues
+        - Réponse et suite enregistrées
+  conclusion: Le CRM sert votre organisation ; vos équipes n'ont pas à renseigner des champs qui ne leur apportent rien.
+
+accompagnement:
+  titre: Partir de vos outils. Construire un suivi que l'équipe utilise.
+  etapes:
+    - titre: Comprendre votre suivi actuel
+      texte: Sources des contacts, fichiers existants, étapes de vente, personnes impliquées et points de friction sont examinés avec vous.
+    - titre: Choisir et cadrer
+      texte: Nous étudions d'abord votre CRM actuel. Si un nouvel outil est utile, SuiteCRM peut faire partie des options, selon vos besoins, votre hébergement et vos contraintes.
+    - titre: Configurer, reprendre et tester
+      texte: Champs, imports, droits, connexions et règles de relance sont préparés, puis vérifiés sur des scénarios représentatifs, y compris les doublons, erreurs et conditions d'arrêt.
+    - titre: Accompagner la prise en main
+      texte: L'équipe découvre les parcours utiles à son quotidien. Après démarrage, nous suivons les indicateurs convenus et ajustons les réglages dans le périmètre défini.
+  devis:
+    titre: Une prestation sur devis
+    facteurs:
+      - CRM existant ou nouvel outil à mettre en place
+      - Qualité et volume des données à reprendre
+      - Utilisateurs, profils et règles de partage
+      - Intégrations, automatisations et rapports attendus
+      - Hébergement, licences éventuelles et maintenance
+    texte: Le périmètre, les coûts de mise en place et les coûts récurrents sont précisés après l'étude de votre besoin.
+
+confidentialite:
+  titre: Les bonnes informations, aux bonnes personnes.
+  sousTitre: Les règles d'accès et d'utilisation font partie du projet.
+  points:
+    - label: Accès
+      texte: Comptes individuels, rôles et droits de lecture, modification ou export sont définis puis testés avec votre équipe.
+    - label: Communications
+      texte: Les finalités, préférences de contact et mécanismes de désinscription ou d'opposition sont cadrés selon vos usages ; installer un CRM ne garantit pas à lui seul la conformité.
+    - label: Conservation
+      texte: Les durées, la restitution et les procédures d'effacement doivent couvrir les données liées et les sauvegardes, selon les règles retenues pour le projet.
+    - label: Maîtrise des envois
+      texte: Les conditions de déclenchement, d'arrêt et de validation des messages sont vérifiées avant toute automatisation d'envoi.
+
+cta:
+  titre: Quel suivi commercial aimeriez-vous simplifier ?
+  texte: Décrivez-nous comment arrivent vos demandes et ce qui vous prend du temps pour les suivre. Nous étudierons avec vous une organisation plus simple et les automatisations utiles.
+  principal: { label: Parlons de mon suivi commercial, href: /contact/ }
+  secondaire: { label: Prendre rendez-vous, href: /rendez-vous/ }

@@ -1,0 +1,204 @@
+---
+import type { Cle } from '@/lib/roi/saisie';
+
+interface Props {
+  id: string;
+  cle: Cle;
+  label: string;
+  unite: string;
+  /** Valeur initiale dans l'unité affichée ; champ vide si absente. */
+  valeur?: number;
+  /** Plage du curseur ; sans curseur, la valeur se saisit seulement au clavier. */
+  curseur?: { min: number; max: number; pas: number };
+  aide?: string;
+  /** Texte affiché tant que le champ est vide. */
+  aSaisir?: string;
+}
+
+// La valeur affichée à droite du libellé est un champ texte modifiable : la virgule décimale y est acceptée,
+// et une valeur peut sortir de la plage du curseur dans les limites du moteur. Le curseur la suit.
+const { id, cle, label, unite, valeur, curseur, aide, aSaisir } = Astro.props;
+const initial = valeur === undefined ? '' : String(valeur).replace('.', ',');
+const decrit = [`${id}-unite`, aide && `${id}-aide`, `${id}-erreur`].filter(Boolean).join(' ');
+---
+
+<div class="champ">
+  <div class="champ__ligne">
+    <label for={id} class="champ__label">{label}</label>
+    <span class="champ__valeur">
+      <input
+        id={id}
+        name={cle}
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        spellcheck="false"
+        class="mono"
+        value={initial}
+        placeholder={aSaisir}
+        data-cle={cle}
+        data-initial={initial}
+        aria-describedby={decrit}
+      />
+      <span class="champ__unite mono" id={`${id}-unite`}>{unite}</span>
+    </span>
+  </div>
+  {
+    curseur && (
+      <input
+        type="range"
+        class="champ__curseur"
+        min={curseur.min}
+        max={curseur.max}
+        step={curseur.pas}
+        value={valeur}
+        aria-label={`${label} (curseur)`}
+        aria-valuetext={`${initial} ${unite}`}
+        data-curseur
+      />
+    )
+  }
+  {aide && <p class="champ__aide" id={`${id}-aide`}>{aide}</p>}
+  <p class="champ__erreur" id={`${id}-erreur`} data-erreur></p>
+</div>
+
+<style>
+  .champ {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .champ__ligne {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  /* Le libellé passe à la ligne ; la valeur reste à sa droite. */
+  .champ__label {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: var(--step--1);
+    line-height: 1.4;
+    color: var(--color-inverse-text);
+  }
+
+  .champ__valeur {
+    display: inline-flex;
+    flex: none;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  input[type='text'] {
+    width: 6.5ch;
+    padding: 0.15rem 0.3rem;
+    border: 0;
+    border-bottom: 1px dashed var(--ink-500);
+    border-radius: var(--radius-s) var(--radius-s) 0 0;
+    background: transparent;
+    font-size: var(--step-0);
+    text-align: right;
+    color: var(--color-inverse-text);
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  input[type='text']::placeholder {
+    font-size: var(--step--2);
+    color: var(--ink-400);
+  }
+
+  input[type='text']:hover {
+    border-bottom-color: var(--color-inverse-muted);
+  }
+
+  input[type='text']:focus-visible {
+    border-bottom: 1px solid var(--signal-300);
+    outline: 2px solid var(--signal-300);
+    outline-offset: 2px;
+    background: color-mix(in srgb, var(--ink-950) 40%, transparent);
+  }
+
+  input[type='text'][aria-invalid='true'] {
+    border-bottom: 1px solid var(--signal-300);
+    background: color-mix(in srgb, var(--signal-500) 18%, transparent);
+  }
+
+  .champ__unite {
+    font-size: var(--step--2);
+    color: var(--color-inverse-muted);
+    white-space: nowrap;
+  }
+
+  /* Curseur : même dessin que le calculateur de /evaluer-le-potentiel/. */
+  .champ__curseur {
+    width: 100%;
+    height: 1.5rem;
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .champ__curseur::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--ink-700);
+  }
+
+  .champ__curseur::-moz-range-track {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--ink-700);
+  }
+
+  .champ__curseur::-moz-range-progress {
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--signal-500);
+  }
+
+  .champ__curseur::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: calc(-0.55rem + 1.5px);
+    border: 3px solid var(--color-inverse-surface);
+    border-radius: 50%;
+    background: var(--signal-500);
+    box-shadow: 0 0 0 1px var(--signal-500);
+  }
+
+  .champ__curseur::-moz-range-thumb {
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 3px solid var(--color-inverse-surface);
+    border-radius: 50%;
+    background: var(--signal-500);
+    box-shadow: 0 0 0 1px var(--signal-500);
+  }
+
+  .champ__curseur:focus-visible {
+    outline: 2px solid var(--signal-300);
+    outline-offset: 4px;
+  }
+
+  .champ__aide {
+    font-size: var(--step--2);
+    line-height: 1.5;
+    color: var(--color-inverse-muted);
+  }
+
+  .champ__erreur {
+    font-size: var(--step--2);
+    font-weight: 520;
+    color: var(--signal-300);
+  }
+
+  .champ__erreur:empty {
+    display: none;
+  }
+</style>

@@ -69,11 +69,14 @@ function publication() {
         // 2. Anciennes pages conservées, avec leurs ressources.
         const conservees = anciennesPagesConservees();
         const analytics = baliseConsentement();
+        // Liens des anciennes pages vers une URL désormais redirigée : pointés directement sur la destination.
+        const redirigees = planAnciennesPages().filter((p) => p.action === '301');
         for (const chemin of conservees) {
           const source = join(LEGACY, chemin, 'index.html');
           const cible = join(racine, chemin, 'index.html');
           await mkdir(dirname(cible), { recursive: true });
-          const html = (await readFile(source, 'utf8')).replace('<!-- ACDT:ANALYTICS -->', analytics);
+          let html = (await readFile(source, 'utf8')).replace('<!-- ACDT:ANALYTICS -->', analytics);
+          for (const r of redirigees) html = html.replaceAll(`href="${r.chemin}"`, `href="${r.cible}"`);
           await writeFile(cible, html);
         }
         if (conservees.length) await cp(join(LEGACY, 'assets'), join(racine, 'assets'), { recursive: true });

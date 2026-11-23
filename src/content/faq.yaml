@@ -88,3 +88,110 @@
   reponse: >-
     Une offre dédiée est à l'étude. Les données de santé imposent des exigences spécifiques :
     nous ne proposerons ces solutions qu'une fois leur conformité validée.
+
+# Page « Automatisation des processus administratifs » (famille 02).
+- id: administratif-logiciels
+  ordre: 20
+  pages: [/solutions/automatisation-administrative/]
+  question: Peut-on conserver ses logiciels actuels ?
+  reponse: >-
+    Dans la plupart des cas, oui : nous partons de vos outils et les relions entre eux. Si un logiciel ne
+    permet pas l'échange de données nécessaire, nous vous le signalons pendant l'analyse et présentons les
+    options possibles avant tout développement.
+
+- id: administratif-ia
+  ordre: 21
+  pages: [/solutions/automatisation-administrative/]
+  question: L'intelligence artificielle est-elle indispensable ?
+  reponse: >-
+    Non. Beaucoup de processus s'améliorent avec des règles simples : formulaires, classement, relances,
+    synchronisation. Nous proposons l'IA lorsque les informations sont rédigées librement ou trop variables pour
+    être traitées par des règles.
+
+- id: administratif-erreur
+  ordre: 22
+  pages: [/solutions/automatisation-administrative/]
+  question: Que se passe-t-il en cas d'erreur ?
+  reponse: >-
+    Les cas imprévus sont pris en compte dès la conception : une information manquante ou incohérente, une étape
+    qui échoue ou un résultat de l'IA incertain sont signalés à une personne plutôt que traités en silence. Les
+    opérations sont journalisées pour comprendre ce qui s'est passé et corriger la règle concernée.
+
+- id: administratif-validation
+  ordre: 23
+  pages: [/solutions/automatisation-administrative/]
+  question: Quelles étapes nécessitent une validation humaine ?
+  reponse: >-
+    Elles sont définies avec vous. Il s'agit généralement des messages envoyés à l'extérieur, des décisions qui
+    engagent l'entreprise, des montants et des informations importantes produites par l'IA. Les tâches sans
+    enjeu peuvent s'exécuter seules.
+
+- id: administratif-donnees
+  ordre: 24
+  pages: [/solutions/automatisation-administrative/]
+  question: Comment sont traitées les données ?
+  reponse: >-
+    Les données traitées, les outils et prestataires concernés, les accès et les durées de conservation sont
+    définis pendant le cadrage. Lorsque l'IA est utilisée, nous précisons quel service traite quelles
+    informations. Pour les données les plus sensibles, une infrastructure privée peut être étudiée.
+
+- id: administratif-prix
+  ordre: 25
+  pages: [/solutions/automatisation-administrative/]
+  question: Comment est calculé le prix ?
+  reponse: >-
+    Sur devis, après analyse du processus. Le prix dépend du nombre d'étapes et de règles, des outils à
+    connecter, du recours éventuel à l'IA, des validations nécessaires et des coûts récurrents des services
+    utilisés.
+
+- id: crm-existant
+  ordre: 40
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Faut-il remplacer notre CRM ?
+  reponse: >-
+    Pas nécessairement. Nous regardons d'abord comment améliorer votre outil actuel : champs, étapes,
+    rappels, rapports et connexions. Un remplacement est étudié seulement s'il apporte un intérêt clair.
+
+- id: crm-suitecrm
+  ordre: 41
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Travaillez-vous uniquement avec SuiteCRM ?
+  reponse: >-
+    Non. SuiteCRM est une option que nous avons prototypée sur des données fictives. Le choix dépend de
+    votre organisation, de vos logiciels, de votre budget et de vos contraintes d'hébergement.
+
+- id: crm-relances
+  ordre: 42
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Peut-on automatiser les relances après un devis ?
+  reponse: >-
+    C'est un usage que nous pouvons étudier. Il faut connaître le statut du devis, les réponses reçues,
+    les règles de contact et les conditions d'arrêt. Nous définissons avec vous ce qui relève d'un rappel,
+    d'un brouillon à valider ou d'un envoi automatique, puis testons le parcours avant sa mise en service.
+
+- id: crm-reprise
+  ordre: 43
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Peut-on reprendre nos fichiers de contacts ?
+  reponse: >-
+    Nous examinons leurs formats et leur qualité, puis préparons les correspondances de champs et un import
+    d'essai. Les doublons, les informations contradictoires et les préférences de contact demandent des règles
+    validées avec vous avant l'import final.
+
+- id: crm-ia
+  ordre: 44
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: L'intelligence artificielle est-elle nécessaire ?
+  reponse: >-
+    Non. Une base bien structurée, des règles de suivi et des rappels peuvent suffire. Une aide à la synthèse
+    ou à la préparation de messages peut être étudiée si elle apporte une utilité et si le traitement des
+    données est compatible avec vos contraintes. Les contenus engageants restent validés par votre équipe.
+
+- id: crm-resultats
+  ordre: 45
+  pages: [/solutions/crm-automatisation-commerciale/]
+  question: Pouvez-vous garantir davantage de ventes ?
+  reponse: >-
+    Nous ne garantissons pas de hausse des ventes. Le CRM aide à organiser les contacts et les prochaines
+    actions ; les résultats dépendent aussi de votre offre, de votre marché et du travail commercial.
+    Nous suivons avec vous des indicateurs concrets de qualité et de continuité du suivi.

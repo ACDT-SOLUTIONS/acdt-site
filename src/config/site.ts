@@ -1,7 +1,7 @@
 export const site = {
   nom: 'ACDT Solutions',
   description:
-    "Automatisation des processus et IA appliquée pour les cabinets d'avocats, les TPE-PME, les artisans et les entreprises de services. Prestations sur devis.",
+    "Automatisation des processus et IA appliquée pour les professions libérales, les TPE-PME, les artisans et les entreprises de services. Prestations sur devis.",
   email: 'contact@acdt-solutions.com',
   // Ligne professionnelle de l'éditeur (Onoff). À ne pas confondre avec la ligne de démonstration (OVH).
   telephone: '07 57 83 02 79',

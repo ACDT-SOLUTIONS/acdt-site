@@ -1,0 +1,164 @@
+---
+import { getEntry, type CollectionEntry } from 'astro:content';
+import { PARAMETRES } from '@/lib/roi/engine';
+import { formatEuros, formatMois, formatNombre, formatParametre, formatPourcent } from '@/lib/roi/format';
+import { lienVisible } from '@/lib/publication';
+import { chargerScenario } from '@/lib/simulations';
+import { CLES_ECONOMIE } from '@/lib/roi/saisie';
+
+type Valeur = NonNullable<CollectionEntry<'pagesSecteurs'>['data']['valeur']>;
+
+interface Props {
+  exemple: Valeur['exemple'];
+  economie: Valeur['economie'];
+}
+
+// Exemple publié tel quel (simulations.yaml) : il ne dépend d'aucun réglage du simulateur.
+const { exemple, economie } = Astro.props;
+const entree = await getEntry(exemple.simulation);
+if (!entree) throw new Error(`Simulation introuvable : ${exemple.simulation.id}`);
+const { scenario, base, resultat: r } = await chargerScenario(entree);
+
+const resume = exemple.resume
+  .replace('{occurrences}', base.occurrencesParMois.toLocaleString('fr-FR'))
+  .replace('{minutes}', formatNombre(base.minutesParOccurrence))
+  .replace('{taux}', formatPourcent(base.tauxAutomatisation))
+  .replace('{heures}', formatNombre(r.heuresLibereesParMois));
+
+const libelles = economie.resultats;
+const resultats = [
+  { label: libelles.valorisation, valeur: `${formatEuros(r.tempsValoriseParMois)} / mois` },
+  { label: libelles.soldeMensuel, valeur: `${formatEuros(r.economiesEffectivesParMois)} / mois` },
+  { label: `${libelles.soldeCumule} sur ${base.horizonMois} mois`, valeur: formatEuros(r.gainNetSurHorizon) },
+  ...(r.roiNet === null ? [] : [{ label: libelles.ratio, valeur: formatPourcent(r.roiNet) }]),
+  {
+    label: libelles.delai,
+    valeur: r.delaiRetourMois === null ? libelles.aucunRetour : formatMois(r.delaiRetourMois),
+  },
+];
+const lien = `/cas-pratiques/${scenario.id}/`;
+---
+
+<article class="exemple" aria-labelledby="exemple-titre">
+  <p class="exemple__tag mono">{exemple.titre}</p>
+  <h3 id="exemple-titre">{scenario.data.titre}</h3>
+  <p class="exemple__resume">{resume}</p>
+
+  <details class="exemple__detail">
+    <summary>{exemple.detail}</summary>
+    <dl class="exemple__liste">
+      {
+        CLES_ECONOMIE.map((cle) => (
+          <div>
+            <dt>{economie.champs[cle].label}</dt>
+            <dd class="mono">{formatParametre(PARAMETRES[cle].unite, base[cle])}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <dl class="exemple__liste exemple__liste--resultats">
+      {
+        resultats.map((x) => (
+          <div>
+            <dt>{x.label}</dt>
+            <dd class="mono">{x.valeur}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="exemple__avertissement">{economie.avertissement}</p>
+  </details>
+
+  <p class="exemple__mention">
+    {exemple.mention}
+    {lienVisible(lien) && <a href={lien}>{exemple.lien}</a>}
+  </p>
+</article>
+
+<style>
+  .exemple {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+
+  .exemple__tag {
+    justify-self: start;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--2);
+    color: var(--color-text-muted);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  .exemple__resume {
+    font-size: var(--step--1);
+  }
+
+  .exemple__detail {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .exemple__detail summary {
+    min-height: 2.75rem;
+    padding-block: var(--space-3);
+    font-size: var(--step--1);
+    font-weight: 520;
+    color: var(--color-accent);
+    cursor: pointer;
+  }
+
+  .exemple__liste {
+    display: grid;
+    margin-bottom: var(--space-4);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .exemple__liste div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-2);
+    border-bottom: 1px solid var(--color-line);
+    font-size: var(--step--2);
+  }
+
+  .exemple__liste dt {
+    color: var(--color-text-muted);
+  }
+
+  .exemple__liste dd {
+    margin: 0;
+    text-align: right;
+  }
+
+  .exemple__liste--resultats dd {
+    color: var(--color-accent);
+  }
+
+  .exemple__avertissement,
+  .exemple__mention {
+    font-size: var(--step--2);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+  }
+
+  .exemple__avertissement {
+    margin-bottom: var(--space-3);
+  }
+
+  .exemple__mention a {
+    margin-left: var(--space-1);
+    color: var(--color-accent);
+  }
+</style>

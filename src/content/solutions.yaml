@@ -78,3 +78,33 @@
   mention: >-
     Solutions adaptées aux exigences de confidentialité, proposées sous réserve de validation
     technique et réglementaire de chaque projet.
+  metiersComplementaires:
+    - nom: Cabinets d'expertise comptable
+      texte: >-
+        Organiser les pièces comptables, les dossiers clients et les échanges internes dans un environnement
+        maîtrisé, avec des accès adaptés à chaque collaborateur. Les logiciels de production réglementés
+        et les plateformes soumises à un agrément ne sont pas concernés.
+    - nom: Cabinets de recrutement et services RH
+      texte: >-
+        Classer les candidatures, préparer les documents internes et organiser les accès aux dossiers RH,
+        sur les seules données nécessaires au suivi. Les usages portant sur des données de santé sont exclus.
+    - nom: Architectes et bureaux d'études
+      texte: >-
+        Centraliser les plans, les contrats et les documents de projet, puis automatiser leur classement
+        et leur suivi. Les projets classifiés ou imposant une habilitation spécifique sont exclus.
+    - nom: Cabinets de conseil et d'audit
+      texte: >-
+        Préserver la confidentialité des dossiers de mission, analyses et documents stratégiques avec des
+        outils internes et des échanges contrôlés. Le périmètre porte sur l'organisation documentaire,
+        sans intervention sur les systèmes soumis à une certification ou à un agrément spécifiques.
+    - nom: Bureaux de recherche et développement
+      texte: >-
+        Organiser les documents techniques, prototypes et connaissances internes sans les transmettre
+        systématiquement à des services externes. Les activités de défense, données classifiées et
+        environnements exigeant une habilitation spécifique sont hors périmètre.
+  metiersNote: >-
+    Ces exemples concernent des outils internes et des automatisations sur un périmètre défini avec vous.
+    Nous vérifions les exigences de chaque mission avant de la proposer. Les prestations nécessitant un
+    agrément, une habilitation ou une certification spécifiques non détenus par ACDT sont exclues,
+    notamment l'hébergement de données de santé soumis à certification HDS. Une installation locale
+    ne dispense pas de vérifier les obligations applicables.
