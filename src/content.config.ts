@@ -417,6 +417,18 @@ const pagesSecteurs = defineCollection({
         conclusion: z.object({ titre: z.string(), cta: lien }),
       })
       .optional(),
+    // Cas client réel, sans chiffres : remplace les cas pratiques chiffrés quand `valeur` est absent.
+    casClient: z
+      .object({
+        eyebrow: z.string(),
+        titre: z.string(),
+        lead: z.string(),
+        besoin: z.array(z.string()).min(1),
+        solution: z.array(z.string()).min(1),
+        retour: z.string(),
+        mention: z.string().optional(),
+      })
+      .optional(),
     exigences: z
       .object({ eyebrow: z.string(), titre: z.string(), lead: z.string(), items: z.array(titreTexte).min(1) })
       .optional(),

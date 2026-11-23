@@ -1,0 +1,47 @@
+# Sections propres à la page /secteurs/kinesitherapeutes/.
+# Le cas client reprend la fiche Notion « Prise de rendez-vous téléphonique pour les kinésithérapeutes ».
+# Le numéro de la permanence du client n'est pas publié.
+
+casClient:
+  eyebrow: Cas client
+  titre: Prise de rendez-vous téléphonique pour un kinésithérapeute.
+  lead: >-
+    Gérer les appels sans interrompre les soins, tout en conservant son agenda Apple et en gardant la main
+    sur les rendez-vous qu'on peut accepter ou non.
+  besoin:
+    - >-
+      Lorsqu'un kinésithérapeute est en séance ou se déplace au domicile de ses patients, il n'est pas toujours
+      disponible pour répondre au téléphone.
+    - Certains préfèrent aussi gérer leur activité sans utiliser Doctolib.
+  solution:
+    - >-
+      Un agent téléphonique répond aux appels, recueille les demandes et consulte les disponibilités dans
+      l'agenda Apple du praticien.
+    - >-
+      Si le créneau demandé nécessite une vérification particulière, le praticien reçoit un SMS pour accepter
+      ou refuser le rendez-vous. L'agent ne confirme la réservation au patient qu'une fois celle-ci enregistrée
+      dans l'agenda.
+  retour: >-
+    Le praticien estime que cette solution pourrait être particulièrement utile aux kinésithérapeutes qui
+    n'ont pas encore Doctolib et à ceux qui se déplacent au domicile de leurs patients.
+
+exigences:
+  eyebrow: Les exigences de votre cabinet
+  titre: Votre pratique a ses exigences. La permanence s'y adapte.
+  lead: >-
+    Une permanence utile doit respecter vos patients, votre agenda et votre façon de travailler. Ces points
+    sont cadrés avec vous avant la mise en service.
+  items:
+    - titre: La décision reste au praticien
+      texte: >-
+        Vous définissez les créneaux que l'agent peut proposer seul et ceux qui nécessitent votre accord.
+        Pour ces derniers, vous acceptez ou refusez par SMS ; rien n'est confirmé au patient sans vous.
+    - titre: Votre agenda reste la référence
+      texte: >-
+        L'agent consulte et alimente l'agenda que vous utilisez déjà. Une réservation n'est annoncée au patient
+        qu'une fois enregistrée dans cet agenda.
+    - titre: Des données à cadrer avec soin
+      texte: >-
+        Un appel de patient peut contenir des informations sur sa santé. Les données recueillies, leur
+        hébergement, les prestataires utilisés et les durées de conservation sont définis avec vous avant la
+        mise en service.

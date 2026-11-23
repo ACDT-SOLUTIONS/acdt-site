@@ -10,13 +10,20 @@ interface Props {
 const solutions = (await getCollection('solutions', (s) => Astro.props.ids.includes(s.id))).sort((a, b) =>
   a.data.numero.localeCompare(b.data.numero),
 );
+// Avec une seule solution, la numéroter (« 01 ») n'apporte rien.
+const numeroter = solutions.length > 1;
 ---
 
 <ul class="solution-cards">
   {
     solutions.map((s) => (
-      <li class:list={['solution-card', { 'solution-card--statique': !lienVisible(`/solutions/${s.id}/`) }]}>
-        <span class="solution-card__numero mono">{s.data.numero}</span>
+      <li
+        class:list={[
+          'solution-card',
+          { 'solution-card--statique': !lienVisible(`/solutions/${s.id}/`), 'solution-card--sans-numero': !numeroter },
+        ]}
+      >
+        {numeroter && <span class="solution-card__numero mono">{s.data.numero}</span>}
         <h3>
           {lienVisible(`/solutions/${s.id}/`) ? <a href={`/solutions/${s.id}/`}>{s.data.titre}</a> : s.data.titre}
         </h3>
@@ -46,6 +53,10 @@ const solutions = (await getCollection('solutions', (s) => Astro.props.ids.inclu
     border-radius: var(--radius-l);
     background: var(--color-surface);
     transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .solution-card--sans-numero {
+    grid-template-rows: auto 1fr auto;
   }
 
   .solution-card:hover {

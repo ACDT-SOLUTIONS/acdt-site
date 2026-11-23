@@ -171,6 +171,10 @@ secteurs:
         Un avocat peut être en audience, en rendez-vous ou occupé à préparer un dossier. La permanence peut
         recueillir les demandes, distinguer les clients existants des nouvelles sollicitations et transmettre
         les informations pertinentes.
+    - secteur: kinesitherapeutes
+      texte: >-
+        Un kinésithérapeute en séance ou en visite à domicile ne peut pas décrocher. La permanence peut
+        proposer un créneau d'après son agenda et lui demander son accord par SMS quand c'est nécessaire.
     - secteur: artisans-services
       texte: >-
         Un professionnel en intervention ne peut pas toujours décrocher. La permanence peut recueillir la nature
